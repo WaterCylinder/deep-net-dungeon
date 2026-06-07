@@ -1,0 +1,41 @@
+{
+	"gameVersion": "0.1.0",
+	"audio": {
+		"masterVolume": 0.8,
+		"musicVolume": 0.8,
+		"sfxVolume": 0.8
+	},
+	"video": {
+		"screenShake": true,
+		"particleEffects": true,
+		"targetFPS": 60
+	},
+	"player": {
+		"speed": 200.0,
+		"health": 100.0,
+		"damage": 10.0
+	},
+	"enemy": {
+		"speed": 150.0,
+		"health": 50.0,
+		"damage": 10.0
+	},
+	"bullet": {
+		"speed": 300.0,
+		"damage": 10.0,
+		"lifetime": 10.0
+	},
+	"level": {
+		"totalLevels": 5,
+		"minWaves": 3,
+		"maxWaves": 10
+	},
+	"item": {
+		"passiveLimit": 99,
+		"activeLimit": 1
+	},
+	"ui": {
+		"fadeSpeed": 0.5,
+		"scaleSpeed": 0.3
+	}
+}
