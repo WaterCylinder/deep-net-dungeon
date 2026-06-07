@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace DeepNetDungeon.Util
+namespace Utils
 {
     /// <summary>
     /// 补间动画辅助类
@@ -84,3 +84,4 @@ namespace DeepNetDungeon.Util
         }
     }
 }
+
