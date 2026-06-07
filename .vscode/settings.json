@@ -3,5 +3,6 @@
     "files.exclude": {
         // 在这里添加你想要隐藏的文件后缀规则
         "**/*.cs.uid": true,      // 隐藏所有 .cs.meta 文件
-    }
+    },
+    "chat.disableAIFeatures": false
 }

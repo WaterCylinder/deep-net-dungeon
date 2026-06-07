@@ -1,147 +1,72 @@
 using Godot;
-using System;
-using System.Collections.Generic;
 
-public partial class RandomSystem
+namespace DeepNetDungeon.GameSystem
 {
-	private Random randomObjDefault;
-	private int defaultSeed;
-	private Dictionary<string, Random> randomObjDict = new();
-	private int randomSeed;
-	public int NextSeed()
-	{
-		randomSeed += 1;
-		return randomSeed;
-	}
-	public RandomSystem(object seed)
-	{
-		int result;
-		try
-		{
-			result = Convert.ToInt32(seed);
-		}
-		catch (Exception e)
-		{
-			e.GetHashCode();
-			result = seed.GetHashCode();
-		}
-		randomObjDefault = new Random(result);
-		defaultSeed = result;
-		randomSeed = defaultSeed;
-		GD.Print("随机数系统种子基数：", result);
-	}
+    /// <summary>
+    /// 随机系统 - 处理所有随机数生成
+    /// </summary>
+    public partial class RandomSystem : Node
+    {
+        private static RandomSystem _instance;
+        public static RandomSystem Instance => _instance;
 
-	public string SetRandomGenerator(int seed = -1, string generatorName = null)
-	{
-		if (seed == -1)
-		{
-			seed = NextSeed();
-		}
-		if (generatorName == null)
-		{
-		    generatorName = Guid.NewGuid().ToString();
-		}
-		if (! randomObjDict.ContainsKey(generatorName))
-		{
-			randomObjDict.Add(generatorName, new Random(seed));
-		}
-		return generatorName;
-	}
+        private RandomNumberGenerator _rng = new();
 
-	/// <summary>
-	/// 获取随机数生成器
-	/// </summary>
-	/// <param name="generator"></param>
-	/// <returns></returns>
-	public Random GetGenerator(string generator)
-	{
-		Random rTemp = null;
-		if (generator == null || !randomObjDict.ContainsKey(generator))
-		{
-			rTemp = randomObjDefault;
-		}
-		else
-		{
-			rTemp = randomObjDict[generator];
-		}
-		return rTemp;
-	}
+        public override void _Ready()
+        {
+            _instance = this;
+            _rng.Randomize();
+        }
 
-	public Random GetDefaultGenerator()
-	{
-		return GetGenerator(null);
-	}
+        /// <summary>
+        /// 获取范围内随机整数
+        /// </summary>
+        public int Range(int min, int max)
+        {
+            return _rng.Randi() % (max - min + 1) + min;
+        }
 
-	/// <summary>
-	/// 生成min到max的随机浮点数
-	/// </summary>
-	/// <param name="min"></param>
-	/// <param name="max"></param>
-	/// <param name="generator"></param>
-	/// <returns></returns>
-	public float Float(float min = 0, float max = 1, string generator = null)
-	{
-		Random rTemp = GetGenerator(generator);
-		float r = (float)rTemp.NextDouble();
-		float result = min + (max - min) * r;
-		return result;
-	}
+        /// <summary>
+        /// 获取范围内随机浮点数
+        /// </summary>
+        public float RangeF(float min, float max)
+        {
+            return _rng.Randf() * (max - min) + min;
+        }
 
-	/// <summary>
-	/// 生成min到max的随机整数，包含min和max
-	/// </summary>
-	/// <param name="min"></param>
-	/// <param name="max"></param>
-	/// <param name="generator"></param>
-	/// <returns></returns>
-	public int Int(int min = 0, int max = 100, string generator = null)
-	{
-		Random rTemp = GetGenerator(generator);
-		int result = rTemp.Next(min, max + 1);
-		return result;
-	}
+        /// <summary>
+        /// 加权随机选择
+        /// </summary>
+        public T WeightedChoice<T>(T[] items, float[] weights)
+        {
+            // 留空：加权随机选择逻辑
+            return items.Length > 0 ? items[0] : default;
+        }
 
-	/// <summary>
-	/// 从列表中随机抽取
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <param name="list"></param>
-	/// <param name="generator"></param>
-	/// <returns></returns>
-	public T Pick<T>(List<T> list, string generator = null)
-	{
-		int count = list.Count;
-		if(count == 0)
-		{
-			return default;
-		}
-		else if(count == 1)
-		{	
-			return list[0];
-		}
-		int r = Int(0, list.Count - 1, generator);
-		return list[r];
-	}
+        /// <summary>
+        /// 概率判定
+        /// </summary>
+        public bool Chance(float probability)
+        {
+            return _rng.Randf() < probability;
+        }
 
-	/// <summary>
-	/// 从列表中随机抽取
-	/// </summary>
-	/// <param name="list"></param>
-	/// <param name="generator"></param>
-	/// <returns></returns>
-	public T Pick<[MustBeVariant] T>(Godot.Collections.Array<T> list, string generator = null)
-	{
-		int count = list.Count;
-		if(count == 0)
-		{
-			return default;
-		}
-		else if(count == 1)
-		{	
-			return list[0];
-		}
-		int r = Int(0, list.Count - 1, generator);
-		return list[r];
-	}
+        /// <summary>
+        /// 从列表中随机选择
+        /// </summary>
+        public T Choice<T>(T[] items)
+        {
+            if (items.Length == 0) return default;
+            int index = (int)(_rng.Randf() * items.Length);
+            return items[Mathf.Min(index, items.Length - 1)];
+        }
 
+        /// <summary>
+        /// 设置随机种子
+        /// </summary>
+        public void SetSeed(uint seed)
+        {
+            _rng.Seed = seed;
+        }
+    }
 }
