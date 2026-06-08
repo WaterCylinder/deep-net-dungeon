@@ -87,6 +87,15 @@ public partial class Value : Resource
         // 初始最小值为0f，初始值为1f
         GetMultiplier(BASE_ID, null);
     }
+    
+    /// <summary>
+    /// Value类的构造函数，允许直接设置基础数值，并自动初始化基础乘区
+    /// </summary>
+    /// <param name="baseValue"></param>
+    public Value(float baseValue) : this()
+    {
+        this.baseValue = baseValue;
+    }
 
     /// <summary>
     /// 获取乘区，没有则创建新的
@@ -339,11 +348,11 @@ public partial class Value : Resource
     }
 
     /// <summary>
-    /// float 显式转换为 Value
+    /// float 隐式转换为 Value
     /// </summary>
-    public static explicit operator Value(float num)
+    public static implicit operator Value(float num)
     {
-        return new Value { baseValue = num };
+        return new Value(num);
     }
 
     /// <summary>
