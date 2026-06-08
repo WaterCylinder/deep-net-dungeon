@@ -9,7 +9,9 @@ using System.Collections.Generic;
 ///   config.json 中的 inputMode 控制操作模式：
 ///     PC平台: "KeyboardMouse" / "Gamepad"
 ///     移动端: "Touch"（暂未实现，预留功能）
-///   key_mapper.json 存储在 user:// 目录下，定义具体键位映射
+///   键位映射通过 Config 加载 key_mapper 配置
+///     默认模板：res://Asset/Default/default_key_mapper.json
+///     用户配置：user://key_mapper.json（优先读取）
 /// </summary>
 public partial class InputManager : ManagerBase
 {
@@ -60,33 +62,33 @@ public partial class InputManager : ManagerBase
     private Dictionary<string, List<JoyButton>> _gamepadMapping = new();
 
     /// <summary>
-    /// key_mapper.json 配置文件路径
+    /// Config 实例，由 GameManager 注入
     /// </summary>
-    private const string KEY_MAPPER_PATH = "user://key_mapper.json";
+    private Config _config;
 
     /// <summary>
-    /// config.json 配置文件路径
+    /// key_mapper 配置名称
     /// </summary>
-    private const string CONFIG_PATH = "user://config.json";
+    private const string KEY_MAPPER_CONFIG_NAME = "key_mapper";
 
     /// <summary>
-    /// 默认键位映射（PC键鼠）
+    /// 默认键位映射（PC键鼠）—— 用于 Config 未加载时的后备
     /// </summary>
-    private static readonly Dictionary<string, List<Key>> DefaultKeyMapping = new()
+    private static readonly Dictionary<string, List<Key>> FallbackKeyMapping = new()
     {
         { Actions.MoveUp, new List<Key> { Key.W, Key.Up } },
         { Actions.MoveDown, new List<Key> { Key.S, Key.Down } },
         { Actions.MoveLeft, new List<Key> { Key.A, Key.Left } },
         { Actions.MoveRight, new List<Key> { Key.D, Key.Right } },
-        { Actions.ActiveSkill, new List<Key> { (Key)1 } },
+        { Actions.ActiveSkill, new List<Key> { (Key)1 } },   // 鼠标左键
         { Actions.Menu, new List<Key> { Key.Escape } },
         { Actions.Confirm, new List<Key> { Key.Enter, Key.KpEnter } }
     };
 
     /// <summary>
-    /// 默认手柄按钮映射
+    /// 默认手柄按钮映射 —— 用于 Config 未加载时的后备
     /// </summary>
-    private static readonly Dictionary<string, List<JoyButton>> DefaultGamepadMapping = new()
+    private static readonly Dictionary<string, List<JoyButton>> FallbackGamepadMapping = new()
     {
         { Actions.MoveUp, new List<JoyButton> { JoyButton.DpadUp } },
         { Actions.MoveDown, new List<JoyButton> { JoyButton.DpadDown } },
@@ -113,10 +115,13 @@ public partial class InputManager : ManagerBase
         // 自动检测平台默认模式
         DefaultMode = DetectPlatformDefaultMode();
 
+        // 获取 Config 引用（通过 GameManager 持有或新建）
+        InitializeConfig();
+
         // 从 config.json 加载 inputMode
         LoadInputModeFromConfig();
 
-        // 加载键位配置
+        // 加载键位映射（优先从 Config 读取）
         LoadKeyMapping();
 
         // 注册 Godot InputMap
@@ -128,6 +133,26 @@ public partial class InputManager : ManagerBase
     public override void Cleanup()
     {
         Log("输入管理器已清理");
+    }
+
+    /// <summary>
+    /// 获取或创建 Config 实例
+    /// </summary>
+    private void InitializeConfig()
+    {
+        // 优先从 GameManager 获取 Config
+        if (GameManager.Instance != null)
+        {
+            _config = GameManager.Instance.Config;
+        }
+
+        // 如果 GameManager 未提供，则新建并使用默认值
+        if (_config == null)
+        {
+            _config = new Config();
+            _config.LoadConfig();              // 加载 config 配置
+            _config.LoadConfig(KEY_MAPPER_CONFIG_NAME);  // 加载 key_mapper 配置
+        }
     }
 
     /// <summary>
@@ -146,46 +171,26 @@ public partial class InputManager : ManagerBase
     }
 
     /// <summary>
-    /// 从 config.json 加载 inputMode 配置
+    /// 从 config.json 加载 inputMode 配置（通过 Config）
     /// </summary>
     private void LoadInputModeFromConfig()
     {
-        if (!FileAccess.FileExists(CONFIG_PATH))
+        if (_config == null || !_config.IsConfigLoaded("config"))
         {
             CurrentMode = DefaultMode;
-            Log($"config.json 不存在，使用默认模式: {DefaultMode}");
             return;
         }
 
-        try
+        Variant modeVar = _config.GetConfig("inputMode");
+        if (modeVar.VariantType == Variant.Type.String)
         {
-            using var file = FileAccess.Open(CONFIG_PATH, FileAccess.ModeFlags.Read);
-            if (file == null)
+            string modeStr = modeVar.AsString();
+            if (Enum.TryParse(modeStr, true, out InputMode parsedMode))
             {
-                CurrentMode = DefaultMode;
+                CurrentMode = parsedMode;
+                Log($"从 config.json 加载输入模式: {CurrentMode}");
                 return;
             }
-
-            string jsonText = file.GetAsText();
-            var configData = Json.ParseString(jsonText);
-            if (configData.VariantType == Variant.Type.Dictionary)
-            {
-                var configDict = configData.AsGodotDictionary();
-                if (configDict.ContainsKey("inputMode"))
-                {
-                    string modeStr = configDict["inputMode"].AsString();
-                    if (Enum.TryParse(modeStr, true, out InputMode parsedMode))
-                    {
-                        CurrentMode = parsedMode;
-                        Log($"从 config.json 加载输入模式: {CurrentMode}");
-                        return;
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log($"加载 config.json 失败: {e.Message}");
         }
 
         CurrentMode = DefaultMode;
@@ -193,171 +198,131 @@ public partial class InputManager : ManagerBase
 
     /// <summary>
     /// 加载键位映射配置
-    /// 优先从 user://key_mapper.json 加载，不存在则使用默认配置
+    /// 优先从 Config(key_mapper) 读取，未加载则使用后备默认值
     /// </summary>
     private void LoadKeyMapping()
     {
-        if (FileAccess.FileExists(KEY_MAPPER_PATH))
+        if (_config != null && _config.IsConfigLoaded(KEY_MAPPER_CONFIG_NAME))
         {
-            try
-            {
-                using var file = FileAccess.Open(KEY_MAPPER_PATH, FileAccess.ModeFlags.Read);
-                if (file != null)
-                {
-                    string jsonText = file.GetAsText();
-                    var data = Json.ParseString(jsonText);
-                    if (data.VariantType == Variant.Type.Dictionary)
-                    {
-                        var dict = data.AsGodotDictionary();
-                        ParseKeyMappingFromJson(dict);
-                        ParseGamepadMappingFromJson(dict);
-                        Log("从 key_mapper.json 加载键位配置");
-                        return;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log($"加载 key_mapper.json 失败: {e.Message}，使用默认配置");
-            }
+            ParseKeyMappingFromConfig();
+            ParseGamepadMappingFromConfig();
+            Log("从 Config(key_mapper) 加载键位配置");
+            return;
         }
 
-        // 使用默认配置
-        _keyMapping = new Dictionary<string, List<Key>>(DefaultKeyMapping);
-        _gamepadMapping = new Dictionary<string, List<JoyButton>>(DefaultGamepadMapping);
-        SaveKeyMapping();
-        Log("使用默认键位配置");
+        // 后备：使用硬编码默认值
+        _keyMapping = CloneKeyMapping(FallbackKeyMapping);
+        _gamepadMapping = CloneGamepadMapping(FallbackGamepadMapping);
+        Log("使用后备默认键位配置");
     }
 
     /// <summary>
-    /// 从 JSON 字典解析键盘映射
+    /// 从 Config 解析键盘映射
+    /// 格式: keyboard.{action} → Variant.Array of keycode strings
     /// </summary>
-    private void ParseKeyMappingFromJson(Godot.Collections.Dictionary dict)
+    private void ParseKeyMappingFromConfig()
     {
         _keyMapping = new Dictionary<string, List<Key>>();
-        if (dict.ContainsKey("keyboard"))
-        {
-            var keyboardDict = dict["keyboard"].AsGodotDictionary();
-            foreach (var kvp in keyboardDict)
-            {
-                string action = kvp.Key.AsString();
-                var keyList = new List<Key>();
-                foreach (var keyVar in kvp.Value.AsGodotArray())
-                {
-                    if (int.TryParse(keyVar.AsString(), out int keyCode))
-                    {
-                        keyList.Add((Key)keyCode);
-                    }
-                    else if (Enum.TryParse(keyVar.AsString(), true, out Key parsedKey))
-                    {
-                        keyList.Add(parsedKey);
-                    }
-                }
-                if (keyList.Count > 0)
-                {
-                    _keyMapping[action] = keyList;
-                }
-            }
-        }
 
-        // 填充缺失的默认值
-        foreach (var kvp in DefaultKeyMapping)
+        foreach (var kvp in FallbackKeyMapping)
         {
-            if (!_keyMapping.ContainsKey(kvp.Key))
+            string action = kvp.Key;
+            Variant varKeys = _config.GetConfig(KEY_MAPPER_CONFIG_NAME, $"keyboard.{action}");
+
+            if (varKeys.VariantType == Variant.Type.Array)
             {
-                _keyMapping[kvp.Key] = new List<Key>(kvp.Value);
+                var list = new List<Key>();
+                foreach (var k in varKeys.AsGodotArray())
+                {
+                    if (int.TryParse(k.AsString(), out int keyCode))
+                    {
+                        list.Add((Key)keyCode);
+                    }
+                }
+                if (list.Count > 0)
+                {
+                    _keyMapping[action] = list;
+                    continue;
+                }
             }
+
+            // 配置中缺失该动作，使用后备值
+            _keyMapping[action] = new List<Key>(kvp.Value);
         }
     }
 
     /// <summary>
-    /// 从 JSON 字典解析手柄映射
+    /// 从 Config 解析手柄映射
+    /// 格式: gamepad.{action} → Variant.Array of button code strings
     /// </summary>
-    private void ParseGamepadMappingFromJson(Godot.Collections.Dictionary dict)
+    private void ParseGamepadMappingFromConfig()
     {
         _gamepadMapping = new Dictionary<string, List<JoyButton>>();
-        if (dict.ContainsKey("gamepad"))
-        {
-            var gamepadDict = dict["gamepad"].AsGodotDictionary();
-            foreach (var kvp in gamepadDict)
-            {
-                string action = kvp.Key.AsString();
-                var buttonList = new List<JoyButton>();
-                foreach (var btnVar in kvp.Value.AsGodotArray())
-                {
-                    if (int.TryParse(btnVar.AsString(), out int btnCode))
-                    {
-                        buttonList.Add((JoyButton)btnCode);
-                    }
-                    else if (Enum.TryParse(btnVar.AsString(), true, out JoyButton parsedBtn))
-                    {
-                        buttonList.Add(parsedBtn);
-                    }
-                }
-                if (buttonList.Count > 0)
-                {
-                    _gamepadMapping[action] = buttonList;
-                }
-            }
-        }
 
-        // 填充缺失的默认值
-        foreach (var kvp in DefaultGamepadMapping)
+        foreach (var kvp in FallbackGamepadMapping)
         {
-            if (!_gamepadMapping.ContainsKey(kvp.Key))
+            string action = kvp.Key;
+            Variant varBtns = _config.GetConfig(KEY_MAPPER_CONFIG_NAME, $"gamepad.{action}");
+
+            if (varBtns.VariantType == Variant.Type.Array)
             {
-                _gamepadMapping[kvp.Key] = new List<JoyButton>(kvp.Value);
+                var list = new List<JoyButton>();
+                foreach (var b in varBtns.AsGodotArray())
+                {
+                    if (int.TryParse(b.AsString(), out int btnCode))
+                    {
+                        list.Add((JoyButton)btnCode);
+                    }
+                }
+                if (list.Count > 0)
+                {
+                    _gamepadMapping[action] = list;
+                    continue;
+                }
             }
+
+            // 配置中缺失该动作，使用后备值
+            _gamepadMapping[action] = new List<JoyButton>(kvp.Value);
         }
     }
 
     /// <summary>
-    /// 保存键位映射到 user://key_mapper.json
+    /// 保存键位映射到 Config(key_mapper) 并写入 user://key_mapper.json
     /// </summary>
     public void SaveKeyMapping()
     {
-        try
+        if (_config == null) return;
+
+        // 确保 key_mapper 配置已加载
+        if (!_config.IsConfigLoaded(KEY_MAPPER_CONFIG_NAME))
         {
-            var rootDict = new Godot.Collections.Dictionary();
-
-            // 序列化键盘映射
-            var keyboardDict = new Godot.Collections.Dictionary();
-            foreach (var kvp in _keyMapping)
-            {
-                var keyArray = new Godot.Collections.Array();
-                foreach (var key in kvp.Value)
-                {
-                    keyArray.Add(((int)key).ToString());
-                }
-                keyboardDict[kvp.Key] = keyArray;
-            }
-            rootDict["keyboard"] = keyboardDict;
-
-            // 序列化手柄映射
-            var gamepadDict = new Godot.Collections.Dictionary();
-            foreach (var kvp in _gamepadMapping)
-            {
-                var btnArray = new Godot.Collections.Array();
-                foreach (var btn in kvp.Value)
-                {
-                    btnArray.Add(((int)btn).ToString());
-                }
-                gamepadDict[kvp.Key] = btnArray;
-            }
-            rootDict["gamepad"] = gamepadDict;
-
-            string jsonText = Json.Stringify(rootDict, "\t");
-            using var file = FileAccess.Open(KEY_MAPPER_PATH, FileAccess.ModeFlags.Write);
-            if (file != null)
-            {
-                file.StoreString(jsonText);
-                Log("键位配置已保存");
-            }
+            _config.LoadConfig(KEY_MAPPER_CONFIG_NAME);
         }
-        catch (Exception e)
+
+        // 写入键盘映射
+        foreach (var kvp in _keyMapping)
         {
-            Log($"保存键位配置失败: {e.Message}");
+            var arr = new Godot.Collections.Array();
+            foreach (var key in kvp.Value)
+            {
+                arr.Add(((int)key).ToString());
+            }
+            _config.SetConfig(KEY_MAPPER_CONFIG_NAME, $"keyboard.{kvp.Key}", arr);
         }
+
+        // 写入手柄映射
+        foreach (var kvp in _gamepadMapping)
+        {
+            var arr = new Godot.Collections.Array();
+            foreach (var btn in kvp.Value)
+            {
+                arr.Add(((int)btn).ToString());
+            }
+            _config.SetConfig(KEY_MAPPER_CONFIG_NAME, $"gamepad.{kvp.Key}", arr);
+        }
+
+        _config.SaveConfig(KEY_MAPPER_CONFIG_NAME);
+        Log("键位配置已保存");
     }
 
     /// <summary>
@@ -421,43 +386,11 @@ public partial class InputManager : ManagerBase
         CurrentMode = mode;
         Log($"切换输入模式为: {mode}");
 
-        // 更新 config.json 中的 inputMode
-        UpdateConfigInputMode();
-    }
-
-    /// <summary>
-    /// 更新 config.json 中的 inputMode
-    /// </summary>
-    private void UpdateConfigInputMode()
-    {
-        try
+        // 更新 config.json 中的 inputMode（通过 Config）
+        if (_config != null)
         {
-            var configDict = new Godot.Collections.Dictionary();
-            if (FileAccess.FileExists(CONFIG_PATH))
-            {
-                using var file = FileAccess.Open(CONFIG_PATH, FileAccess.ModeFlags.Read);
-                if (file != null)
-                {
-                    string jsonText = file.GetAsText();
-                    var data = Json.ParseString(jsonText);
-                    if (data.VariantType == Variant.Type.Dictionary)
-                    {
-                        configDict = data.AsGodotDictionary();
-                    }
-                }
-            }
-
-            configDict["inputMode"] = CurrentMode.ToString();
-
-            using var writeFile = FileAccess.Open(CONFIG_PATH, FileAccess.ModeFlags.Write);
-            if (writeFile != null)
-            {
-                writeFile.StoreString(Json.Stringify(configDict, "\t"));
-            }
-        }
-        catch (Exception e)
-        {
-            Log($"保存 config.json 失败: {e.Message}");
+            _config.SetConfig("inputMode", CurrentMode.ToString());
+            _config.SaveConfig();
         }
     }
 
@@ -543,12 +476,7 @@ public partial class InputManager : ManagerBase
     /// </summary>
     public Dictionary<string, List<Key>> GetKeyMapping()
     {
-        var copy = new Dictionary<string, List<Key>>();
-        foreach (var kvp in _keyMapping)
-        {
-            copy[kvp.Key] = new List<Key>(kvp.Value);
-        }
-        return copy;
+        return CloneKeyMapping(_keyMapping);
     }
 
     /// <summary>
@@ -556,13 +484,32 @@ public partial class InputManager : ManagerBase
     /// </summary>
     public Dictionary<string, List<JoyButton>> GetGamepadMapping()
     {
+        return CloneGamepadMapping(_gamepadMapping);
+    }
+
+    #region 辅助方法
+
+    private static Dictionary<string, List<Key>> CloneKeyMapping(Dictionary<string, List<Key>> source)
+    {
+        var copy = new Dictionary<string, List<Key>>();
+        foreach (var kvp in source)
+        {
+            copy[kvp.Key] = new List<Key>(kvp.Value);
+        }
+        return copy;
+    }
+
+    private static Dictionary<string, List<JoyButton>> CloneGamepadMapping(Dictionary<string, List<JoyButton>> source)
+    {
         var copy = new Dictionary<string, List<JoyButton>>();
-        foreach (var kvp in _gamepadMapping)
+        foreach (var kvp in source)
         {
             copy[kvp.Key] = new List<JoyButton>(kvp.Value);
         }
         return copy;
     }
+
+    #endregion
 
     /// <summary>
     /// 处理输入更新（每帧在 _Process 或 _PhysicsProcess 中调用）

@@ -14,6 +14,11 @@ public partial class GameManager : Node
 {
     public static GameManager Instance { get; private set; }
 
+    /// <summary>
+    /// 全局配置管理器，供所有子管理器共享使用
+    /// </summary>
+    public Config Config { get; private set; }
+
     public override void _EnterTree()
     {
         Instance = this;
@@ -21,6 +26,11 @@ public partial class GameManager : Node
 
     public override void _Ready()
     {
+        // 初始化全局 Config 并加载所有配置
+        Config = new Config();
+        Config.LoadConfig();           // config.json
+        Config.LoadConfig("key_mapper"); // key_mapper.json
+
         ManagerBase.InitAllManager(this);
     }
 

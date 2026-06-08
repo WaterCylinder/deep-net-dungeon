@@ -1,29 +1,142 @@
 using Godot;
 using Godot.Collections;
 
+/// <summary>
+/// 通用配置管理器。
+/// 
+/// 支持多个非同名配置文件，提供统一的加载/保存/存取接口。
+/// 配置文件命名规则：
+///   默认模板：res://Asset/Default/default_{name}.json
+///   用户配置：user://{name}.json
+/// 
+/// 加载逻辑：
+///   1. 用户配置存在且结构与默认一致 → 使用用户配置
+///   2. 否则 → 从默认模板复制到 user:// 目录
+/// </summary>
 public class Config
 {
-    private const string DEFAULT_CONFIG_PATH = "res://Asset/Default/default_config.json";
-    private const string USER_CONFIG_PATH = "user://config.json";
+    private const string DEFAULT_CONFIG_DIR = "res://Asset/Default/";
+    private const string USER_CONFIG_DIR = "user://";
 
     /// <summary>
-    /// 以嵌套 Dictionary/Array 形式保存的完整配置数据。
+    /// 以配置名称为 key，存储各配置的 Dictionary 数据
     /// </summary>
-    private Dictionary _configData = new();
+    private Dictionary<string, Dictionary> _configs = new();
 
     /// <summary>
-    /// 通过路径字符串获取配置值，支持点号和索引访问。
-    /// 示例路径："item1.item2[1].item3"
+    /// 默认配置名称（用于无参重载）
+    /// </summary>
+    private const string DEFAULT_CONFIG_NAME = "config";
+
+    // ========== 便捷方法（使用默认配置名 "config"） ==========
+
+    /// <summary>
+    /// 从默认配置（config.json）获取值，支持点号和索引访问。
     /// </summary>
     public Variant GetConfig(string path, Variant defaultValue = default)
+    {
+        return GetConfig(DEFAULT_CONFIG_NAME, path, defaultValue);
+    }
+
+    /// <summary>
+    /// 向默认配置（config.json）设置值，支持点号和索引访问。
+    /// </summary>
+    public void SetConfig(string path, Variant value)
+    {
+        SetConfig(DEFAULT_CONFIG_NAME, path, value);
+    }
+
+    /// <summary>
+    /// 加载默认配置（config.json）。如果用户目录不存在则从 default_config.json 复制。
+    /// </summary>
+    public void LoadConfig()
+    {
+        LoadConfig(DEFAULT_CONFIG_NAME);
+    }
+
+    /// <summary>
+    /// 保存默认配置到 user://config.json。
+    /// </summary>
+    public void SaveConfig()
+    {
+        SaveConfig(DEFAULT_CONFIG_NAME);
+    }
+
+    /// <summary>
+    /// 重置默认配置为默认模板。
+    /// </summary>
+    public void ResetToDefault()
+    {
+        ResetToDefault(DEFAULT_CONFIG_NAME);
+    }
+
+    // ========== 核心方法（支持多配置） ==========
+
+    /// <summary>
+    /// 加载指定名称的配置。
+    /// 如果 user://{name}.json 不存在或结构不一致，则从 res://Asset/Default/default_{name}.json 复制。
+    /// </summary>
+    /// <param name="name">配置名称（不含路径和后缀），如 "config"、"key_mapper"</param>
+    public void LoadConfig(string name)
+    {
+        string defaultPath = $"{DEFAULT_CONFIG_DIR}default_{name}.json";
+        string userPath = $"{USER_CONFIG_DIR}{name}.json";
+
+        Variant defaultData = LoadJsonFile(defaultPath);
+        if (defaultData.VariantType == Variant.Type.Nil)
+        {
+            GD.PrintErr($"[Config] 无法加载默认配置模板: {defaultPath}");
+            return;
+        }
+
+        Dictionary defaultDict = defaultData.As<Dictionary>();
+        Variant userData = LoadJsonFile(userPath);
+
+        if (userData.VariantType == Variant.Type.Nil)
+        {
+            // 用户配置不存在，复制默认配置
+            GD.Print($"[Config] '{name}' 用户配置不存在，从默认模板创建。");
+            _configs[name] = DeepCopyDict(defaultDict);
+            SaveConfig(name);
+            return;
+        }
+
+        Dictionary userDict = userData.As<Dictionary>();
+
+        if (!StructurallyEqual(defaultDict, userDict))
+        {
+            // 结构不一致，用默认配置覆盖
+            GD.Print($"[Config] '{name}' 用户配置结构与默认不一致，重建用户配置。");
+            _configs[name] = DeepCopyDict(defaultDict);
+            SaveConfig(name);
+            return;
+        }
+
+        _configs[name] = userDict;
+        GD.Print($"[Config] '{name}' 用户配置加载成功。");
+    }
+
+    /// <summary>
+    /// 从指定名称的配置中获取值，支持点号和索引访问。
+    /// 示例路径："item1.item2[1].item3"
+    /// </summary>
+    /// <param name="name">配置名称</param>
+    /// <param name="path">点号分隔的路径</param>
+    /// <param name="defaultValue">路径无效时的默认返回值</param>
+    public Variant GetConfig(string name, string path, Variant defaultValue = default)
     {
         if (string.IsNullOrEmpty(path))
         {
             return defaultValue;
         }
 
+        if (!_configs.TryGetValue(name, out var configData))
+        {
+            return defaultValue;
+        }
+
         string[] segments = path.Split('.');
-        Variant current = Variant.From(_configData);
+        Variant current = Variant.From(configData);
 
         foreach (string segment in segments)
         {
@@ -37,20 +150,30 @@ public class Config
     }
 
     /// <summary>
-    /// 通过路径字符串设置配置值，支持点号和索引访问。
+    /// 向指定名称的配置中设置值，支持点号和索引访问。
     /// 示例路径："item1.item2[1].item3"
     /// 如果路径中的中间节点不存在则自动创建。
     /// </summary>
-    public void SetConfig(string path, Variant value)
+    /// <param name="name">配置名称</param>
+    /// <param name="path">点号分隔的路径</param>
+    /// <param name="value">要设置的值</param>
+    public void SetConfig(string name, string path, Variant value)
     {
         if (string.IsNullOrEmpty(path))
         {
             return;
         }
 
+        if (!_configs.TryGetValue(name, out var configData))
+        {
+            // 配置未加载，自动初始化空字典
+            configData = new Dictionary();
+            _configs[name] = configData;
+        }
+
         string[] segments = path.Split('.');
         // 遍历到倒数第二层，确保中间节点存在
-        Variant current = Variant.From(_configData);
+        Variant current = Variant.From(configData);
         for (int i = 0; i < segments.Length - 1; i++)
         {
             EnsureNode(ref current, segments[i]);
@@ -62,78 +185,57 @@ public class Config
     }
 
     /// <summary>
-    /// 加载用户配置文件。如果不存在或结构不一致，则从默认配置复制。
+    /// 保存指定名称的配置到 user://{name}.json。
     /// </summary>
-    public void LoadConfig()
+    /// <param name="name">配置名称</param>
+    public void SaveConfig(string name)
     {
-        Variant defaultData = LoadJsonFile(DEFAULT_CONFIG_PATH);
-        if (defaultData.VariantType == Variant.Type.Nil)
+        if (!_configs.TryGetValue(name, out var configData))
         {
-            GD.PrintErr("GameConfig: 无法加载默认配置文件: " + DEFAULT_CONFIG_PATH);
+            GD.PrintErr($"[Config] 配置 '{name}' 未加载，无法保存。");
             return;
         }
 
-        Dictionary defaultDict = defaultData.As<Dictionary>();
-        Variant userData = LoadJsonFile(USER_CONFIG_PATH);
-
-        if (userData.VariantType == Variant.Type.Nil)
-        {
-            // 用户配置不存在，复制默认配置
-            GD.Print("GameConfig: 用户配置不存在，从默认配置创建。");
-            _configData = DeepCopyDict(defaultDict);
-            SaveConfig();
-            return;
-        }
-
-        Dictionary userDict = userData.As<Dictionary>();
-
-        if (!StructurallyEqual(defaultDict, userDict))
-        {
-            // 结构不一致，用默认配置覆盖
-            GD.Print("GameConfig: 用户配置结构与默认不一致，重建用户配置。");
-            _configData = DeepCopyDict(defaultDict);
-            SaveConfig();
-            return;
-        }
-
-        _configData = userDict;
-        GD.Print("GameConfig: 用户配置加载成功。");
-    }
-
-    /// <summary>
-    /// 保存当前配置到用户配置文件。
-    /// </summary>
-    public void SaveConfig()
-    {
-        string json = Json.Stringify(_configData, "\t");
-        using var file = FileAccess.Open(USER_CONFIG_PATH, FileAccess.ModeFlags.Write);
+        string userPath = $"{USER_CONFIG_DIR}{name}.json";
+        string json = Json.Stringify(configData, "\t");
+        using var file = FileAccess.Open(userPath, FileAccess.ModeFlags.Write);
         if (file == null)
         {
-            GD.PrintErr("GameConfig: 无法写入用户配置文件: " + USER_CONFIG_PATH);
+            GD.PrintErr($"[Config] 无法写入用户配置文件: {userPath}");
             return;
         }
         file.StoreString(json);
-        GD.Print("GameConfig: 配置已保存。");
+        GD.Print($"[Config] '{name}' 配置已保存。");
     }
 
     /// <summary>
-    /// 重置为默认配置并保存。
+    /// 将指定名称的配置重置为默认模板。
     /// </summary>
-    public void ResetToDefault()
+    /// <param name="name">配置名称</param>
+    public void ResetToDefault(string name)
     {
-        Variant defaultData = LoadJsonFile(DEFAULT_CONFIG_PATH);
+        string defaultPath = $"{DEFAULT_CONFIG_DIR}default_{name}.json";
+        Variant defaultData = LoadJsonFile(defaultPath);
         if (defaultData.VariantType != Variant.Type.Nil)
         {
-            _configData = DeepCopyDict(defaultData.As<Dictionary>());
+            _configs[name] = DeepCopyDict(defaultData.As<Dictionary>());
         }
         else
         {
-            _configData.Clear();
+            _configs.Remove(name);
         }
-        SaveConfig();
+        SaveConfig(name);
     }
 
-    # region 辅助方法
+    /// <summary>
+    /// 检查指定名称的配置是否已加载。
+    /// </summary>
+    public bool IsConfigLoaded(string name)
+    {
+        return _configs.ContainsKey(name);
+    }
+
+    #region 辅助方法
 
     /// <summary>
     /// 从指定路径加载 JSON 文件，返回解析后的 Variant。
@@ -156,7 +258,7 @@ public class Config
         Error error = json.Parse(text);
         if (error != Error.Ok)
         {
-            GD.PrintErr($"GameConfig: JSON 解析失败 ({path}): {json.GetErrorMessage()}");
+            GD.PrintErr($"[Config] JSON 解析失败 ({path}): {json.GetErrorMessage()}");
             return default;
         }
 
@@ -394,5 +496,5 @@ public class Config
         return (segment, -1);
     }
 
-    # endregion
+    #endregion
 }
