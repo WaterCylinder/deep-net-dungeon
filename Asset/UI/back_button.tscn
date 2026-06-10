@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bf1nnhpgs1ka"]
+
+[ext_resource type="Script" uid="uid://c2rxkrvngdlff" path="res://Script/UI/Button/BackButton.cs" id="1_ndhjm"]
+
+[node name="BackButton" type="Button" unique_id=2079176812]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+offset_right = 120.0
+grow_vertical = 0
+text = "返回"
+script = ExtResource("1_ndhjm")

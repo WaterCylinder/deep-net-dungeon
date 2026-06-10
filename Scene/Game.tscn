@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cmblg6cmcce1v"]
+
+[ext_resource type="Script" uid="uid://c3k0k360vv4vt" path="res://Script/Core/Game.cs" id="1_6igcf"]
+[ext_resource type="Script" uid="uid://ugjrhfqe3hks" path="res://Script/Object/CameraController.cs" id="2_u6khg"]
+
+[node name="Game" type="Node" unique_id=1707391241]
+script = ExtResource("1_6igcf")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
+
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="World" type="Node2D" parent="." unique_id=1017394826]
+
+[node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
+unique_name_in_owner = true
+script = ExtResource("2_u6khg")
