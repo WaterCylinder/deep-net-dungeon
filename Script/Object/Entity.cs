@@ -2,59 +2,69 @@ using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
 
+public enum EntityTag
+{
+    Player,
+    Enemy,
+    Bullet,
+    Obstacle,
+}
+
 /// <summary>
 /// 实体抽象基类 - 所有游戏实体的基础
 /// 包含基础属性系统和Buff管理系统
 /// 继承CharacterBody2D以支持物理移动
 /// </summary>
-public abstract partial class Entity : CharacterBody2D
+public abstract partial class Entity : RigidBody2D
 {
-    #region 基础属性（使用Value对象）
+    #region 基础属性
+
+    [Export]public Array<EntityTag> tags = new Array<EntityTag>();
 
     /// <summary>
     /// 最大生命值
     /// </summary>
-    [Export] public Value MaxHealth { get; protected set; } = new(100f);
+    [Export] public Value maxHealth = new(100f);
 
     /// <summary>
     /// 当前生命值
     /// </summary>
-    [Export] public float CurrentHealth { get; protected set; } = 100f;
+    [Export] public float currentHealth = 100f;
 
     /// <summary>
     /// 攻击力
     /// </summary>
-    [Export] public Value Attack { get; protected set; } = new(10f);
+    [Export] public Value attack = new(10f);
 
     /// <summary>
     /// 防御力
     /// </summary>
-    [Export] public Value Defense { get; protected set; } = new(5f);
-
-    /// <summary>
-    /// 移动速度
-    /// </summary>
-    [Export] public Value MoveSpeed { get; protected set; } = new(200f);
+    [Export] public Value defense = new(5f);
 
     /// <summary>
     /// 攻击速度
     /// </summary>
-    [Export] public Value AttackSpeed { get; protected set; } = new(1f);
+    [Export] public Value attackSpeed = new(1f);
 
     /// <summary>
     /// 攻击范围
     /// </summary>
-    [Export] public Value AttackRange { get; protected set; } = new(100f);
+    [Export] public Value attackRange = new(100f);
 
     /// <summary>
     /// 暴击率（0-1）
     /// </summary>
-    [Export] public Value CritRate { get; protected set; } = new(0f);
+    [Export] public Value critRate = new(0f);
 
     /// <summary>
     /// 暴击伤害倍数
     /// </summary>
-    [Export] public Value CritDamage { get; protected set; } = new(1.5f);
+    [Export] public Value critDamage = new(1.5f);
+
+    /// <summary>
+    /// 速度
+    /// </summary>
+    [Export] public Value speed = new(100f);
 
     #endregion
 
@@ -63,17 +73,128 @@ public abstract partial class Entity : CharacterBody2D
     /// <summary>
     /// 实体是否存活
     /// </summary>
-    public bool IsAlive => CurrentHealth > 0;
+    public bool IsAlive => currentHealth > 0;
 
     /// <summary>
     /// 实体是否已死亡
     /// </summary>
-    public bool IsDead => CurrentHealth <= 0;
+    public bool IsDead => currentHealth <= 0;
 
     /// <summary>
     /// 生命值百分比（0-1）
     /// </summary>
-    public float HealthPercent => MaxHealth.Get() > 0 ? CurrentHealth / MaxHealth.Get() : 0f;
+    public float HealthPercent => maxHealth.Get() > 0 ? currentHealth / maxHealth.Get() : 0f;
+
+    #endregion
+
+    #region tag
+
+    public bool CheckTag(EntityTag tag)
+    {
+        return tags.Contains(tag);
+    }
+
+    public void AddTag(EntityTag tag)
+    {
+        if (!tags.Contains(tag))
+        {
+            tags.Add(tag);
+        }
+    }
+
+    public void RemoveTag(EntityTag tag)
+    {
+        if (tags.Contains(tag))
+        {
+            tags.Remove(tag);
+        }
+    }
+
+    #endregion 
+
+    #region 实体移动系统
+
+    /// <summary>
+    /// 当前速度向量
+    /// </summary>
+    protected Vector2 velocity = Vector2.Zero;
+    /// <summary>
+    /// 当前环境速度
+    /// </summary>
+    protected Vector2 environmentVelocity = Vector2.Zero;
+    /// <summary>
+    /// 当前移动方向
+    /// </summary>
+    protected Vector2 moveTowards = Vector2.Zero;
+    /// <summary>
+    /// 平滑参数
+    /// </summary>
+    protected float smoothFactor = 0;
+
+    /// <summary>
+    /// 移动，平滑移动请帧调用
+    /// </summary>
+    public void Move()
+    {
+        Vector2 localVelocity = moveTowards * speed;
+        if(smoothFactor > 0)
+        {
+            // 从当前速度插值到目标速度，smoothFactor越大越快达到目标速度
+            velocity = (velocity - environmentVelocity).Lerp(
+                localVelocity, smoothFactor
+            ) + environmentVelocity;
+        }
+        else
+        {
+            velocity = localVelocity + environmentVelocity;
+        }
+        LinearVelocity = velocity;
+    }
+
+    /// <summary>
+    /// 向指定方向移动，平滑移动请帧调用
+    /// </summary>
+    /// <param name="toward"></param>
+    public void MoveToward(Vector2 toward)
+    {
+        moveTowards = toward.Normalized();
+        Move();
+    }
+
+    /// <summary>
+    /// 向指定位置移动，平滑移动请帧调用
+    /// </summary>
+    /// <param name="toward"></param>
+    public void MoveTarget(Vector2 target, float stopDistance = 5f)
+    {
+        Vector2 toward = target - Position;
+        if(toward.Length() > stopDistance)
+        {
+            MoveToward(toward);
+        }
+        else
+        {
+            MoveStop();
+        }
+    }
+
+    /// <summary>
+    /// 停止移动，平滑移动请帧调用
+    /// </summary>
+    public void MoveStop()
+    {
+        moveTowards = Vector2.Zero;
+        Move();
+    }
+
+    #endregion
+
+    #region 碰撞系统
+
+    /// <summary>
+    /// 当前碰撞中的Entity集合
+    /// </summary>
+    private HashSet<Entity> _collidingEntities = new();
 
     #endregion
 
@@ -366,19 +487,19 @@ public abstract partial class Entity : CharacterBody2D
 
         // 计算实际伤害
         float rawDamage = damage.value.Get();
-        float defense = Defense.Get();
+        float def = defense.Get();
         
         // 伤害公式：原始伤害 * (100 / (100 + 防御力))
-        float damageReduction = 100f / (100f + defense);
+        float damageReduction = 100f / (100f + def);
         float finalDamage = rawDamage * damageReduction;
         
         // 确保伤害不为负
         finalDamage = Mathf.Max(0f, finalDamage);
 
         // 应用伤害
-        float oldHealth = CurrentHealth;
+        float oldHealth = currentHealth;
         float newHealth = Mathf.Max(0f, oldHealth - finalDamage);
-        CurrentHealth = newHealth;
+        currentHealth = newHealth;
 
         // 触发受伤抽象方法
         OnHurt(damage, finalDamage);
@@ -401,12 +522,12 @@ public abstract partial class Entity : CharacterBody2D
     {
         if (!IsAlive || amount <= 0) return 0f;
 
-        float oldHealth = CurrentHealth;
-        float maxHealth = MaxHealth.Get();
-        float newHealth = Mathf.Min(oldHealth + amount, maxHealth);
+        float oldHealth = currentHealth;
+        float maxHp = maxHealth.Get();
+        float newHealth = Mathf.Min(oldHealth + amount, maxHp);
         float actualHeal = newHealth - oldHealth;
 
-        CurrentHealth = newHealth;
+        currentHealth = newHealth;
         OnHeal(actualHeal);
 
         return actualHeal;
@@ -459,9 +580,95 @@ public abstract partial class Entity : CharacterBody2D
     {
     }
 
+    /// <summary>
+    /// 初始化时触发
+    /// </summary>
+    protected virtual void OnStart()
+    {
+    }
+
+    /// <summary>
+    /// 进入场景树时触发（在Ready之前）
+    /// 用于设置碰撞层等早期初始化
+    /// </summary>
+    protected virtual void OnEnterTree()
+    {
+    }
+
+    /// <summary>
+    /// 退出场景树时触发
+    /// </summary>
+    protected virtual void OnExitTree()
+    {
+    }
+
+    /// <summary>
+    /// 每帧更新（子类可重写）
+    /// </summary>
+    /// <param name="delta">帧间隔时间</param>
+    protected virtual void OnUpdate(double delta)
+    {
+    }
+
+    /// <summary>
+    /// 物理更新（子类可重写）
+    /// </summary>
+    /// <param name="delta"></param>
+    protected virtual void OnPhysicsUpdate(double delta)
+    {
+    }
+
+    /// <summary>
+    /// 进入碰撞时触发（与其他Entity碰撞开始）
+    /// </summary>
+    /// <param name="other">碰撞的Entity对象</param>
+    protected virtual void OnCollisionEntered(Entity other)
+    {
+    }
+
+    /// <summary>
+    /// 碰撞中触发（每帧与其他Entity保持碰撞时）
+    /// </summary>
+    /// <param name="other">碰撞的Entity对象</param>
+    protected virtual void OnCollisionStayed(Entity other)
+    {
+    }
+
+    /// <summary>
+    /// 离开碰撞时触发（与其他Entity碰撞结束）
+    /// </summary>
+    /// <param name="other">碰撞的Entity对象</param>
+    protected virtual void OnCollisionExited(Entity other)
+    {
+    }
+
     #endregion
 
     #region 生命周期
+
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        OnEnterTree();
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        OnExitTree();
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        currentHealth = maxHealth.Get();
+
+        // 连接碰撞信号
+        BodyEntered += OnBodyEntered;
+        BodyExited += OnBodyExited;
+
+        OnStart();
+    }
 
     public override void _Process(double delta)
     {
@@ -474,12 +681,48 @@ public abstract partial class Entity : CharacterBody2D
         OnUpdate(delta);
     }
 
-    /// <summary>
-    /// 每帧更新（子类可重写）
-    /// </summary>
-    /// <param name="delta">帧间隔时间</param>
-    protected virtual void OnUpdate(double delta)
+
+    public override void _PhysicsProcess(double delta)
     {
+        base._PhysicsProcess(delta);
+        
+        // 处理碰撞中的Entity
+        foreach (var entity in _collidingEntities)
+        {
+            if (entity != null && entity.IsAlive)
+            {
+                OnCollisionStayed(entity);
+            }
+        }
+        
+        // 子类物理更新
+        OnPhysicsUpdate(delta);
+    }
+
+    /// <summary>
+    /// 碰撞体进入时触发（信号回调）
+    /// </summary>
+    /// <param name="body">碰撞到的物理体</param>
+    private void OnBodyEntered(Node body)
+    {
+        if (body is Entity entity && entity != this)
+        {
+            _collidingEntities.Add(entity);
+            OnCollisionEntered(entity);
+        }
+    }
+
+    /// <summary>
+    /// 碰撞体离开时触发（信号回调）
+    /// </summary>
+    /// <param name="body">离开的物理体</param>
+    private void OnBodyExited(Node body)
+    {
+        if (body is Entity entity && entity != this)
+        {
+            _collidingEntities.Remove(entity);
+            OnCollisionExited(entity);
+        }
     }
 
     #endregion
@@ -491,7 +734,7 @@ public abstract partial class Entity : CharacterBody2D
     /// </summary>
     public virtual void Reset()
     {
-        CurrentHealth = MaxHealth.Get();
+        currentHealth = maxHealth.Get();
         ClearAllBuffs();
     }
 
@@ -502,14 +745,14 @@ public abstract partial class Entity : CharacterBody2D
     {
         if (IsAlive)
         {
-            CurrentHealth = 0;
+            currentHealth = 0;
             OnDeath(null);
         }
     }
 
     public override string ToString()
     {
-        return $"{GetType().Name}[{Name}] HP:{CurrentHealth:F0}/{MaxHealth.Get():F0} Buffs:{_buffs.Count}";
+        return $"{GetType().Name}[{Name}] HP:{currentHealth:F0}/{maxHealth.Get():F0} Buffs:{_buffs.Count}";
     }
 
     #endregion

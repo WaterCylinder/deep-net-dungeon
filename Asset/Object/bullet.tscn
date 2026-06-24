@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://t6pn8xolblic"]
+
+[ext_resource type="Script" uid="uid://br203tr1721s5" path="res://Script/Object/Entity/Bullet.cs" id="1_w427c"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_odvyn"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_r1e3c"]
+[ext_resource type="Texture2D" uid="uid://cwho8tlrfbhuu" path="res://Asset/Default/default_bullet.png" id="4_fbc4d"]
+
+[sub_resource type="Resource" id="Resource_aawhf"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_kcbv6"]
+script = ExtResource("3_r1e3c")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_aawhf")
+})
+
+[sub_resource type="Resource" id="Resource_hbowo"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_p323j"]
+script = ExtResource("3_r1e3c")
+baseValue = 10.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_hbowo")
+})
+
+[sub_resource type="Resource" id="Resource_hjrqo"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_ghk2r"]
+script = ExtResource("3_r1e3c")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_hjrqo")
+})
+
+[sub_resource type="Resource" id="Resource_mw7jm"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_1mx4w"]
+script = ExtResource("3_r1e3c")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_mw7jm")
+})
+
+[sub_resource type="Resource" id="Resource_65ldo"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_0yiub"]
+script = ExtResource("3_r1e3c")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_65ldo")
+})
+
+[sub_resource type="Resource" id="Resource_10r1t"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_vmjmr"]
+script = ExtResource("3_r1e3c")
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_10r1t")
+})
+
+[sub_resource type="Resource" id="Resource_yl8rb"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_fm120"]
+script = ExtResource("3_r1e3c")
+baseValue = 1.5
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_yl8rb")
+})
+
+[sub_resource type="Resource" id="Resource_sq4tt"]
+script = ExtResource("2_odvyn")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_ct3sx"]
+script = ExtResource("3_r1e3c")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_odvyn")]({
+"Base": SubResource("Resource_sq4tt")
+})
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tujvx"]
+
+[node name="Bullet" type="RigidBody2D" unique_id=1624697840]
+script = ExtResource("1_w427c")
+maxHealth = SubResource("Resource_kcbv6")
+attack = SubResource("Resource_p323j")
+defense = SubResource("Resource_ghk2r")
+attackSpeed = SubResource("Resource_1mx4w")
+attackRange = SubResource("Resource_0yiub")
+critRate = SubResource("Resource_vmjmr")
+critDamage = SubResource("Resource_fm120")
+speed = SubResource("Resource_ct3sx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=112950675]
+shape = SubResource("CircleShape2D_tujvx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1525363217]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_fbc4d")

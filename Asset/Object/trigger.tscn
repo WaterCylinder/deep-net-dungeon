@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dhjpw6yp5gchp"]
+
+[ext_resource type="Script" uid="uid://catbvokcg1n4e" path="res://Script/Object/Trigger.cs" id="1_lkn8t"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3xgnh"]
+radius = 256.0
+
+[node name="Trigger" type="Area2D" unique_id=653166855]
+script = ExtResource("1_lkn8t")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1712995635]
+shape = SubResource("CircleShape2D_3xgnh")

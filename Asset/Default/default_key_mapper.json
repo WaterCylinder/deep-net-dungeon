@@ -5,6 +5,7 @@
 		"move_left": ["65", "16777231"],
 		"move_right": ["68", "16777234"],
 		"active_skill": ["1"],
+		"other_skill": ["2"],
 		"menu": ["16777217"],
 		"confirm": ["16777221", "16777319"]
 	},
@@ -14,6 +15,7 @@
 		"move_left": ["14"],
 		"move_right": ["15"],
 		"active_skill": ["7"],
+		"other_skill": ["1"],
 		"menu": ["6"],
 		"confirm": ["3"]
 	}

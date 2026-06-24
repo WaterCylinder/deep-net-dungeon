@@ -37,6 +37,7 @@ public partial class InputManager : ManagerBase
         public const string MoveLeft = "move_left";
         public const string MoveRight = "move_right";
         public const string ActiveSkill = "active_skill";
+        public const string OtherSkill = "other_skill";
         public const string Menu = "menu";
         public const string Confirm = "confirm";
     }
@@ -81,6 +82,7 @@ public partial class InputManager : ManagerBase
         { Actions.MoveLeft, new List<Key> { Key.A, Key.Left } },
         { Actions.MoveRight, new List<Key> { Key.D, Key.Right } },
         { Actions.ActiveSkill, new List<Key> { (Key)1 } },   // 鼠标左键
+        { Actions.OtherSkill, new List<Key> { (Key)2 } },    // 鼠标右键
         { Actions.Menu, new List<Key> { Key.Escape } },
         { Actions.Confirm, new List<Key> { Key.Enter, Key.KpEnter } }
     };
@@ -95,6 +97,7 @@ public partial class InputManager : ManagerBase
         { Actions.MoveLeft, new List<JoyButton> { JoyButton.DpadLeft } },
         { Actions.MoveRight, new List<JoyButton> { JoyButton.DpadRight } },
         { Actions.ActiveSkill, new List<JoyButton> { JoyButton.RightShoulder } },
+        { Actions.OtherSkill, new List<JoyButton> { JoyButton.B } },
         { Actions.Menu, new List<JoyButton> { JoyButton.Start } },
         { Actions.Confirm, new List<JoyButton> { JoyButton.A } }
     };
@@ -345,14 +348,25 @@ public partial class InputManager : ManagerBase
             // 清空原有按键绑定
             InputMap.ActionEraseEvents(actionName);
 
-            // 注册键盘按键
+            // 注册键盘/鼠标按键
             if (_keyMapping.TryGetValue(actionName, out var keys))
             {
                 foreach (var key in keys)
                 {
-                    var inputEvent = new InputEventKey();
-                    inputEvent.Keycode = key;
-                    InputMap.ActionAddEvent(actionName, inputEvent);
+                    int keyCode = (int)key;
+                    // 鼠标按键 (Key 值 1-9 对应鼠标按键)
+                    if (keyCode >= 1 && keyCode <= 9)
+                    {
+                        var inputEvent = new InputEventMouseButton();
+                        inputEvent.ButtonIndex = (MouseButton)keyCode;
+                        InputMap.ActionAddEvent(actionName, inputEvent);
+                    }
+                    else
+                    {
+                        var inputEvent = new InputEventKey();
+                        inputEvent.Keycode = key;
+                        InputMap.ActionAddEvent(actionName, inputEvent);
+                    }
                 }
             }
 
@@ -435,6 +449,54 @@ public partial class InputManager : ManagerBase
         direction.Y += Input.GetActionStrength(Actions.MoveDown) - Input.GetActionStrength(Actions.MoveUp);
         direction.X += Input.GetActionStrength(Actions.MoveRight) - Input.GetActionStrength(Actions.MoveLeft);
         return direction.Normalized();
+    }
+
+    /// <summary>
+    /// 获取从指定位置到鼠标位置的向量（仅键鼠模式有效，世界坐标系）
+    /// </summary>
+    /// <param name="fromPosition">起始位置（世界坐标）</param>
+    /// <returns>从起始位置指向鼠标世界位置的向量，非键鼠模式返回Vector2.Zero</returns>
+    public Vector2 GetDirectionToMouse(Vector2 fromPosition)
+    {
+        if (CurrentMode != InputMode.KeyboardMouse)
+        {
+            return Vector2.Zero;
+        }
+
+        Vector2 mouseWorldPosition = GetMouseWorldPosition();
+        return (mouseWorldPosition - fromPosition).Normalized();
+    }
+
+    /// <summary>
+    /// 获取鼠标在屏幕上的位置（仅键鼠模式有效）
+    /// </summary>
+    /// <returns>鼠标屏幕位置，非键鼠模式返回Vector2.Zero</returns>
+    public Vector2 GetMousePosition()
+    {
+        if (CurrentMode != InputMode.KeyboardMouse)
+        {
+            return Vector2.Zero;
+        }
+
+        return GetViewport().GetMousePosition();
+    }
+
+    /// <summary>
+    /// 获取鼠标在世界坐标系中的位置（仅键鼠模式有效）
+    /// </summary>
+    /// <returns>鼠标世界坐标位置，非键鼠模式返回Vector2.Zero</returns>
+    public Vector2 GetMouseWorldPosition()
+    {
+        if (CurrentMode != InputMode.KeyboardMouse)
+        {
+            return Vector2.Zero;
+        }
+
+        // 获取屏幕坐标
+        Vector2 screenPos = GetViewport().GetMousePosition();
+        // 使用CanvasTransform将屏幕坐标转换为世界坐标
+        Transform2D canvasTransform = GetViewport().CanvasTransform;
+        return canvasTransform.AffineInverse() * screenPos;
     }
 
     /// <summary>

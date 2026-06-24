@@ -8,7 +8,7 @@ using System;
 public partial class TempStartMenu : Control
 {
     [Export]
-    public string GameTitle { get; set; } = "DeepNet Dungeon";
+    public string gameTitle = "DeepNet Dungeon";
 
     public override void _Ready()
     {
@@ -19,7 +19,7 @@ public partial class TempStartMenu : Control
         var titleLabel = GetNode<Label>("%TitleLabel");
 
         // 设置标题
-        titleLabel.Text = GameTitle;
+        titleLabel.Text = gameTitle;
 
         // 连接按钮信号
         startButton.Pressed += OnStartButtonPressed;
