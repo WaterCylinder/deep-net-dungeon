@@ -40,7 +40,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
             try
             {
                 // 执行方法并返回结果
-                var parameters = method.GetParameters();
+                var parameters = method.GetParameters(); //函数签名参数
                 if(parameters.Length == 0)
                 {
                     GD.Print($"方法 {methodName} 空参数执行");
@@ -56,6 +56,11 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                     {
                         ParameterInfo para = parameters[i];
                         object arg = args[i];
+                        if(arg == null)
+                        {
+                            //传入NULL则默认匹配
+                            continue;
+                        }
                         if(!para.ParameterType.IsAssignableFrom(arg.GetType()))
                         {
                             isFormat = false;
@@ -99,7 +104,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                     args = [.. temp];
                     GD.Print($"方法 {methodName} 参数 {parameterNames} 匹配后传入参数 {string.Join(",",args)}");
                 }
-
+                
                 return (T)method.Invoke(this, args);
             }
             catch (System.Exception e)

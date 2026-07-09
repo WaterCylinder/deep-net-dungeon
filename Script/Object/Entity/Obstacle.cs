@@ -6,22 +6,6 @@ using Godot;
 /// </summary>
 public partial class Obstacle : Entity
 {
-    #region 碰撞层配置
-
-    /// <summary>
-    /// 障碍物碰撞层（第4层）
-    /// </summary>
-    private const int LAYER_OBSTACLE = 4;
-    
-    /// <summary>
-    /// 障碍物碰撞掩码
-    /// 检测：玩家(Layer1)、敌人(Layer2)
-    /// 与玩家/敌人产生物理碰撞（阻挡移动）
-    /// 不检测子弹(Layer3)，所以子弹不会与障碍物产生物理碰撞
-    /// </summary>
-    private const int MASK_OBSTACLE = (1 << 0) | (1 << 1); // Player | Enemy
-
-    #endregion
 
     #region 障碍物属性
 
@@ -50,13 +34,6 @@ public partial class Obstacle : Entity
         
         // 设置障碍物标签
         AddTag(EntityTag.Obstacle);
-        
-        // 设置碰撞层和掩码
-        // Layer = 4（障碍物层），让其他实体能检测到我们
-        // Mask = Player | Enemy，与玩家/敌人产生物理碰撞（阻挡移动）
-        // 不包含Bullet层，所以子弹不会与障碍物产生物理碰撞
-        CollisionLayer = LAYER_OBSTACLE;
-        CollisionMask = MASK_OBSTACLE;
     }
 
     protected override void OnStart()

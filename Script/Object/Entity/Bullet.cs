@@ -30,6 +30,30 @@ public enum BulletTag
 
     #endregion
 
+    #region 忽视类
+
+    /// <summary>
+    /// 忽略障碍物 - 弹幕不会和障碍物发生碰撞事件
+    /// </summary>
+    IgnoreObstacle,
+
+    /// <summary>
+    /// 忽略敌人 - 弹幕不会和敌人发生碰撞事件
+    /// </summary>
+    IgnoreEnemy,
+
+    /// <summary>
+    /// 忽略玩家 - 弹幕不会和玩家发生碰撞事件
+    /// </summary>
+    IgnorePlayer,
+
+    /// <summary>
+    /// 忽略所有实体 - 弹幕不会和任何实体发生碰撞事件
+    /// </summary>
+    IgnoreAll,
+
+    #endregion
+
     #region 运动行为类
 
     /// <summary>
@@ -226,25 +250,123 @@ public partial class Bullet : Entity
         }
     }
 
-
-    #region 碰撞层配置
+    #region 默认数据
 
     /// <summary>
-    /// 子弹碰撞层（第3层）
+    /// 默认弹幕数据缓存
     /// </summary>
-    private const int LAYER_BULLET = 3;
-    
+    private static BulletData _defaultData = null;
+
     /// <summary>
-    /// 子弹碰撞掩码
-    /// 主动检测：玩家(Layer1)、敌人(Layer2)、障碍物(Layer4)
-    /// 因为玩家/敌人的Mask不包含子弹层，所以不会产生物理碰撞
-    /// 但子弹能触发body_entered信号处理碰撞效果
+    /// 获取默认弹幕数据（从Asset/Default/Data/bullet_data.tres加载）
     /// </summary>
-    private const int MASK_BULLET = (1 << 0) | (1 << 1) | (1 << 3); // Player | Enemy | Obstacle
+    public static BulletData DefaultData
+    {
+        get
+        {
+            if (_defaultData == null)
+            {
+                _defaultData = AssetManager.Instance.GetDefault<BulletData>("Data/bullet_data.tres");
+                if (_defaultData == null)
+                {
+                    GD.PrintErr("未找到默认弹幕数据，使用新建默认数据");
+                    _defaultData = new BulletData();
+                }
+            }
+            return _defaultData;
+        }
+    }
+
+    #endregion
+
+    #region 工厂方法
+
+    /// <summary>
+    /// 在指定位置创建弹幕
+    /// </summary>
+    /// <param name="owner">发射者</param>
+    /// <param name="pos">世界坐标位置</param>
+    /// <param name="velocity">初速度</param>
+    /// <param name="data">弹幕数据</param>
+    /// <param name="parent">父节点（默认添加到当前场景）</param>
+    /// <returns>创建的弹幕实例</returns>
+    public static Bullet Create(Entity owner, Vector2 pos, Vector2 velocity, BulletData data, Node parent = null)
+    {
+        // 如果数据为空，使用默认数据
+        if (data == null)
+        {
+            data = DefaultData;
+        }
+
+        if (BulletPrefab == null)
+        {
+            GD.PrintErr("无法创建弹幕：Bullet预制体未找到");
+            return null;
+        }
+
+        Bullet bullet = BulletPrefab.Instantiate<Bullet>();
+        if (bullet == null)
+        {
+            GD.PrintErr("无法创建弹幕：实例化失败");
+            return null;
+        }
+        //设置节点名称
+        bullet.Name = data.bulletName;
+
+        // 设置位置和速度
+        bullet.Position = pos;
+        bullet.moveTowards = velocity.Normalized();
+
+        // 设置发射者
+        bullet.owner = owner;
+
+        // 设置名称
+        bullet.Name = data.bulletName;
+
+        // 初始化数据
+        bullet.Initialize(data);
+
+        // 立即移动
+        bullet.Move();
+
+        // 根据归属设置标签
+        if (owner != null)
+        {
+            if (owner.CheckTag(EntityTag.Player))
+            {
+                bullet.AddTag(BulletTag.PlayerOwned);
+            }
+            else if (owner.CheckTag(EntityTag.Enemy))
+            {
+                bullet.AddTag(BulletTag.EnemyOwned);
+            }
+        }
+
+        // 添加到场景
+        if (parent == null)
+        {
+            parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
+        }
+        parent?.AddChild(bullet);
+
+        bullet._onCreate?.Run(bullet, owner, null);
+
+        return bullet;
+    }
 
     #endregion
 
     #region 弹幕属性
+
+    /// <summary>
+    /// 弹幕数据源
+    /// </summary>
+    public BulletData data;
+
+    /// <summary>
+    /// 弹幕发射者
+    /// </summary>
+    public Entity owner;
 
     /// <summary>
     /// 弹幕标签列表
@@ -260,6 +382,25 @@ public partial class Bullet : Entity
     /// 弹幕伤害倍率
     /// </summary>
     [Export] public float damageMultiplier = 1f;
+
+    /// <summary>
+    /// 创建时的行为
+    /// </summary>
+    private BulletBehavior _onCreate;
+    /// <summary>
+    /// 更新时的行为
+    /// </summary>
+    private BulletBehavior _onUpdate;
+
+    /// <summary>
+    /// 碰撞时触发的效果
+    /// </summary>
+    private Effect _onCollision;
+
+    /// <summary>
+    /// 生命周期结束时触发的效果
+    /// </summary>
+    private Effect _onLifetimeEnd;
 
     #endregion
 
@@ -315,6 +456,17 @@ public partial class Bullet : Entity
         return false;
     }
 
+    public bool IsIgnore(Entity target)
+    {
+        if (CheckTag(BulletTag.IgnoreAll)) return true;
+
+        if (target.CheckTag(EntityTag.Player) && CheckTag(BulletTag.IgnorePlayer)) return true;
+        if (target.CheckTag(EntityTag.Enemy) && CheckTag(BulletTag.IgnoreEnemy)) return true;
+        if (target.CheckTag(EntityTag.Obstacle) && CheckTag(BulletTag.IgnoreObstacle)) return true;
+
+        return false;
+    }
+
     /// <summary>
     /// 检查弹幕是否属于玩家
     /// </summary>
@@ -360,24 +512,10 @@ public partial class Bullet : Entity
     protected virtual void OnLifetimeEnd()
     {
         // 分裂弹幕处理
-        if (CheckTag(BulletTag.Split))
-        {
-            OnSplit();
-        }
+        
+        _onLifetimeEnd?.Run(this, owner, null);
 
-        // 滞留区域处理
-        if (CheckTag(BulletTag.Lingering))
-        {
-            CreateLingeringZone();
-        }
-
-        // 定时引爆处理
-        if (CheckTag(BulletTag.TimedExplosion))
-        {
-            OnTimedExplosion();
-        }
-
-        QueueFree();
+        Kill();
     }
 
     #endregion
@@ -392,14 +530,24 @@ public partial class Bullet : Entity
     {
         base.OnCollisionEntered(other);
 
-        // 检查是否可穿透
-        if (CanPenetrate(other))
+        if(other == owner)
         {
-            return;
+            return; // 忽略与发射者的碰撞
         }
 
+        GD.Print($"弹幕 {Name} 碰撞到实体 {other.Name}");
+
         // 处理碰撞效果
-        HandleCollision(other);
+        if (! IsIgnore(other))
+        {
+            HandleCollision(other);
+        }
+
+        // 检查是否可穿透
+        if (! CanPenetrate(other))
+        {
+            Kill();
+        }
     }
 
     /// <summary>
@@ -414,12 +562,8 @@ public partial class Bullet : Entity
             DealDamage(other);
         }
 
-        // 反弹处理
-        if (CheckTag(BulletTag.Bounce) && other.CheckTag(EntityTag.Obstacle))
-        {
-            OnBounce(other);
-            return;
-        }
+        GD.Print("触发碰撞事件");
+        _onCollision?.Run(this, owner, other);
 
         // 默认行为：销毁弹幕
         QueueFree();
@@ -461,55 +605,56 @@ public partial class Bullet : Entity
         };
 
         target.Hurt(damage);
-
-        // 吸血效果
-        if (CheckTag(BulletTag.Lifesteal))
-        {
-            // 回复发射者生命值
-            // 具体实现需要追踪发射者
-        }
     }
 
     #endregion
 
-    #region 特殊效果
+    #region 初始化
 
     /// <summary>
-    /// 反弹时触发
+    /// 使用BulletData初始化弹幕
     /// </summary>
-    /// <param name="obstacle">反弹的障碍物</param>
-    protected virtual void OnBounce(Entity obstacle)
+    /// <param name="data">弹幕数据</param>
+    public void Initialize(BulletData data)
     {
-        // 计算反弹方向
-        Vector2 bounceDir = (Position - obstacle.Position).Normalized();
-        MoveToward(bounceDir);
-    }
+        // 如果数据为空，使用默认数据
+        if (data == null)
+        {
+            data = DefaultData;
+            GD.Print($"弹幕 {Name} 使用默认数据初始化");
+        }
 
-    /// <summary>
-    /// 分裂时触发
-    /// </summary>
-    protected virtual void OnSplit()
-    {
-        // 创建多个小弹幕
-        // 具体实现需要根据弹幕系统调整
-    }
+        this.data = data;
 
-    /// <summary>
-    /// 创建滞留区域
-    /// </summary>
-    protected virtual void CreateLingeringZone()
-    {
-        // 在地面创建持续伤害区域
-        // 具体实现需要根据游戏系统调整
-    }
+        // 设置标签
+        bulletTags = [.. data.bulletTags];
 
-    /// <summary>
-    /// 定时引爆时触发
-    /// </summary>
-    protected virtual void OnTimedExplosion()
-    {
-        // 产生范围爆炸
-        // 具体实现需要根据爆炸系统调整
+        // 设置生命周期
+        lifetime = data.lifetime;
+
+        // 设置伤害
+        attack = new Value(data.damage.baseValue);
+        damageMultiplier = data.damageMultiplier;
+
+        // 设置基础数值
+        speed = data.speed;
+
+        // 设置行为和效果
+        _onCreate = data.onCreate;
+        _onUpdate = data.onUpdate;
+        _onCollision = data.onCollision;
+        _onLifetimeEnd = data.onLifetimeEnd;
+
+        // 设置贴图
+        if (data.sprite != null)
+        {
+            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
+            if (spriteNode != null)
+            {
+                spriteNode.Texture = data.sprite;
+                spriteNode.Scale = data.scale;
+            }
+        }
     }
 
     #endregion
@@ -522,12 +667,6 @@ public partial class Bullet : Entity
         
         // 设置子弹标签
         AddTag(EntityTag.Bullet);
-        
-        // 设置碰撞层和掩码
-        // Layer = 3（子弹层），让其他实体能检测到我们
-        // Mask = 0，不主动检测任何层，不产生物理碰撞
-        CollisionLayer = LAYER_BULLET;
-        CollisionMask = MASK_BULLET;
     }
 
     protected override void OnStart()
@@ -540,7 +679,17 @@ public partial class Bullet : Entity
     {
         base.OnUpdate(delta);
         UpdateLifetime(delta);
+
+        // 执行更新行为
+        _onUpdate?.Run(this, delta);
+    }
+
+    protected override void OnDeath(Damage damage)
+    {
+        base.OnDeath(damage);
     }
 
     #endregion
+
+   
 }

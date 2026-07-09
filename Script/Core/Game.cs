@@ -10,23 +10,35 @@ using System;
 /// </summary>
 public partial class Game : Node
 {
+
+    [Export] public string gameMode = "Test"; // 可在编辑器中设置默认游戏模式
     /// <summary>
     /// 当前游戏模式实例
     /// </summary>
     public GameModeBase CurrentMode { get; private set; }
 
+    /// <summary>
+    /// 当前玩家
+    /// </summary>
+    public Player player = null;
+
+    public override void _EnterTree()
+    {
+        base._EnterTree();
+        GameManager.Instance.game = this;
+    }
+
+
     public override void _Ready()
     {
-        // 从GameManager获取游戏模式名称
-        string modeName = GameManager.Instance?.GameMode ?? "Classic";
-        GD.Print($"[Game] 加载游戏模式: {modeName}");
+        GD.Print($"[Game] 加载游戏模式: {gameMode}");
 
         // 通过工厂创建游戏模式实例
-        CurrentMode = GameModeFactory.CreateMode(modeName);
+        CurrentMode = GameModeFactory.CreateMode(gameMode);
 
         if (CurrentMode == null)
         {
-            GD.PrintErr($"[Game] 无法加载游戏模式: {modeName}，使用默认模式 Classic");
+            GD.PrintErr($"[Game] 无法加载游戏模式: {gameMode}，使用默认模式 Classic");
             CurrentMode = GameModeFactory.CreateMode("Classic");
         }
 

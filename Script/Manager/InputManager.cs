@@ -146,7 +146,7 @@ public partial class InputManager : ManagerBase
         // 优先从 GameManager 获取 Config
         if (GameManager.Instance != null)
         {
-            _config = GameManager.Instance.Config;
+            _config = GameManager.Instance.config;
         }
 
         // 如果 GameManager 未提供，则新建并使用默认值

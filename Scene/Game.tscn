@@ -88,7 +88,11 @@ _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_3xgnh")
 })
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u6khg"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_48ymf"]
+radius = 25.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cohtu"]
+radius = 25.0
 
 [node name="Game" type="Node" unique_id=1707391241]
 script = ExtResource("1_6igcf")
@@ -106,9 +110,13 @@ mouse_filter = 1
 
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
 
-[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941]
-collision_mask = 16
+[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("area")]
+unique_name_in_owner = true
+collision_mask = 0
 gravity_scale = 0.0
+lock_rotation = true
+contact_monitor = true
+max_contacts_reported = 4
 script = ExtResource("2_ou18a")
 maxHealth = SubResource("Resource_tujvx")
 attack = SubResource("Resource_g3fkh")
@@ -118,14 +126,21 @@ attackRange = SubResource("Resource_kfjtm")
 critRate = SubResource("Resource_3jynh")
 critDamage = SubResource("Resource_0mc8i")
 speed = SubResource("Resource_48ymf")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
-shape = SubResource("CapsuleShape2D_u6khg")
+area = NodePath("Area2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="World/Player" unique_id=1962542118]
+position = Vector2(0, -40)
 texture = ExtResource("4_3xgnh")
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
+shape = SubResource("CircleShape2D_48ymf")
+
 [node name="Trigger" parent="World/Player" unique_id=653166855 instance=ExtResource("6_48ymf")]
+
+[node name="Area2D" type="Area2D" parent="World/Player" unique_id=1207618881]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player/Area2D" unique_id=433231473]
+shape = SubResource("CircleShape2D_cohtu")
 
 [node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
 unique_name_in_owner = true

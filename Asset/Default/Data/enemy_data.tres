@@ -1,0 +1,98 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://c5mxgtm0qtjbw"]
+
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="1_4bndl"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="2_1p803"]
+[ext_resource type="Script" uid="uid://dhmtbduld05f5" path="res://Script/Data/Effect/Behavior.cs" id="3_nvxrf"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="4_vp2m3"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="5_8cbye"]
+
+[sub_resource type="Resource" id="Resource_4m30g"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_h08rl"]
+script = ExtResource("2_1p803")
+baseValue = 10.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_4m30g")
+})
+
+[sub_resource type="Resource" id="Resource_lttsp"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_arfp6"]
+script = ExtResource("2_1p803")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_lttsp")
+})
+
+[sub_resource type="Resource" id="Resource_iedl6"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_bmdxx"]
+script = ExtResource("2_1p803")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_iedl6")
+})
+
+[sub_resource type="Resource" id="Resource_de0ye"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_0qj73"]
+script = ExtResource("2_1p803")
+baseValue = 1.5
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_de0ye")
+})
+
+[sub_resource type="Resource" id="Resource_8fwxt"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_1lc3s"]
+script = ExtResource("2_1p803")
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_8fwxt")
+})
+
+[sub_resource type="Resource" id="Resource_q3ag0"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_7foq1"]
+script = ExtResource("2_1p803")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_q3ag0")
+})
+
+[sub_resource type="Resource" id="Resource_53qet"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_3i0lw"]
+script = ExtResource("2_1p803")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_53qet")
+})
+
+[sub_resource type="Resource" id="Resource_kpkxi"]
+script = ExtResource("1_4bndl")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_lwuw4"]
+script = ExtResource("2_1p803")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("1_4bndl")]({
+"Base": SubResource("Resource_kpkxi")
+})
+
+[resource]
+script = ExtResource("5_8cbye")
+metadata/_custom_type_script = "uid://mqed4halsexx"

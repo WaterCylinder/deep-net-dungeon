@@ -17,13 +17,9 @@ public partial class GameManager : Node
     /// <summary>
     /// 全局配置管理器，供所有子管理器共享使用
     /// </summary>
-    public Config Config { get; private set; }
+    public Config config;
 
-    /// <summary>
-    /// 当前游戏模式名称（由外部设置，Game类读取此值加载对应模式）
-    /// 默认值为 "Classic"
-    /// </summary>
-    public string GameMode { get; set; } = "Classic";
+    public Game game;
 
     public override void _EnterTree()
     {
@@ -33,9 +29,9 @@ public partial class GameManager : Node
     public override void _Ready()
     {
         // 初始化全局 Config 并加载所有配置
-        Config = new Config();
-        Config.LoadConfig();           // config.json
-        Config.LoadConfig("key_mapper"); // key_mapper.json
+        config = new Config();
+        config.LoadConfig();           // config.json
+        config.LoadConfig("key_mapper"); // key_mapper.json
 
         // 注册所有游戏模式
         RegisterGameModes();
@@ -56,6 +52,7 @@ public partial class GameManager : Node
     {
         GameModeFactory.Clear();
         GameModeFactory.Register<ClassicMode>("Classic");
+        GameModeFactory.Register<TestMode>("Test");
         // 在此处注册更多游戏模式...
         // GameModeFactory.Register<RushMode>("Rush");
         // GameModeFactory.Register<ChallengeMode>("Challenge");
@@ -69,7 +66,6 @@ public partial class GameManager : Node
     {
         if (GameModeFactory.HasMode(modeName))
         {
-            GameMode = modeName;
             GD.Print($"[GameManager] 设置游戏模式: {modeName}");
         }
         else

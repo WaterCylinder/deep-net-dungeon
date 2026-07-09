@@ -86,6 +86,12 @@ public abstract partial class Entity : RigidBody2D
     public float HealthPercent => maxHealth.Get() > 0 ? currentHealth / maxHealth.Get() : 0f;
 
     #endregion
+    
+    #region 组件
+
+    [Export] public Area2D area = null;
+
+    #endregion
 
     #region tag
 
@@ -115,9 +121,9 @@ public abstract partial class Entity : RigidBody2D
     #region 实体移动系统
 
     /// <summary>
-    /// 当前速度向量
+    /// 当前速度向量，请勿手动修改（在Move方法里自动计算）
     /// </summary>
-    protected Vector2 velocity = Vector2.Zero;
+    [Export] protected Vector2 velocity = Vector2.Zero;
     /// <summary>
     /// 当前环境速度
     /// </summary>
@@ -664,8 +670,18 @@ public abstract partial class Entity : RigidBody2D
         currentHealth = maxHealth.Get();
 
         // 连接碰撞信号
-        BodyEntered += OnBodyEntered;
-        BodyExited += OnBodyExited;
+        // BodyEntered += OnBodyEntered;
+        // BodyExited += OnBodyExited;
+        // 链接Area2D的信号
+        if(area == null)
+        {
+            area = GetChild<Area2D>(0);
+        }
+        if(area != null)
+        {
+            area.BodyEntered += OnBodyEntered;
+            area.BodyExited += OnBodyExited;
+        }
 
         OnStart();
     }
@@ -743,11 +759,45 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     public void Kill()
     {
-        if (IsAlive)
+        currentHealth = 0;
+        OnDeath(null);
+        QueueFree();
+    }
+
+    /// <summary>
+    /// 在指定位置创建实体（泛型工厂方法）
+    /// </summary>
+    /// <typeparam name="T">实体类型</typeparam>
+    /// <param name="prefabPath">预制体路径</param>
+    /// <param name="pos">世界坐标位置</param>
+    /// <param name="parent">父节点（默认添加到当前场景）</param>
+    /// <returns>创建的实体实例</returns>
+    public static T Create<T>(string prefabPath, Vector2 pos, Node parent = null) where T : Entity
+    {
+        PackedScene prefab = GD.Load<PackedScene>(prefabPath);
+        if (prefab == null)
         {
-            currentHealth = 0;
-            OnDeath(null);
+            GD.PrintErr($"无法创建实体：预制体 '{prefabPath}' 未找到");
+            return null;
         }
+
+        T entity = prefab.Instantiate<T>();
+        if (entity == null)
+        {
+            GD.PrintErr($"无法创建实体：实例化 '{typeof(T).Name}' 失败");
+            return null;
+        }
+
+        entity.Position = pos;
+
+        // 添加到场景
+        if (parent == null)
+        {
+            parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
+        }
+        parent?.AddChild(entity);
+
+        return entity;
     }
 
     public override string ToString()
