@@ -5,6 +5,15 @@ using Godot;
 /// </summary>
 public partial class Player : Entity
 {
+    [Export] Trigger enemyTrigger;
+
+    # region 玩家即时属性
+
+    public Enemy targetEnemy = null;
+
+    public Vector2 targetShotToward = Vector2.Zero;
+
+    # endregion 
 
     protected override void OnEnterTree()
     {
@@ -45,6 +54,46 @@ public partial class Player : Entity
     protected override void OnUpdate(double delta)
     {
         base.OnUpdate(delta);
-        
+        //默认状态获取触发器的实例，自动攻击
+        targetEnemy = enemyTrigger.latestEntity as Enemy;
+        TargetAttack();
+    }
+
+    /// <summary>
+    /// 朝着目标攻击
+    /// </summary>
+    void TargetAttack()
+    {
+        if (targetEnemy == null)
+        {
+            return;
+        }
+        targetShotToward = targetEnemy.Position - Position;
+        targetShotToward = targetShotToward.Normalized();
+        TryAttack();
+    }
+
+    /// <summary>
+    /// 朝着指定方向攻击
+    /// </summary>
+    /// <param name="toward"></param>
+    void TryAttack()
+    {
+        if (targetShotToward == Vector2.Zero)
+        {
+            return;
+        }
+        Attack();
+    }
+
+    protected override void OnAttack()
+    {
+        Bullet but = Bullet.Create(
+            this,
+            Position,
+            targetShotToward * 500f,
+            null
+        );
+        GD.Print(but);
     }
 }

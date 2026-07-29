@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://b1mn6d8t7ldfn"]
+
+[ext_resource type="Script" uid="uid://dac5k07rwyebl" path="res://Script/Object/GameObject/Room.cs" id="1_xcj5d"]
+
+[node name="Room" type="Node2D" unique_id=1239382871 node_paths=PackedStringArray("enemyNode", "doorNode")]
+script = ExtResource("1_xcj5d")
+enemyNode = NodePath("Enemy")
+doorNode = NodePath("Door")
+
+[node name="Enemy" type="Node2D" parent="." unique_id=808383346]
+
+[node name="Door" type="Node2D" parent="." unique_id=1257551757]

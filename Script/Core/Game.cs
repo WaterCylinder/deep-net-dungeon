@@ -7,6 +7,7 @@ using System;
 /// 负责：
 ///   - 根据GameManager中的gameMode字符串加载对应的游戏模式
 ///   - 在游戏生命周期的各个阶段调用游戏模式的对应方法
+///   - 管理敌人创建（通过EnemyGenerator），并发出敌人生成信号
 /// </summary>
 public partial class Game : Node
 {
@@ -22,13 +23,36 @@ public partial class Game : Node
     /// </summary>
     public Player player = null;
 
+    /// <summary>
+    /// 当前相机
+    /// </summary>
+    public CameraController camera = null;
+
+    /// <summary>
+    /// 敌人生成信号
+    /// 当敌人生成器被创建时发出，可用于播放生成特效等
+    /// </summary>
+    [Signal]
+    public delegate void EnemySpawnedEventHandler(Enemy enemy);
+
+    [Signal]
+    public delegate void RoomSpawnedEventHandler(Room room);
+
+    # region 父类节点
+
+    [Export] public Node enemyNode;
+
+    [Export] public Node roomNode;
+
+    # endregion
+
     public override void _EnterTree()
     {
         base._EnterTree();
         GameManager.Instance.game = this;
     }
 
-
+ 
     public override void _Ready()
     {
         GD.Print($"[Game] 加载游戏模式: {gameMode}");
@@ -42,10 +66,13 @@ public partial class Game : Node
             CurrentMode = GameModeFactory.CreateMode("Classic");
         }
 
+        //获取相机
+        camera = GetNode<CameraController>("%MainCamera");
+
         // 执行模式生命周期：初始化 -> 开始 -> 加载
         CurrentMode?.OnInit();
-        CurrentMode?.OnStart();
         CurrentMode?.OnLoad();
+        CurrentMode?.OnStart();
     }
 
     public override void _Process(double delta)
@@ -177,4 +204,47 @@ public partial class Game : Node
     {
         CurrentMode?.OnEnd(isVictory);
     }
+
+    # region 通用方法
+
+    /// <summary>
+    /// 在指定位置生成敌人
+    /// 创建EnemyGenerator来实际生成敌人，并发出敌人生成信号
+    /// </summary>
+    /// <param name="position">生成位置（世界坐标）</param>
+    /// <param name="data">敌人数据</param>
+    /// <param name="parent">EnemyGenerator的父节点（通常是房间）</param>
+    /// <returns>创建的EnemyGenerator实例</returns>
+    public Enemy SpawnEnemy(EnemyData data, Vector2 position, Node parent = null)
+    {
+        if(parent == null)
+        {
+            parent = enemyNode;
+        }
+        Enemy enemy = Enemy.Create(position, data, parent);
+
+        // 发出敌人生成信号
+        EmitSignal(SignalName.EnemySpawned, position, data);
+
+        return enemy;
+    }
+
+    /// <summary>
+    /// 在指定位置生成房间
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public Room SpawnRoom(Vector2 position, RoomData data)
+    {
+
+        Room room = Room.Create(position, data, roomNode);
+
+        // 发出敌人生成信号
+        EmitSignal(SignalName.RoomSpawned, position, data);
+
+        return room;
+    }
+
+    #endregion
 }

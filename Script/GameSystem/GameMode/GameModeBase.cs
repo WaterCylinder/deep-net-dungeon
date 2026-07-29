@@ -17,6 +17,10 @@ public abstract partial class GameModeBase : RefCounted
     /// </summary>
     public virtual string ModeName => "BaseMode";
 
+    protected Game game => GameManager.Instance.game;
+    Player player => game.player;
+    Camera2D camera => game.camera;
+
     /// <summary>
     /// 初始化模式 - 最先调用，用于设置模式相关的基础数据
     /// </summary>
@@ -26,20 +30,22 @@ public abstract partial class GameModeBase : RefCounted
     }
 
     /// <summary>
-    /// 开始游戏 - 在OnInit之后调用，用于启动游戏逻辑
+    /// 加载数据 - 在OnInit之后调用,用于加载存档或初始化关卡数据
+    /// </summary>
+    public virtual void OnLoad()
+    {
+        GD.Print($"[GameMode:{ModeName}] 加载数据");
+    }
+
+
+    /// <summary>
+    /// 开始游戏 - 在OnLoad之后调用，用于游戏启动时逻辑
     /// </summary>
     public virtual void OnStart()
     {
         GD.Print($"[GameMode:{ModeName}] 开始游戏");
     }
 
-    /// <summary>
-    /// 加载数据 - 用于加载存档或初始化关卡数据
-    /// </summary>
-    public virtual void OnLoad()
-    {
-        GD.Print($"[GameMode:{ModeName}] 加载数据");
-    }
 
     /// <summary>
     /// 每帧处理 - 在游戏的_Process中调用，用于模式特有的实时更新逻辑
@@ -193,4 +199,19 @@ public abstract partial class GameModeBase : RefCounted
     {
         GD.Print($"[GameMode:{ModeName}] 清理完成");
     }
+    
+    # region 通用方法
+
+    /// <summary>
+    /// 摄像机跟随玩家
+    /// </summary>
+    public void CameraFollowPlayer()
+    {
+        if (game != null && game.player != null && game.camera != null)
+        {
+            game.camera.SetTargetPosition(game.player.Position);
+        }
+    }
+
+    # endregion
 }

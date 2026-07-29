@@ -684,9 +684,8 @@ public partial class Bullet : Entity
         _onUpdate?.Run(this, delta);
     }
 
-    protected override void OnDeath(Damage damage)
+    protected override void OnDeath(Damage damage, Entity other)
     {
-        base.OnDeath(damage);
     }
 
     #endregion

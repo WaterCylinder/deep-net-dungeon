@@ -23,7 +23,7 @@ public partial class CameraController : Camera2D
 	/// </summary>
 	[Signal]public delegate void OnScreenStartMoveEventHandler();
 
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{	
 		base._Process(delta);
 		Vector2 toward = targetPos - this.Position;

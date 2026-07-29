@@ -11,9 +11,14 @@ public partial class Trigger : Area2D
     #region 配置
 
     /// <summary>
-    /// 忽略的EntityTag列表，这些标签的实体不会触发记录
+    /// 忽略的EntityTag列表，这些标签的实体不会触发记录，黑名单，优先级大于白名单
     /// </summary>
     [Export] public Array<EntityTag> ignoreTags = new Array<EntityTag> { EntityTag.Bullet };
+
+    /// <summary>
+    /// 包含的EntityTag列表，只有这些标签的实体才会触发记录，白名单，优先级小于黑名单
+    /// </summary>
+    [Export] public Array<EntityTag> includeTags = new Array<EntityTag>();
 
     /// <summary>
     /// 历史记录最大长度
@@ -33,6 +38,15 @@ public partial class Trigger : Area2D
     /// 历史记录列表（固定大小256，记录进入过的实体）
     /// </summary>
     public LinkedList<Entity> history_list { get; private set; } = new();
+
+    #endregion
+
+    #region 属性
+
+    /// <summary>
+    /// 获取最新的实体
+    /// </summary>
+    public Entity latestEntity => entityList.Count > 0 ? entityList[entityList.Count - 1] : null;
 
     #endregion
 
@@ -138,8 +152,19 @@ public partial class Trigger : Area2D
         {
             if (entity.CheckTag(tag))
             {
-                return true;
+                return true; // 包含标签，忽略
             }
+        }
+        foreach (var tag in includeTags)
+        {
+            if (entity.CheckTag(tag))
+            {
+                return false; // 包含标签，允许
+            }
+        }
+        if (includeTags.Count > 0)
+        {
+            return true; // 有包含标签但实体不包含，忽略
         }
         return false;
     }

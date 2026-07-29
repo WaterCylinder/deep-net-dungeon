@@ -7,11 +7,20 @@ using Godot.Collections;
 [GlobalClass]
 public partial class RoomData : Resource
 {
+    /// <summary>
+    /// 房间ID，房间类型的唯一标识符
+    /// </summary>
     [Export] public string roomId = "";
-    [Export] public Array<RoomTag> roomType = new();
-    [Export] public Vector2I roomSize = new(1920, 1080);
-    [Export] public Array<Resource> enemies = new();
-    [Export] public Array<Resource> obstacles = new();
-    [Export] public int minWaves = 3;
-    [Export] public int maxWaves = 5;
+    /// <summary>
+    /// 房间标签
+    /// </summary>
+    [Export] public Array<RoomTag> roomTags = new();
+    /// <summary>
+    /// 房间瓦片地图
+    /// </summary>
+    [Export(PropertyHint.ResourceType, "RoomTileMap")] public PackedScene tileMap;
+    [Export] public Effect onCreate;
+    [Export] public Effect onEnter;
+    [Export] public Effect onExit;
+    [Export] public Effect onUpdate;
 }

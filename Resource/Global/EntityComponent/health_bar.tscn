@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://dk1elvus77kdw"]
+
+[ext_resource type="Script" uid="uid://b75ieh167owvo" path="res://Script/Object/Entity/EntityComponent/HealthBar.cs" id="1_lggst"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_lggst"]
+
+[node name="HealthBar" type="Node2D" unique_id=1727495241 node_paths=PackedStringArray("bar", "label")]
+script = ExtResource("1_lggst")
+bar = NodePath("BG/Bar")
+label = NodePath("Label")
+
+[node name="BG" type="ColorRect" parent="." unique_id=1776079594]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_right = 128.0
+offset_bottom = 24.0
+grow_horizontal = 2
+color = Color(0.91, 0.26390004, 0.26390004, 1)
+
+[node name="Bar" type="ColorRect" parent="BG" unique_id=1121458473]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 1)
+color = Color(0.166, 0.83, 0.166, 1)
+
+[node name="Label" type="Label" parent="." unique_id=1888700760]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "100 / 100"
+label_settings = SubResource("LabelSettings_lggst")

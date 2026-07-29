@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://ram0gxhmoss1"]
+
+[ext_resource type="Texture2D" uid="uid://l8iumut38u3g" path="res://Asset/Sprite/generator.png" id="1_xjqrv"]
+[ext_resource type="Script" uid="uid://tmdku01l3fsw" path="res://Script/Object/EnemyGenerator.cs" id="1_ykbcm"]
+
+[node name="EnemyGenerator" type="Sprite2D" unique_id=463566022]
+texture = ExtResource("1_xjqrv")
+script = ExtResource("1_ykbcm")

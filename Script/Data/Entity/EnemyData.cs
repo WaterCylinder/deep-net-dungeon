@@ -31,42 +31,42 @@ public partial class EnemyData : Resource
     /// <summary>
     /// 最大生命值
     /// </summary>
-    [Export] public Value maxHealth = new(100f);
+    [Export] public float maxHealth = 100;
 
     /// <summary>
     /// 攻击力
     /// </summary>
-    [Export] public Value attack = new(10f);
+    [Export] public float attack = 10;
 
     /// <summary>
     /// 防御力
     /// </summary>
-    [Export] public Value defense = new(5f);
+    [Export] public float defense = 5;
 
     /// <summary>
     /// 攻击速度
     /// </summary>
-    [Export] public Value attackSpeed = new(1f);
+    [Export] public float attackSpeed = 1;
 
     /// <summary>
     /// 攻击范围
     /// </summary>
-    [Export] public Value attackRange = new(100f);
+    [Export] public float attackRange = 1;
 
     /// <summary>
     /// 暴击率（0-1）
     /// </summary>
-    [Export] public Value critRate = new(0f);
+    [Export] public float critRate = 1;
 
     /// <summary>
     /// 暴击伤害倍数
     /// </summary>
-    [Export] public Value critDamage = new(1.5f);
+    [Export] public float critDamage = 1;
 
     /// <summary>
     /// 移动速度
     /// </summary>
-    [Export] public Value speed = new(100f);
+    [Export] public float speed = 100;
 
     /// <summary>
     /// 敌人贴图
@@ -74,55 +74,22 @@ public partial class EnemyData : Resource
     [Export] public Texture2D sprite;
 
     /// <summary>
+    /// 敌人物理形状
+    /// </summary>
+    [Export] public Shape2D physicShape;
+    /// <summary>
+    /// 敌人碰撞区域形状
+    /// </summary>
+    [Export] public Shape2D areaShape;
+
+    /// <summary>
     /// 敌人缩放
     /// </summary>
     [Export] public Vector2 scale = Vector2.One;
 
-    /// <summary>
-    /// 敌人行为列表
-    /// </summary>
-    [Export] public Array<Behavior> behaviors = new();
 
     /// <summary>
     /// 敌人初始Buff列表
     /// </summary>
     [Export] public Array<BuffData> initialBuffs = new();
-
-    /// <summary>
-    /// 死亡时触发的效果
-    /// </summary>
-    [Export] public Effect onDeath;
-
-    /// <summary>
-    /// 受伤时触发的效果
-    /// </summary>
-    [Export] public Effect onHurt;
-
-    /// <summary>
-    /// 深拷贝EnemyData
-    /// </summary>
-    public EnemyData Clone()
-    {
-        return new EnemyData
-        {
-            enemyName = this.enemyName,
-            displayName = this.displayName,
-            description = this.description,
-            tags = new Array<EntityTag>(this.tags),
-            maxHealth = new Value(this.maxHealth.baseValue),
-            attack = new Value(this.attack.baseValue),
-            defense = new Value(this.defense.baseValue),
-            attackSpeed = new Value(this.attackSpeed.baseValue),
-            attackRange = new Value(this.attackRange.baseValue),
-            critRate = new Value(this.critRate.baseValue),
-            critDamage = new Value(this.critDamage.baseValue),
-            speed = new Value(this.speed.baseValue),
-            sprite = this.sprite,
-            scale = this.scale,
-            behaviors = new Array<Behavior>(this.behaviors),
-            initialBuffs = new Array<BuffData>(this.initialBuffs),
-            onDeath = this.onDeath,
-            onHurt = this.onHurt,
-        };
-    }
 }

@@ -7,23 +7,19 @@ using System;
 /// </summary>
 public partial class TestMode : GameModeBase
 {
-    Player player => GameManager.Instance.game.player;
     public override string ModeName => "Test";
 
-    public override void OnProcess(double delta)
+    public override void OnStart()
     {
-        base.OnProcess(delta);
-        InputManager input = InputManager.Instance;
-        // 测试模式：每帧处理逻辑
-        if(input.IsActionJustPressed(InputManager.Actions.ActiveSkill))
-        {
-            Vector2 toward = input.GetMouseWorldPosition() - player.Position;
-            Bullet but = Bullet.Create(
-                player,
-                player.Position,
-                toward * 500f,
-                null
-            );
-        }
+        //创建测试房间
+        Room room = game.SpawnRoom(new Vector2(0, 0), null);
+        room.OnEnter();
+    }
+
+    public override void OnPhysicsProcess(double delta)
+    {
+        base.OnPhysicsProcess(delta);
+        //对其摄像机到玩家位置
+        CameraFollowPlayer();
     }
 }

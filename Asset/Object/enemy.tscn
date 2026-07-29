@@ -1,0 +1,135 @@
+[gd_scene format=3 uid="uid://g0goyepaph8c"]
+
+[ext_resource type="Script" uid="uid://8c1pu6jwh2ky" path="res://Script/Object/Entity/Enemy.cs" id="1_qwyrd"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_126kb"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_q0m5t"]
+[ext_resource type="Texture2D" uid="uid://bq3tjiu206x63" path="res://Asset/Default/default_character_sprite.png" id="4_qwyrd"]
+[ext_resource type="PackedScene" uid="uid://dk1elvus77kdw" path="res://Resource/Global/EntityComponent/health_bar.tscn" id="5_126kb"]
+
+[sub_resource type="Resource" id="Resource_aawhf"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_kcbv6"]
+script = ExtResource("3_q0m5t")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_aawhf")
+})
+
+[sub_resource type="Resource" id="Resource_hbowo"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_p323j"]
+script = ExtResource("3_q0m5t")
+baseValue = 10.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_hbowo")
+})
+
+[sub_resource type="Resource" id="Resource_hjrqo"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_ghk2r"]
+script = ExtResource("3_q0m5t")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_hjrqo")
+})
+
+[sub_resource type="Resource" id="Resource_mw7jm"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_1mx4w"]
+script = ExtResource("3_q0m5t")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_mw7jm")
+})
+
+[sub_resource type="Resource" id="Resource_65ldo"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_0yiub"]
+script = ExtResource("3_q0m5t")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_65ldo")
+})
+
+[sub_resource type="Resource" id="Resource_10r1t"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_vmjmr"]
+script = ExtResource("3_q0m5t")
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_10r1t")
+})
+
+[sub_resource type="Resource" id="Resource_yl8rb"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_fm120"]
+script = ExtResource("3_q0m5t")
+baseValue = 1.5
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_yl8rb")
+})
+
+[sub_resource type="Resource" id="Resource_sq4tt"]
+script = ExtResource("2_126kb")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_ct3sx"]
+script = ExtResource("3_q0m5t")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_126kb")]({
+"Base": SubResource("Resource_sq4tt")
+})
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_126kb"]
+radius = 12.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qwyrd"]
+radius = 15.0
+height = 46.0
+
+[node name="Enemy" type="RigidBody2D" unique_id=1886345344]
+gravity_scale = 0.0
+lock_rotation = true
+script = ExtResource("1_qwyrd")
+maxHealth = SubResource("Resource_kcbv6")
+attack = SubResource("Resource_p323j")
+defense = SubResource("Resource_ghk2r")
+attackSpeed = SubResource("Resource_1mx4w")
+attackRange = SubResource("Resource_0yiub")
+critRate = SubResource("Resource_vmjmr")
+critDamage = SubResource("Resource_fm120")
+speed = SubResource("Resource_ct3sx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1710458428]
+self_modulate = Color(0.8, 0.13333336, 0, 1)
+texture_filter = 1
+position = Vector2(0, -23.135)
+scale = Vector2(1.14, 1.14)
+texture = ExtResource("4_qwyrd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=576429156]
+shape = SubResource("CircleShape2D_126kb")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1371731811]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1075330994]
+position = Vector2(0, -11.245)
+shape = SubResource("CapsuleShape2D_qwyrd")
+
+[node name="HealthBar" parent="." unique_id=1727495241 node_paths=PackedStringArray("entity") instance=ExtResource("5_126kb")]
+position = Vector2(-20, -66)
+scale = Vector2(0.3, 0.3)
+entity = NodePath("..")

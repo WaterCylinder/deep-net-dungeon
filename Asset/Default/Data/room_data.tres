@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://tgkp70lpfiw1"]
+
+[ext_resource type="PackedScene" uid="uid://5q7x3hmg7it" path="res://Asset/Object/TileMap/default_tile_map.tscn" id="2_ch13k"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="2_rgecu"]
+
+[sub_resource type="CSharpScript" id="CSharpScript_rgecu"]
+script/source = "using Godot;
+using Godot.Collections;
+
+/// <summary>
+/// 敌人生成信息（纯数据类）
+/// 
+/// 结构说明：
+/// - enemyDatas: n个敌人数据数组
+/// - positions: m个位置数组
+/// - entries: 多个生成条目，每条描述哪个敌人以多少概率生成在哪些位置
+/// 
+/// 生成逻辑由Room类负责解析该数据并创建EnemyGenerator
+/// </summary>
+[GlobalClass]
+public partial class EnemyGenerateInfo : Resource
+{
+    /// <summary>
+    /// 敌人数据数组（n个敌人data）
+    /// </summary>
+    [Export] public Array<EnemyData> enemyDatas = new();
+
+    /// <summary>
+    /// 位置数组（m个位置）
+    /// </summary>
+    [Export] public Array<Vector2> positions = new();
+
+    /// <summary>
+    /// 生成条目列表
+    /// 每个条目描述：哪个敌人，以多少概率，生成在哪些位置
+    /// </summary>
+    [Export] public Array<EnemyGenerateEntry> entries = new();
+
+    /// <summary>
+    /// 生成间隔（秒），连续生成多个敌人时的间隔时间
+    /// </summary>
+    [Export] public float interval = 0f;
+}"
+
+[resource]
+script = ExtResource("2_rgecu")
+tileMap = ExtResource("2_ch13k")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

@@ -42,7 +42,7 @@ public abstract partial class Entity : RigidBody2D
     [Export] public Value defense = new(5f);
 
     /// <summary>
-    /// 攻击速度
+    /// 攻击速度，每秒多少次攻击
     /// </summary>
     [Export] public Value attackSpeed = new(1f);
 
@@ -84,6 +84,11 @@ public abstract partial class Entity : RigidBody2D
     /// 生命值百分比（0-1）
     /// </summary>
     public float HealthPercent => maxHealth.Get() > 0 ? currentHealth / maxHealth.Get() : 0f;
+
+    /// <summary>
+    /// 攻速计时器
+    /// </summary>
+    float attackTimer = 0f;
 
     #endregion
     
@@ -513,7 +518,7 @@ public abstract partial class Entity : RigidBody2D
         // 检查死亡
         if (newHealth <= 0 && oldHealth > 0)
         {
-            OnDeath(damage);
+            Dead(damage, damage?.source);
         }
 
         return finalDamage;
@@ -557,7 +562,7 @@ public abstract partial class Entity : RigidBody2D
     /// 死亡时触发
     /// </summary>
     /// <param name="damage">致死伤害数据</param>
-    protected virtual void OnDeath(Damage damage)
+    protected virtual void OnDeath(Damage damage, Entity other)
     {
         
     }
@@ -648,6 +653,13 @@ public abstract partial class Entity : RigidBody2D
     {
     }
 
+    /// <summary>
+    /// 攻击时方法，自动处理攻速
+    /// </summary>
+    protected virtual void OnAttack()
+    {
+    }
+
     #endregion
 
     #region 生命周期
@@ -669,13 +681,25 @@ public abstract partial class Entity : RigidBody2D
         base._Ready();
         currentHealth = maxHealth.Get();
 
-        // 连接碰撞信号
-        // BodyEntered += OnBodyEntered;
-        // BodyExited += OnBodyExited;
-        // 链接Area2D的信号
-        if(area == null)
+        //检查子节点
+        foreach (var child in GetChildren())
         {
-            area = GetChild<Area2D>(0);
+            //给Area子节点绑定碰撞事件
+            if (child is Area2D a)
+            {
+                if(area != null)
+                {
+                    area = a;
+                }
+                break;
+            }
+            //初始化所有实体组件
+            else if (child is EntityComponent component)
+            {
+                GD.Print("初始化实体组件: " + component.Name);
+                component.Init(this);
+                break;
+            }
         }
         if(area != null)
         {
@@ -692,6 +716,12 @@ public abstract partial class Entity : RigidBody2D
         
         // 更新Buff
         UpdateBuffs(delta);
+
+        // 更新攻击计时器
+        if (attackTimer <= 1f)
+        {
+            attackTimer += (float)delta * attackSpeed.Get();
+        }
         
         // 子类更新
         OnUpdate(delta);
@@ -741,9 +771,24 @@ public abstract partial class Entity : RigidBody2D
         }
     }
 
+    private void Dead(Damage damage, Entity other)
+    {
+        OnDeath(damage, other);
+        QueueFree();
+    }
+
     #endregion
 
     #region 辅助方法
+
+    public void Attack()
+    {
+        if(attackTimer >= 1f)
+        {
+            OnAttack();
+            attackTimer = 0;
+        }
+    }
 
     /// <summary>
     /// 重置实体状态（复活时使用）
@@ -760,44 +805,7 @@ public abstract partial class Entity : RigidBody2D
     public void Kill()
     {
         currentHealth = 0;
-        OnDeath(null);
-        QueueFree();
-    }
-
-    /// <summary>
-    /// 在指定位置创建实体（泛型工厂方法）
-    /// </summary>
-    /// <typeparam name="T">实体类型</typeparam>
-    /// <param name="prefabPath">预制体路径</param>
-    /// <param name="pos">世界坐标位置</param>
-    /// <param name="parent">父节点（默认添加到当前场景）</param>
-    /// <returns>创建的实体实例</returns>
-    public static T Create<T>(string prefabPath, Vector2 pos, Node parent = null) where T : Entity
-    {
-        PackedScene prefab = GD.Load<PackedScene>(prefabPath);
-        if (prefab == null)
-        {
-            GD.PrintErr($"无法创建实体：预制体 '{prefabPath}' 未找到");
-            return null;
-        }
-
-        T entity = prefab.Instantiate<T>();
-        if (entity == null)
-        {
-            GD.PrintErr($"无法创建实体：实例化 '{typeof(T).Name}' 失败");
-            return null;
-        }
-
-        entity.Position = pos;
-
-        // 添加到场景
-        if (parent == null)
-        {
-            parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
-        }
-        parent?.AddChild(entity);
-
-        return entity;
+        Dead(null, null);
     }
 
     public override string ToString()

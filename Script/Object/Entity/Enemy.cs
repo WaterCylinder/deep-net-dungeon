@@ -22,7 +22,7 @@ public partial class Enemy : Entity
         {
             if (_enemyPrefab == null)
             {
-                _enemyPrefab = AssetManager.Instance.GetPrefab("Scene.Entity.Enemy", null);
+                _enemyPrefab = AssetManager.Instance.GetPrefab("Asset.Object.enemy", null);
             }
             return _enemyPrefab;
         }
@@ -68,7 +68,7 @@ public partial class Enemy : Entity
         {
             parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
         }
-        parent?.AddChild(enemy);
+        parent.CallDeferred("add_child", enemy); // 使用CallDeferred确保在树中添加节点时不会引发错误
 
         return enemy;
     }
@@ -91,10 +91,10 @@ public partial class Enemy : Entity
         {
             if (_defaultData == null)
             {
-                _defaultData = AssetManager.Instance.GetDefault<EnemyData>("Data/enemy_data");
+                _defaultData = AssetManager.Instance.GetDefault<EnemyData>("Data/enemy_data.tres");
                 if (_defaultData == null)
                 {
-                    GD.PrintErr("未找到默认敌人数据，使用新建默认数据");
+                    GD.PrintErr("未找到默认敌人数据！");
                     _defaultData = new EnemyData();
                 }
             }
@@ -147,29 +147,29 @@ public partial class Enemy : Entity
         if (data == null)
         {
             data = DefaultData;
-            GD.Print($"敌人 {Name} 使用默认数据初始化");
+            GD.Print($"敌人使用默认数据初始化");
         }
 
         this.data = data;
 
         // 设置基础属性
-        maxHealth = new Value(data.maxHealth.baseValue);
-        attack = new Value(data.attack.baseValue);
-        defense = new Value(data.defense.baseValue);
-        attackSpeed = new Value(data.attackSpeed.baseValue);
-        attackRange = new Value(data.attackRange.baseValue);
-        critRate = new Value(data.critRate.baseValue);
-        critDamage = new Value(data.critDamage.baseValue);
-        speed = new Value(data.speed.baseValue);
+        maxHealth = data.maxHealth;
+        attack = data.attack;
+        defense = data.defense;
+        attackSpeed = data.attackSpeed;
+        attackRange = data.attackRange;
+        critRate = data.critRate;
+        critDamage = data.critDamage;
+        speed = data.speed;
+
+        //设置节点属性
+        Name = data.enemyName;
 
         // 复制标签
         foreach (var tag in data.tags)
         {
             AddTag(tag);
         }
-
-        // 复制行为列表
-        _behaviors = new Array<Behavior>(data.behaviors);
 
         // 挂载初始Buff
         foreach (var buffData in data.initialBuffs)
@@ -208,26 +208,6 @@ public partial class Enemy : Entity
         {
             behavior?.Run(this, target, delta);
         }
-    }
-
-    #endregion
-
-    #region 受伤与死亡
-
-    protected override void OnHurt(Damage damage, float finalDamage)
-    {
-        base.OnHurt(damage, finalDamage);
-
-        // 触发受伤效果
-        data?.onHurt?.Run(this, damage, finalDamage);
-    }
-
-    protected override void OnDeath(Damage damage)
-    {
-        base.OnDeath(damage);
-
-        // 触发死亡效果
-        data?.onDeath?.Run(this, damage);
     }
 
     #endregion
