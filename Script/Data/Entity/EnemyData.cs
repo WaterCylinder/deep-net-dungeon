@@ -74,6 +74,11 @@ public partial class EnemyData : Resource
     [Export] public Texture2D sprite;
 
     /// <summary>
+    /// 敌人动画帧
+    /// </summary>
+    [Export] public SpriteFrames spriteFrames;
+
+    /// <summary>
     /// 敌人物理形状
     /// </summary>
     [Export] public Shape2D physicShape;
@@ -81,11 +86,16 @@ public partial class EnemyData : Resource
     /// 敌人碰撞区域形状
     /// </summary>
     [Export] public Shape2D areaShape;
+    /// <summary>
+    /// 近战攻击形状，为空则不生成近战弹幕。
+    /// </summary>
+    [Export] public Shape2D attackShape;
 
     /// <summary>
     /// 敌人缩放
     /// </summary>
     [Export] public Vector2 scale = Vector2.One;
+
 
 
     /// <summary>

@@ -86,11 +86,25 @@ public abstract partial class Entity : RigidBody2D
     public float HealthPercent => maxHealth.Get() > 0 ? currentHealth / maxHealth.Get() : 0f;
 
     /// <summary>
+    /// 当前实体所在的房间
+    /// </summary>
+    public Room room;
+
+    /// <summary>
     /// 攻速计时器
     /// </summary>
     float attackTimer = 0f;
 
+    Vector2 transPos = Vector2.Zero;
+
+
     #endregion
+
+    # region 信号
+
+    [Signal] public delegate void OnTransEventHandler(Vector2 pos);
+
+    # endregion
     
     #region 组件
 
@@ -196,6 +210,14 @@ public abstract partial class Entity : RigidBody2D
     {
         moveTowards = Vector2.Zero;
         Move();
+    }
+
+    public void TransTo(Vector2 pos)
+    {
+        //传送到某地，同时重置移动状态防止RigidBody2D惯性漂移
+        GD.Print($"传送到{pos}");
+        transPos = pos;
+        EmitSignal(nameof(OnTrans), pos);
     }
 
     #endregion
@@ -743,6 +765,19 @@ public abstract partial class Entity : RigidBody2D
         
         // 子类物理更新
         OnPhysicsUpdate(delta);
+    }
+
+    public override void _IntegrateForces(PhysicsDirectBodyState2D state)
+    {
+        base._IntegrateForces(state);
+
+        if(transPos != Vector2.Zero)
+        {
+            Transform2D t = state.Transform;
+            t.Origin = transPos;
+            state.Transform = t;
+            transPos = Vector2.Zero;
+        }
     }
 
     /// <summary>

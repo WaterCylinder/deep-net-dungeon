@@ -13,9 +13,13 @@ public partial class RandomSystem
 		randomSeed += 1;
 		return randomSeed;
 	}
-	public RandomSystem(object seed)
+	public RandomSystem(object seed = null)
 	{
 		int result;
+		if(seed == null)
+		{
+			seed = Time.GetUnixTimeFromSystem();
+		}
 		try
 		{
 			result = Convert.ToInt32(seed);

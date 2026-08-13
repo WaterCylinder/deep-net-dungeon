@@ -77,6 +77,49 @@ namespace Utils
         }
 
         /// <summary>
+        /// 获取指定节点下的所有指定类型的子节点（包括嵌套子节点）
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public static Godot.Collections.Array<T> GetAllChildren<[MustBeVariant] T>(Node parent) where T : Node
+        {
+            Godot.Collections.Array<T> result = new();
+            
+            if (parent == null)
+                return result;
+
+            // 使用栈进行深度优先遍历
+            System.Collections.Generic.Stack<Node> stack = new();
+            
+            // 先将所有直接子节点入栈
+            foreach (Node child in parent.GetChildren())
+            {
+                stack.Push(child);
+            }
+
+            // 深度优先遍历
+            while (stack.Count > 0)
+            {
+                Node current = stack.Pop();
+                
+                // 检查当前节点是否匹配类型
+                if (current is T typedNode)
+                {
+                    result.Add(typedNode);
+                }
+                
+                // 将当前节点的所有子节点入栈（继续向下搜索）
+                foreach (Node child in current.GetChildren())
+                {
+                    stack.Push(child);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 输出二维数组
         /// </summary>
         /// <param name="array"></param>

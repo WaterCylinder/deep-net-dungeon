@@ -68,7 +68,7 @@ public partial class Player : Entity
         {
             return;
         }
-        targetShotToward = targetEnemy.Position - Position;
+        targetShotToward = targetEnemy.GlobalPosition - GlobalPosition;
         targetShotToward = targetShotToward.Normalized();
         TryAttack();
     }

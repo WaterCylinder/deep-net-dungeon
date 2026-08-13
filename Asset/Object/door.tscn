@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c2ddfp6q8lbyt"]
+
+[ext_resource type="Script" uid="uid://b1kymj1a2vkdj" path="res://Script/Object/GameObject/Door.cs" id="1_p8eba"]
+[ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="2_yt0f0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c6gdm"]
+radius = 32.0
+
+[node name="Door" type="Area2D" unique_id=1902877401]
+script = ExtResource("1_p8eba")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1684120142]
+texture = ExtResource("2_yt0f0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1042312309]
+shape = SubResource("CircleShape2D_c6gdm")

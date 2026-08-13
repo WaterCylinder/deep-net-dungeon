@@ -100,7 +100,7 @@ radius = 12.0
 radius = 15.0
 height = 46.0
 
-[node name="Enemy" type="RigidBody2D" unique_id=1886345344]
+[node name="Enemy" type="RigidBody2D" unique_id=1886345344 node_paths=PackedStringArray("area")]
 gravity_scale = 0.0
 lock_rotation = true
 script = ExtResource("1_qwyrd")
@@ -112,20 +112,23 @@ attackRange = SubResource("Resource_0yiub")
 critRate = SubResource("Resource_vmjmr")
 critDamage = SubResource("Resource_fm120")
 speed = SubResource("Resource_ct3sx")
+area = NodePath("Area")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1710458428]
+[node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=1001527903]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1710458428]
 self_modulate = Color(0.8, 0.13333336, 0, 1)
 texture_filter = 1
 position = Vector2(0, -23.135)
 scale = Vector2(1.14, 1.14)
 texture = ExtResource("4_qwyrd")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=576429156]
+[node name="CollisionShape" type="CollisionShape2D" parent="." unique_id=576429156]
 shape = SubResource("CircleShape2D_126kb")
 
-[node name="Area2D" type="Area2D" parent="." unique_id=1371731811]
+[node name="Area" type="Area2D" parent="." unique_id=1371731811]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1075330994]
+[node name="CollisionShape" type="CollisionShape2D" parent="Area" unique_id=1075330994]
 position = Vector2(0, -11.245)
 shape = SubResource("CapsuleShape2D_qwyrd")
 

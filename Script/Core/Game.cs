@@ -16,7 +16,12 @@ public partial class Game : Node
     /// <summary>
     /// 当前游戏模式实例
     /// </summary>
-    public GameModeBase CurrentMode { get; private set; }
+    [Export] public GameModeBase currentMode;
+
+    /// <summary>
+    /// 流程变量
+    /// </summary>
+    [Export] public int A = 0;
 
     /// <summary>
     /// 当前玩家
@@ -27,6 +32,11 @@ public partial class Game : Node
     /// 当前相机
     /// </summary>
     public CameraController camera = null;
+
+    /// <summary>
+    /// 当前地图
+    /// </summary>
+    public Map map = null;
 
     /// <summary>
     /// 敌人生成信号
@@ -46,6 +56,27 @@ public partial class Game : Node
 
     # endregion
 
+    # region 游戏流程变量控制
+
+    public void Next(int step = 100)
+    {
+        A += step;
+    }
+
+    int _cache = 0;
+    public void GoTo(int target)
+    {
+        A = target;
+        _cache = target;
+    }
+
+    public void Back()
+    {
+        A = _cache;
+    }
+
+    # endregion
+
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -58,37 +89,40 @@ public partial class Game : Node
         GD.Print($"[Game] 加载游戏模式: {gameMode}");
 
         // 通过工厂创建游戏模式实例
-        CurrentMode = GameModeFactory.CreateMode(gameMode);
+        currentMode = GameModeFactory.CreateMode(gameMode);
 
-        if (CurrentMode == null)
+        if (currentMode == null)
         {
             GD.PrintErr($"[Game] 无法加载游戏模式: {gameMode}，使用默认模式 Classic");
-            CurrentMode = GameModeFactory.CreateMode("Classic");
+         currentMode = GameModeFactory.CreateMode("Classic");
         }
 
         //获取相机
         camera = GetNode<CameraController>("%MainCamera");
 
+        //获取地图
+        map = GetNode<Map>("%Map");
+
         // 执行模式生命周期：初始化 -> 开始 -> 加载
-        CurrentMode?.OnInit();
-        CurrentMode?.OnLoad();
-        CurrentMode?.OnStart();
+        currentMode?.OnInit();
+        currentMode?.OnLoad();
+        currentMode?.OnStart();
     }
 
     public override void _Process(double delta)
     {
-        CurrentMode?.OnProcess(delta);
+     currentMode?.OnProcess(delta);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        CurrentMode?.OnPhysicsProcess(delta);
+     currentMode?.OnPhysicsProcess(delta);
     }
 
     public override void _ExitTree()
     {
-        CurrentMode?.OnCleanup();
-        CurrentMode = null;
+     currentMode?.OnCleanup();
+     currentMode = null;
     }
 
     // ========== 以下为游戏事件中调用模式方法的便捷接口 ==========
@@ -98,7 +132,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyNextRoom(int roomIndex)
     {
-        CurrentMode?.OnNextRoom(roomIndex);
+     currentMode?.OnNextRoom(roomIndex);
     }
 
     /// <summary>
@@ -106,7 +140,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyNextLevel(int levelIndex)
     {
-        CurrentMode?.OnNextLevel(levelIndex);
+     currentMode?.OnNextLevel(levelIndex);
     }
 
     /// <summary>
@@ -114,7 +148,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyGetItem(string itemId, int quantity = 1)
     {
-        CurrentMode?.OnGetItem(itemId, quantity);
+     currentMode?.OnGetItem(itemId, quantity);
     }
 
     /// <summary>
@@ -122,7 +156,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyUseItem(string itemId)
     {
-        CurrentMode?.OnUseItem(itemId);
+     currentMode?.OnUseItem(itemId);
     }
 
     /// <summary>
@@ -130,7 +164,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyDropItem(string itemId)
     {
-        CurrentMode?.OnDropItem(itemId);
+     currentMode?.OnDropItem(itemId);
     }
 
     /// <summary>
@@ -138,7 +172,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerDamaged(float damage, string source = "")
     {
-        CurrentMode?.OnPlayerDamaged(damage, source);
+     currentMode?.OnPlayerDamaged(damage, source);
     }
 
     /// <summary>
@@ -146,7 +180,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerHealed(float amount)
     {
-        CurrentMode?.OnPlayerHealed(amount);
+     currentMode?.OnPlayerHealed(amount);
     }
 
     /// <summary>
@@ -154,7 +188,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerDeath()
     {
-        CurrentMode?.OnPlayerDeath();
+     currentMode?.OnPlayerDeath();
     }
 
     /// <summary>
@@ -162,7 +196,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEnemyKilled(string enemyId, string enemyType)
     {
-        CurrentMode?.OnEnemyKilled(enemyId, enemyType);
+     currentMode?.OnEnemyKilled(enemyId, enemyType);
     }
 
     /// <summary>
@@ -170,7 +204,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyRoomCleared(int roomIndex)
     {
-        CurrentMode?.OnRoomCleared(roomIndex);
+     currentMode?.OnRoomCleared(roomIndex);
     }
 
     /// <summary>
@@ -178,7 +212,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyBossStart(string bossId)
     {
-        CurrentMode?.OnBossStart(bossId);
+     currentMode?.OnBossStart(bossId);
     }
 
     /// <summary>
@@ -186,7 +220,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyBossDefeated(string bossId)
     {
-        CurrentMode?.OnBossDefeated(bossId);
+     currentMode?.OnBossDefeated(bossId);
     }
 
     /// <summary>
@@ -194,7 +228,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEventTriggered(string eventName, Variant data = default)
     {
-        CurrentMode?.OnEventTriggered(eventName, data);
+     currentMode?.OnEventTriggered(eventName, data);
     }
 
     /// <summary>
@@ -202,7 +236,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEnd(bool isVictory)
     {
-        CurrentMode?.OnEnd(isVictory);
+     currentMode?.OnEnd(isVictory);
     }
 
     # region 通用方法

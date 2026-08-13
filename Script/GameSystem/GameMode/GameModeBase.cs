@@ -18,8 +18,9 @@ public abstract partial class GameModeBase : RefCounted
     public virtual string ModeName => "BaseMode";
 
     protected Game game => GameManager.Instance.game;
-    Player player => game.player;
-    Camera2D camera => game.camera;
+    protected Player player => game.player;
+    protected CameraController camera => game.camera;
+    protected Map map => game.map;
 
     /// <summary>
     /// 初始化模式 - 最先调用，用于设置模式相关的基础数据

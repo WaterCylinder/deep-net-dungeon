@@ -11,6 +11,11 @@ public partial class Trigger : Area2D
     #region 配置
 
     /// <summary>
+    /// 触发范围，128px的倍数
+    /// </summary>
+    [Export] public float radius = 2f;
+
+    /// <summary>
     /// 忽略的EntityTag列表，这些标签的实体不会触发记录，黑名单，优先级大于白名单
     /// </summary>
     [Export] public Array<EntityTag> ignoreTags = new Array<EntityTag> { EntityTag.Bullet };
@@ -37,7 +42,7 @@ public partial class Trigger : Area2D
     /// <summary>
     /// 历史记录列表（固定大小256，记录进入过的实体）
     /// </summary>
-    public LinkedList<Entity> history_list { get; private set; } = new();
+    public LinkedList<Entity> historyList { get; private set; } = new();
 
     #endregion
 
@@ -46,7 +51,7 @@ public partial class Trigger : Area2D
     /// <summary>
     /// 获取最新的实体
     /// </summary>
-    public Entity latestEntity => entityList.Count > 0 ? entityList[entityList.Count - 1] : null;
+    public Entity latestEntity => entityList.Count > 0 ? entityList[0] : null;
 
     #endregion
 
@@ -75,6 +80,8 @@ public partial class Trigger : Area2D
         // 连接碰撞信号
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
+
+        ChangeRadius(radius);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -223,6 +230,24 @@ public partial class Trigger : Area2D
 
     #endregion
 
+    #region 暴露方法
+
+    /// <summary>
+    /// 设置触发器半径
+    /// </summary>
+    /// <param name="newRadius"></param>
+    public void ChangeRadius(float newRadius)
+    {
+        radius = newRadius;
+        CollisionShape2D shape = GetNode<CollisionShape2D>("CollisionShape2D");
+        if (shape != null && shape.Shape is CircleShape2D circle)
+        {
+            circle.Radius = radius * 128f;
+        }
+    }
+
+    #endregion
+
     #region 历史记录管理
 
     /// <summary>
@@ -234,26 +259,26 @@ public partial class Trigger : Area2D
         var existingNode = FindInHistory(entity);
         if (existingNode != null)
         {
-            history_list.Remove(existingNode);
-            history_list.AddLast(entity);
+            historyList.Remove(existingNode);
+            historyList.AddLast(entity);
             return;
         }
 
         // 如果历史记录已满，移除最早的
-        if (history_list.Count >= HISTORY_MAX_SIZE)
+        if (historyList.Count >= HISTORY_MAX_SIZE)
         {
             // 移除时清理无效实体
             CleanInvalidHistory();
 
             // 如果清理后仍然满，移除最早的
-            if (history_list.Count >= HISTORY_MAX_SIZE)
+            if (historyList.Count >= HISTORY_MAX_SIZE)
             {
-                history_list.RemoveFirst();
+                historyList.RemoveFirst();
             }
         }
 
         // 添加到末尾
-        history_list.AddLast(entity);
+        historyList.AddLast(entity);
     }
 
     /// <summary>
@@ -261,7 +286,7 @@ public partial class Trigger : Area2D
     /// </summary>
     private LinkedListNode<Entity> FindInHistory(Entity entity)
     {
-        var node = history_list.First;
+        var node = historyList.First;
         while (node != null)
         {
             if (node.Value == entity)
@@ -278,14 +303,14 @@ public partial class Trigger : Area2D
     /// </summary>
     public void CleanInvalidHistory()
     {
-        var node = history_list.First;
+        var node = historyList.First;
         while (node != null)
         {
             var next = node.Next;
             // 如果实体已被销毁或不合法，移除
             if (node.Value == null || node.Value.IsQueuedForDeletion() || !IsInstanceValid(node.Value))
             {
-                history_list.Remove(node);
+                historyList.Remove(node);
             }
             node = next;
         }
@@ -296,8 +321,8 @@ public partial class Trigger : Area2D
     /// </summary>
     public Entity[] GetHistoryArray()
     {
-        var array = new Entity[history_list.Count];
-        history_list.CopyTo(array, 0);
+        var array = new Entity[historyList.Count];
+        historyList.CopyTo(array, 0);
         return array;
     }
 

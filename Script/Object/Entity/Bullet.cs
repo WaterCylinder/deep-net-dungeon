@@ -252,13 +252,10 @@ public partial class Bullet : Entity
 
     #region 默认数据
 
-    /// <summary>
-    /// 默认弹幕数据缓存
-    /// </summary>
     private static BulletData _defaultData = null;
 
     /// <summary>
-    /// 获取默认弹幕数据（从Asset/Default/Data/bullet_data.tres加载）
+    /// 默认弹幕数据（从Asset/Default/Data/bullet_data.tres加载）
     /// </summary>
     public static BulletData DefaultData
     {
@@ -274,6 +271,27 @@ public partial class Bullet : Entity
                 }
             }
             return _defaultData;
+        }
+    }
+
+    private static BulletData _defaultMeleeData = null;
+    
+    /// <summary>
+    /// 默认近战弹幕数据（从Asset/Default/Data/melee_bullet_data.tres加载）
+    /// </summary>
+    public static BulletData DefaultMeleeData
+    {
+        get
+        {
+            if (_defaultMeleeData == null)
+            {
+                _defaultMeleeData = AssetManager.Instance.GetDefault<BulletData>("Data/melee_bullet_data.tres");
+                if (_defaultMeleeData == null)
+                {
+                    GD.PrintErr("未找到默认近战弹幕数据，使用新建默认数据");
+                }
+            }
+            return _defaultMeleeData;
         }
     }
 
@@ -456,6 +474,11 @@ public partial class Bullet : Entity
         return false;
     }
 
+    /// <summary>
+    /// 检测弹幕是否会忽略与指定实体的碰撞事件
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool IsIgnore(Entity target)
     {
         if (CheckTag(BulletTag.IgnoreAll)) return true;

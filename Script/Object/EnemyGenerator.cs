@@ -38,12 +38,13 @@ public partial class EnemyGenerator : Node2D
         }
     }
 
-    public void GenerateEnemy(Node2D parent = null)
+    public Enemy GenerateEnemy(Node2D parent = null, bool del = true)
     {
         //TODO: 生成器动画以及是否采用动画的判断条件实现
 
         //在当前位置生成敌人
-        GameManager.Instance.game.SpawnEnemy(enemyData, Position, parent);
-        QueueFree(); //生成后销毁生成器
+        Enemy enemy = GameManager.Instance.game.SpawnEnemy(enemyData, Position, parent);
+        if(del) QueueFree(); //生成后销毁生成器
+        return enemy;
     }
 }

@@ -112,14 +112,14 @@ public partial class Enemy : Entity
     public EnemyData data;
 
     /// <summary>
-    /// 敌人行为列表
-    /// </summary>
-    private Array<Behavior> _behaviors = new();
-
-    /// <summary>
     /// 目标实体（用于AI追踪）
     /// </summary>
     public Entity target;
+
+    /// <summary>
+    /// 近战弹幕
+    /// </summary>
+    public Bullet meleeBullet;
 
     #endregion
 
@@ -183,13 +183,44 @@ public partial class Enemy : Entity
         // 设置贴图
         if (data.sprite != null)
         {
-            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
+            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite");
             if (spriteNode != null)
             {
                 spriteNode.Texture = data.sprite;
-                spriteNode.Scale = data.scale;
             }
         }
+        // 设置动画
+        if (data.spriteFrames != null)
+        {
+            var animNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
+            if (animNode != null)
+            {
+                animNode.SpriteFrames = data.spriteFrames;
+            }
+        }
+        
+        // 设置物理性状
+        if (data.physicShape != null)
+        {
+            var physicShape = GetNodeOrNull<CollisionShape2D>("CollisionShape");
+            if (physicShape != null)
+            {
+                physicShape.Shape = data.physicShape;
+            }
+        }
+
+        // 设置检测范围
+        if (data.areaShape != null)
+        {
+            var areaShape = GetNodeOrNull<CollisionShape2D>("Area/CollisionShape");
+            if (areaShape != null)
+            {
+                areaShape.Shape = data.areaShape;
+            }
+        }
+
+        //设置尺寸
+        Scale = data.scale;
 
         // 重置生命值到最大值
         currentHealth = maxHealth.Get();
@@ -199,14 +230,34 @@ public partial class Enemy : Entity
 
     #region 行为更新
 
+    float timer = 0f;
     protected override void OnUpdate(double delta)
     {
         base.OnUpdate(delta);
 
-        // 执行所有行为
-        foreach (var behavior in _behaviors)
+        // 如果有近战形状则生成近战弹幕
+        if (data.attackShape != null)
         {
-            behavior?.Run(this, target, delta);
+            if (meleeBullet == null)
+            {
+
+                meleeBullet = Bullet.Create(
+                    owner: this,
+                    pos: GlobalPosition,
+                    velocity: Vector2.Zero,
+                    data: Bullet.DefaultMeleeData,
+                    parent: this
+                );
+                var shape = meleeBullet.GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
+                if(shape != null)
+                {
+                    shape.Shape = data.attackShape;
+                }
+            }
+            else
+            {
+                meleeBullet.Position = Vector2.Zero;
+            }
         }
     }
 

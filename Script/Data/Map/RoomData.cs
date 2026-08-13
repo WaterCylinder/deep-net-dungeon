@@ -18,7 +18,7 @@ public partial class RoomData : Resource
     /// <summary>
     /// 房间瓦片地图
     /// </summary>
-    [Export(PropertyHint.ResourceType, "RoomTileMap")] public PackedScene tileMap;
+    [Export] public PackedScene tileMap;
     [Export] public Effect onCreate;
     [Export] public Effect onEnter;
     [Export] public Effect onExit;
