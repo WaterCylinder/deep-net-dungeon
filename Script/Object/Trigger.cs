@@ -58,6 +58,14 @@ public partial class Trigger : Area2D
     #region 信号
 
     /// <summary>
+    /// 实体进入前触发
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns>实体是否被计入</returns>
+    public delegate bool BeforeEntityEntered(Entity entity);
+    public BeforeEntityEntered beforeEntityEntered;
+
+    /// <summary>
     /// 实体进入时触发
     /// </summary>
     [Signal]
@@ -112,6 +120,12 @@ public partial class Trigger : Area2D
                 return;
             }
 
+            // 检查是否允许进入
+            if (beforeEntityEntered != null && !beforeEntityEntered.Invoke(entity))
+            {
+                return;
+            }
+
             // 如果已经在列表中，不重复添加
             if (entityList.Contains(entity))
             {
@@ -136,6 +150,12 @@ public partial class Trigger : Area2D
     {
         if (body is Entity entity)
         {
+            //原列表没有该实体则忽略
+            if (!entityList.Contains(entity))
+            {
+                return;
+            }
+
             // 检查是否应该忽略该实体
             if (ShouldIgnore(entity))
             {
@@ -173,6 +193,7 @@ public partial class Trigger : Area2D
         {
             return true; // 有包含标签但实体不包含，忽略
         }
+
         return false;
     }
 

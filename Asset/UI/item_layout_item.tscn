@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cnhkoacuwafyq"]
+
+[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Temp.png" id="1_jfn5g"]
+
+[node name="ItemLayoutItem" type="AspectRatioContainer" unique_id=1457596014]
+custom_minimum_size = Vector2(64, 64)
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=559819692]
+layout_mode = 2
+texture_normal = ExtResource("1_jfn5g")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="." unique_id=2044972126]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1

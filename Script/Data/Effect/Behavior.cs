@@ -6,12 +6,19 @@ using Godot;
 [GlobalClass] // 标记为全局类，可在整个项目中访问
 public partial class Behavior : Resource // Behavior类继承自Resource，是资源类的一部分
 {
+    public static bool logEnabled = false; // 是否启用日志记录
     // 使用静态字典存储方法信息，键为方法名，值为方法信息
     public static System.Collections.Generic.Dictionary<string, MethodInfo> MethodList = new();
     // 行为名称
     [Export]public string behaviorName = "";
     // 参数
     [Export]public Godot.Collections.Dictionary<string, Variant> args = new();
+
+    void Log(string message)
+    {
+        if(logEnabled)
+            GD.Print($"[{GetType().Name}.{behaviorName}] {message}");
+    }
     
     /// <summary>
     /// 执行指定名称的行为方法，并返回结果
@@ -43,7 +50,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                 var parameters = method.GetParameters(); //函数签名参数
                 if(parameters.Length == 0)
                 {
-                    GD.Print($"方法 {methodName} 空参数执行");
+                    Log("空参数执行");
                     return (T)method.Invoke(this, null);
                 }
                 //参数匹配性检查
@@ -73,11 +80,11 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                     string parameterNames ="";
                     foreach(ParameterInfo para in parameters)
                         parameterNames += para.Name + ", ";
-                    GD.Print($"方法 {methodName} 参数 {parameterNames}传入参数 {string.Join(",",args)}");
+                    Log($"参数 {parameterNames} 传入 {string.Join(",",args)}");
                 }
                 else
                 {
-                    GD.Print($"方法 {methodName} 参数数量不匹配，正在截取可用参数");
+                    Log($"参数数量不匹配，正在截取可用参数");
                     List<object> temp = [];
                     List<object> argsList = [.. args];
                     string parameterNames ="";
@@ -102,7 +109,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                         }
                     }
                     args = [.. temp];
-                    GD.Print($"方法 {methodName} 参数 {parameterNames} 匹配后传入参数 {string.Join(",",args)}");
+                    Log($"参数 {parameterNames} 匹配后传入参数 {string.Join(",",args)}");
                 }
                 
                 return (T)method.Invoke(this, args);
@@ -139,7 +146,13 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
         Run<object>(methodName);
     }
 
-    public Variant Arg(string key)
+    /// <summary>
+    /// 获取行为参数
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public Variant Arg(string key, Variant defaultValue = default)
     {
         if (args.ContainsKey(key))
         {
@@ -147,7 +160,30 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
         }
         else
         {
-            return default;
+            return defaultValue;
+        }
+    }
+
+    /// <summary>
+    /// 获取行为参数
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public T Arg<[MustBeVariant] T>(string key, T defaultValue = default)
+    {
+        if (args.ContainsKey(key))
+        {
+            if(args[key] is T value)
+            {
+                return value;
+            }
+            return defaultValue;
+        }
+        else
+        {
+            return defaultValue;
         }
     }
 

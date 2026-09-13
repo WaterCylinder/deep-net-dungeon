@@ -93,7 +93,7 @@ public partial class Map : Node2D
     {
         if (data == null)
         {
-            GD.PrintErr("地图初始化：MapData参数为空，使用编辑器定义的data");
+            GD.PushWarning("地图初始化：MapData参数为空，使用编辑器定义的data");
             data = this.data;
         }
 
@@ -276,22 +276,43 @@ public partial class Map : Node2D
     /// <summary>
     /// 创建房间实例
     /// </summary>
-    private Room CreateRoomInstance(Vector2 position, RoomData data)
+    private Room CreateRoomInstance(Vector2 position, RoomData data, string roomName = "")
     {
         if (data == null)
         {
             data = Room.DefaultData;
         }
 
+        Room room = null;
+
         // 通过Game的SpawnRoom方法创建房间
         Game game = GameManager.Instance?.game;
         if (game != null)
         {
-            return game.SpawnRoom(position, data);
+            room = game.SpawnRoom(position, data);
+        }
+        else
+        {
+            // 无game对象：直接创建
+            room = Room.Create(position, data);
         }
 
-        // 回退：直接创建
-        return Room.Create(position, data);
+        if(room == null)
+        {
+            GD.PrintErr("[Map] 房间创建失败");
+            return null;
+        }
+
+        if(roomName != "")
+        {
+            room.Name = roomName;
+        }
+        else
+        {
+            room.Name = $"Room_{rooms.Count}";
+        }
+
+        return room;
     }
 
     /// <summary>

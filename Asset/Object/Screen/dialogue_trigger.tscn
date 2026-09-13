@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dheeqe0sjpbhh"]
+
+[ext_resource type="Script" uid="uid://db2r7pcnvphcd" path="res://Script/Object/GameObject/SceneComponent/TriggerDialogue.cs" id="1_r3kg1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xnvj2"]
+radius = 46.9
+
+[node name="DialogueTrigger" type="Area2D" unique_id=1800465108 node_paths=PackedStringArray("dialoguePoint")]
+script = ExtResource("1_r3kg1")
+contents = Array[String](["***留：", "无论谁看到这个留言，恭喜你来到这个地方", "这里是某种虚拟空间的角落，想出去的话只能去其他找找办法", "总之祝你好运。", " "])
+dialoguePoint = NodePath("Point")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1381557472]
+shape = SubResource("CircleShape2D_xnvj2")
+debug_color = Color(0.35347262, 0.48292178, 1, 0.41960785)
+
+[node name="Point" type="Node2D" parent="." unique_id=277603966]
+position = Vector2(0, -80)

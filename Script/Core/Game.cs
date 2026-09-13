@@ -11,6 +11,18 @@ using System;
 /// </summary>
 public partial class Game : Node
 {
+    #region 游戏工具
+
+    public static bool IsAble(Node2D node)
+    {
+        if(node == null || !IsInstanceValid(node) || node.IsQueuedForDeletion())
+        {
+            return false;
+        }
+        return true;
+    }
+
+    #endregion
 
     [Export] public string gameMode = "Test"; // 可在编辑器中设置默认游戏模式
     /// <summary>
@@ -53,6 +65,10 @@ public partial class Game : Node
     [Export] public Node enemyNode;
 
     [Export] public Node roomNode;
+
+    [Export] public Node2D dropItemNode;
+
+    [Export] public Node smallObjectNode;
 
     # endregion
 

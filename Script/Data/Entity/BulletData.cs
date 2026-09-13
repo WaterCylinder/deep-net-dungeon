@@ -34,11 +34,6 @@ public partial class BulletData : Resource
     [Export] public float damageMultiplier = 1f;
 
     /// <summary>
-    /// 弹幕基础速度（像素/秒）
-    /// </summary>
-    [Export] public float speed = 200f;
-
-    /// <summary>
     /// 弹幕贴图
     /// </summary>
     [Export] public Texture2D sprite;
@@ -57,6 +52,11 @@ public partial class BulletData : Resource
     /// 弹幕碰撞形状半径
     /// </summary>
     [Export] public float collisionRadius = 5f;
+
+    /// <summary>
+    /// 是否跟随移动方向改变精灵图像的旋转角度，默认角度为向右
+    /// </summary>
+    [Export] public bool isRotateWithToward = true;
 
     /// <summary>
     /// 创建时的行为
@@ -78,26 +78,4 @@ public partial class BulletData : Resource
     /// </summary>
     [Export] public Effect onLifetimeEnd;
 
-    /// <summary>
-    /// 深拷贝BulletData
-    /// </summary>
-    public BulletData Clone()
-    {
-        return new BulletData
-        {
-            bulletName = this.bulletName,
-            bulletTags = new Array<BulletTag>(this.bulletTags),
-            lifetime = this.lifetime,
-            damage = new Value(this.damage.baseValue),
-            damageMultiplier = this.damageMultiplier,
-            speed = this.speed,
-            sprite = this.sprite,
-            scale = this.scale,
-            collisionOffset = this.collisionOffset,
-            collisionRadius = this.collisionRadius,
-            onUpdate = this.onUpdate,
-            onCollision = this.onCollision,
-            onLifetimeEnd = this.onLifetimeEnd,
-        };
-    }
 }

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cleomu7wca23h"]
+
+[ext_resource type="Script" uid="uid://cbq62jtghcc45" path="res://Script/Object/Entity/EntityComponent/Bag.cs" id="1_np2so"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1e3q2"]
+radius = 16.0
+
+[node name="Bag" type="Node2D" unique_id=301600655 node_paths=PackedStringArray("area")]
+script = ExtResource("1_np2so")
+area = NodePath("Area2D")
+itemDict = Dictionary[Object, int]({})
+
+[node name="Area2D" type="Area2D" parent="." unique_id=525245349]
+collision_layer = 2
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1526022993]
+shape = SubResource("CircleShape2D_1e3q2")
+debug_color = Color(0, 0.63, 0.4725, 0.21960784)

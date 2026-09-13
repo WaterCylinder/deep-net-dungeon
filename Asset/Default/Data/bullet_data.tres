@@ -2,37 +2,20 @@
 
 [ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="1_ruqr4"]
 [ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="2_mfkwn"]
-[ext_resource type="Script" uid="uid://b41675oscarsg" path="res://Script/Data/Entity/BulletBehavior.cs" id="3_brd34"]
-[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_ihttq"]
 [ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="3_kbe4v"]
-[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_mfkwn"]
 
-[sub_resource type="Resource" id="Resource_ihttq"]
+[sub_resource type="Resource" id="Resource_ruqr4"]
 script = ExtResource("1_ruqr4")
 id = "Base"
 
-[sub_resource type="Resource" id="Resource_s7wad"]
+[sub_resource type="Resource" id="Resource_mfkwn"]
 script = ExtResource("2_mfkwn")
 baseValue = 10.0
 _multipliers = Dictionary[String, ExtResource("1_ruqr4")]({
-"Base": SubResource("Resource_ihttq")
+"Base": SubResource("Resource_ruqr4")
 })
-
-[sub_resource type="Resource" id="Resource_l3u6g"]
-script = ExtResource("3_brd34")
-behaviorName = "Test"
-metadata/_custom_type_script = "uid://b41675oscarsg"
-
-[sub_resource type="Resource" id="Resource_brd34"]
-script = ExtResource("3_mfkwn")
-effectName = "测试效果"
-condition = ExtResource("3_ihttq")
-behavior = SubResource("Resource_l3u6g")
-tags = null
-metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [resource]
 script = ExtResource("3_kbe4v")
-speed = 1400.0
-onCollision = SubResource("Resource_brd34")
+isRotateWithToward = false
 metadata/_custom_type_script = "uid://draiigge0qptw"

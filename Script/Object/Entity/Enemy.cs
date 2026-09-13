@@ -1,11 +1,62 @@
 using Godot;
 using Godot.Collections;
 
+public enum EnemyTag
+{
+    Normal,
+    /// <summary>
+    /// 不可被选中
+    /// </summary>
+    TriggerDisable,
+    /// <summary>
+    /// 不会被弹幕击中
+    /// </summary>
+    IgnoreBullet,
+    /// <summary>
+    /// 忽略物理效果(不会推开玩家和被玩家推开)
+    /// </summary>
+    IgnorePhysical,
+}
+
 /// <summary>
 /// 敌人实体类
 /// </summary>
 public partial class Enemy : Entity
 {
+    /// <summary>
+    /// 默认近战攻击速度 次/秒
+    /// </summary>
+    public static float MELEE_SPEED = 2;
+
+    #region 默认数据
+
+    /// <summary>
+    /// 默认敌人数据缓存
+    /// </summary>
+    private static EnemyData _defaultData = null;
+
+    /// <summary>
+    /// 获取默认敌人数据（从Asset/Default/Data/enemy_data.tres加载）
+    /// </summary>
+    public static EnemyData DefaultData
+    {
+        get
+        {
+            if (_defaultData == null)
+            {
+                _defaultData = AssetManager.Instance.GetDefault<EnemyData>("Data/enemy_data.tres");
+                if (_defaultData == null)
+                {
+                    GD.PrintErr("未找到默认敌人数据！");
+                    _defaultData = new EnemyData();
+                }
+            }
+            return _defaultData;
+        }
+    }
+
+    #endregion
+
     #region 工厂方法
 
     /// <summary>
@@ -75,36 +126,15 @@ public partial class Enemy : Entity
 
     #endregion
 
-    #region 默认数据
-
-    /// <summary>
-    /// 默认敌人数据缓存
-    /// </summary>
-    private static EnemyData _defaultData = null;
-
-    /// <summary>
-    /// 获取默认敌人数据（从Asset/Default/Data/enemy_data.tres加载）
-    /// </summary>
-    public static EnemyData DefaultData
-    {
-        get
-        {
-            if (_defaultData == null)
-            {
-                _defaultData = AssetManager.Instance.GetDefault<EnemyData>("Data/enemy_data.tres");
-                if (_defaultData == null)
-                {
-                    GD.PrintErr("未找到默认敌人数据！");
-                    _defaultData = new EnemyData();
-                }
-            }
-            return _defaultData;
-        }
-    }
-
-    #endregion
+   
 
     #region 敌人属性
+
+    public Node2D layoutNode;
+    public Sprite2D spriteNode;
+    public AnimatedSprite2D animNode;
+
+    public Array<EnemyTag> enemyTags = new();
 
     /// <summary>
     /// 敌人数据源
@@ -120,6 +150,49 @@ public partial class Enemy : Entity
     /// 近战弹幕
     /// </summary>
     public Bullet meleeBullet;
+
+    public Behavior onGenerate;
+    public Behavior onUpdate;
+    public Behavior onAttack;
+    public Behavior onDeath;
+
+    #endregion
+    
+    #region 标签管理
+
+    /// <summary>
+    /// 检查敌人是否有指定标签
+    /// </summary>
+    /// <param name="tag">要检查的标签</param>
+    /// <returns>是否拥有该标签</returns>
+    public bool CheckTag(EnemyTag tag)
+    {
+        return enemyTags.Contains(tag);
+    }
+
+    /// <summary>
+    /// 添加敌人标签
+    /// </summary>
+    /// <param name="tag">要添加的标签</param>
+    public void AddTag(EnemyTag tag)
+    {
+        if (!enemyTags.Contains(tag))
+        {
+            enemyTags.Add(tag);
+        }
+    }
+
+    /// <summary>
+    /// 移除敌人标签
+    /// </summary>
+    /// <param name="tag">要移除的标签</param>
+    public void RemoveTag(EnemyTag tag)
+    {
+        if (enemyTags.Contains(tag))
+        {
+            enemyTags.Remove(tag);
+        }
+    }
 
     #endregion
 
@@ -152,6 +225,11 @@ public partial class Enemy : Entity
 
         this.data = data;
 
+        //设置节点路径
+        layoutNode = GetNodeOrNull<Node2D>("Layout");
+        spriteNode = layoutNode?.GetNodeOrNull<Sprite2D>("Sprite");
+        animNode = layoutNode?.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
+
         // 设置基础属性
         maxHealth = data.maxHealth;
         attack = data.attack;
@@ -161,6 +239,11 @@ public partial class Enemy : Entity
         critRate = data.critRate;
         critDamage = data.critDamage;
         speed = data.speed;
+
+        onGenerate = data.onGenerate;
+        onUpdate = data.onUpdate;
+        onAttack = data.onAttack;
+        onDeath = data.onDeath;
 
         //设置节点属性
         Name = data.enemyName;
@@ -183,7 +266,6 @@ public partial class Enemy : Entity
         // 设置贴图
         if (data.sprite != null)
         {
-            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite");
             if (spriteNode != null)
             {
                 spriteNode.Texture = data.sprite;
@@ -192,12 +274,12 @@ public partial class Enemy : Entity
         // 设置动画
         if (data.spriteFrames != null)
         {
-            var animNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
             if (animNode != null)
             {
                 animNode.SpriteFrames = data.spriteFrames;
             }
         }
+        layoutNode.Position = data.layoutOffset;
         
         // 设置物理性状
         if (data.physicShape != null)
@@ -216,14 +298,26 @@ public partial class Enemy : Entity
             if (areaShape != null)
             {
                 areaShape.Shape = data.areaShape;
+                areaShape.Position = data.areaOffset;
             }
         }
 
         //设置尺寸
         Scale = data.scale;
 
+        //设置初始额外参数
+        args.Init(data.args);
+
         // 重置生命值到最大值
         currentHealth = maxHealth.Get();
+
+        // 根据tags设置性能
+        if (CheckTag(EnemyTag.IgnorePhysical))
+        {
+            //移除该物体的碰撞层
+            SetCollisionLayerValue(1, false);
+            Freeze = true;
+        }
     }
 
     #endregion
@@ -238,30 +332,71 @@ public partial class Enemy : Entity
         // 如果有近战形状则生成近战弹幕
         if (data.attackShape != null)
         {
-            if (meleeBullet == null)
+            timer += (float)delta;
+            if(timer > (1 / MELEE_SPEED))
             {
-
-                meleeBullet = Bullet.Create(
-                    owner: this,
-                    pos: GlobalPosition,
-                    velocity: Vector2.Zero,
-                    data: Bullet.DefaultMeleeData,
-                    parent: this
-                );
-                var shape = meleeBullet.GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
-                if(shape != null)
+                timer = 0;
+                if (!Game.IsAble(meleeBullet))
                 {
-                    shape.Shape = data.attackShape;
+                    //生成不可见的近战弹幕
+                    meleeBullet = Bullet.Create(
+                        owner: this,
+                        pos: GlobalPosition + data.meleeOffest,
+                        velocity: Vector2.Zero,
+                        data: Bullet.DefaultMeleeData,
+                        parent: this,
+                        isVisible: false
+                    );
+                    //设置近战弹幕的碰撞形状
+                    var shape = meleeBullet.GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
+                    if(shape != null)
+                    {
+                        shape.Shape = data.attackShape;
+                    }
+                    meleeBullet.Position = Vector2.Zero;
+                }
+                else
+                {
+                    meleeBullet.Position = Vector2.Zero;
                 }
             }
             else
             {
-                meleeBullet.Position = Vector2.Zero;
+                if (Game.IsAble(meleeBullet))
+                {
+                    meleeBullet.Position = Vector2.Zero;
+                }
             }
+            
         }
+
+        onUpdate?.Run(this);
+    }
+
+    protected override void OnAttack()
+    {
+        base.OnAttack();
+        onAttack?.Run(this);
+    }
+
+    protected override void OnDeath(Damage damage, Entity other)
+    {
+        base.OnDeath(damage, other);
+        onDeath?.Run(this);
     }
 
     #endregion
 
+    #region 功能方法
+
+    public void ScaleLayout(Vector2 scale)
+    {
+        if(layoutNode != null)
+        {
+            layoutNode.Scale = scale;
+        }
+    }
+
+    #endregion
     
 }

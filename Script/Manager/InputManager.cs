@@ -12,6 +12,15 @@ using System.Collections.Generic;
 ///   键位映射通过 Config 加载 key_mapper 配置
 ///     默认模板：res://Asset/Default/default_key_mapper.json
 ///     用户配置：user://key_mapper.json（优先读取）
+/// 
+/// 输入流程：
+///   所有动作的按下/松开状态统一由本管理器对外提供（IsActionPressed 等接口），
+///   内部按输入源区分处理：
+///     鼠标按键 —— 通过 _UnhandledInput 派发，Control 的 mouse_filter 为 Stop 时会截停事件，
+///                 因此点击 UI 不会误触发游戏内动作；Pass / Ignore 的 Control 不会截停。
+///     键盘/手柄 —— 同样通过 _UnhandledInput 记录按下，再与原始按键状态校验，
+///                 既能被 UI（如输入框）截停，也不会因丢失松开事件导致长按状态卡死。
+///   动作状态判定 = 收到过未被截停的按下事件 && 绑定输入源当前仍处于按下状态。
 /// </summary>
 public partial class InputManager : ManagerBase
 {
@@ -63,6 +72,26 @@ public partial class InputManager : ManagerBase
     private Dictionary<string, List<JoyButton>> _gamepadMapping = new();
 
     /// <summary>
+    /// 动作绑定的输入源缓存（动作名 -> 输入源），与 InputMap 注册的键位保持一致
+    /// </summary>
+    private readonly Dictionary<string, ActionSources> _actionSources = new();
+
+    /// <summary>
+    /// 已收到未被 UI 截停的按下事件的动作集合（由 _UnhandledInput 维护）
+    /// </summary>
+    private readonly HashSet<string> _unhandledPressedActions = new();
+
+    /// <summary>
+    /// 动作最近一次按下所在的主循环帧号（用于 JustPressed 判断）
+    /// </summary>
+    private readonly Dictionary<string, long> _actionPressFrame = new();
+
+    /// <summary>
+    /// 动作最近一次松开所在的主循环帧号（用于 JustReleased 判断）
+    /// </summary>
+    private readonly Dictionary<string, long> _actionReleaseFrame = new();
+
+    /// <summary>
     /// Config 实例，由 GameManager 注入
     /// </summary>
     private Config _config;
@@ -105,6 +134,9 @@ public partial class InputManager : ManagerBase
     public override void _EnterTree()
     {
         Instance = this;
+
+        // 确保未被 UI（Control）截停的输入事件会派发到本管理器
+        SetProcessUnhandledInput(true);
     }
 
     public override void _ExitTree()
@@ -112,6 +144,282 @@ public partial class InputManager : ManagerBase
         if (Instance == this)
             Instance = null;
     }
+
+    #region 未截停输入处理（_UnhandledInput）
+
+    /// <summary>
+    /// 单个动作绑定的输入源集合，用于在收到「按下」事件后与原始输入状态做校验
+    /// </summary>
+    private sealed class ActionSources
+    {
+        /// <summary>
+        /// 键盘键位
+        /// </summary>
+        public readonly List<Key> Keys = new();
+
+        /// <summary>
+        /// 鼠标按键
+        /// </summary>
+        public readonly List<MouseButton> MouseButtons = new();
+
+        /// <summary>
+        /// 手柄按钮（含实际产生输入的设备号）
+        /// </summary>
+        public readonly List<(int Device, JoyButton Button)> JoyButtons = new();
+
+        /// <summary>
+        /// 是否未绑定任何输入源
+        /// </summary>
+        public bool IsEmpty => Keys.Count == 0 && MouseButtons.Count == 0 && JoyButtons.Count == 0;
+    }
+
+    /// <summary>
+    /// 处理未被 UI（Control）截停的输入事件。
+    /// 
+    /// Control 的 mouse_filter 为 Stop 时会截停事件，其按下不会在这里被记录，
+    /// 因此点击 UI 不会误触发游戏内动作；Pass / Ignore 的 Control 不会截停事件。
+    /// </summary>
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        // 忽略键盘自动重复产生的回声事件
+        if (@event.IsEcho())
+        {
+            return;
+        }
+
+        switch (@event)
+        {
+            case InputEventMouseButton mouseButton:
+                if (mouseButton.Pressed)
+                    HandleSourcePressed(mouseButton);
+                else
+                    HandleSourceReleased(mouseButton);
+                break;
+
+            case InputEventKey key:
+                if (key.Pressed)
+                    HandleSourcePressed(key);
+                else
+                    HandleSourceReleased(key);
+                break;
+
+            case InputEventJoypadButton joyButton:
+                if (joyButton.Pressed)
+                    HandleSourcePressed(joyButton);
+                else
+                    HandleSourceReleased(joyButton);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 记录被按下事件命中的动作
+    /// </summary>
+    private void HandleSourcePressed(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseButton)
+        {
+            // 滚轮等瞬时按键无法保持按下，只记录为「刚刚按下」
+            bool holdable = IsHoldableMouseButton(mouseButton.ButtonIndex);
+            foreach (string action in FindMouseActions(mouseButton.ButtonIndex))
+            {
+                MarkActionPressed(action, holdable);
+            }
+            return;
+        }
+
+        if (@event is InputEventKey key)
+        {
+            foreach (string action in FindKeyActions(key))
+            {
+                MarkActionPressed(action, true);
+            }
+            return;
+        }
+
+        if (@event is InputEventJoypadButton joyButton)
+        {
+            foreach (string action in FindJoyActions(joyButton))
+            {
+                MarkActionPressed(action, true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 记录被松开事件命中的动作
+    /// </summary>
+    private void HandleSourceReleased(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseButton)
+        {
+            foreach (string action in FindMouseActions(mouseButton.ButtonIndex))
+            {
+                MarkActionReleased(action);
+            }
+            return;
+        }
+
+        if (@event is InputEventKey key)
+        {
+            foreach (string action in FindKeyActions(key))
+            {
+                MarkActionReleased(action);
+            }
+            return;
+        }
+
+        if (@event is InputEventJoypadButton joyButton)
+        {
+            foreach (string action in FindJoyActions(joyButton))
+            {
+                MarkActionReleased(action);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 标记动作被按下。holdable 为 false 表示瞬时输入（如滚轮），只影响 JustPressed
+    /// </summary>
+    private void MarkActionPressed(string action, bool holdable)
+    {
+        if (holdable)
+        {
+            _unhandledPressedActions.Add(action);
+        }
+        _actionPressFrame[action] = (long)Engine.GetProcessFrames();
+    }
+
+    /// <summary>
+    /// 标记动作被松开
+    /// </summary>
+    private void MarkActionReleased(string action)
+    {
+        _actionReleaseFrame[action] = (long)Engine.GetProcessFrames();
+
+        // 仅当所有绑定输入源都已松开时才清除按下标记
+        // （同一动作可能绑定多个输入源，或部分输入源被 UI 截停后收不到松开事件）
+        if (_actionSources.TryGetValue(action, out ActionSources sources) && !IsAnySourceRawPressed(sources))
+        {
+            _unhandledPressedActions.Remove(action);
+        }
+    }
+
+    /// <summary>
+    /// 查找该鼠标按键绑定的所有动作
+    /// </summary>
+    private List<string> FindMouseActions(MouseButton button)
+    {
+        var actions = new List<string>();
+        foreach (var kvp in _actionSources)
+        {
+            if (kvp.Value.MouseButtons.Contains(button))
+            {
+                actions.Add(kvp.Key);
+            }
+        }
+        return actions;
+    }
+
+    /// <summary>
+    /// 查找该键盘事件绑定的所有动作（同时比较逻辑键与物理键）
+    /// </summary>
+    private List<string> FindKeyActions(InputEventKey key)
+    {
+        var actions = new List<string>();
+        foreach (var kvp in _actionSources)
+        {
+            foreach (Key boundKey in kvp.Value.Keys)
+            {
+                bool matched = (key.Keycode != Key.None && key.Keycode == boundKey)
+                    || (key.PhysicalKeycode != Key.None && key.PhysicalKeycode == boundKey);
+
+                if (matched)
+                {
+                    actions.Add(kvp.Key);
+                    break;
+                }
+            }
+        }
+        return actions;
+    }
+
+    /// <summary>
+    /// 查找该手柄按钮事件绑定的所有动作，并补全实际产生输入的设备号
+    /// </summary>
+    private List<string> FindJoyActions(InputEventJoypadButton joyButton)
+    {
+        var actions = new List<string>();
+        foreach (var kvp in _actionSources)
+        {
+            bool matched = false;
+            bool deviceKnown = false;
+            foreach ((int device, JoyButton button) in kvp.Value.JoyButtons)
+            {
+                if (button != joyButton.ButtonIndex)
+                {
+                    continue;
+                }
+                matched = true;
+                deviceKnown |= device == joyButton.Device;
+            }
+
+            if (!matched)
+            {
+                continue;
+            }
+
+            if (!deviceKnown)
+            {
+                kvp.Value.JoyButtons.Add((joyButton.Device, joyButton.ButtonIndex));
+            }
+            actions.Add(kvp.Key);
+        }
+        return actions;
+    }
+
+    /// <summary>
+    /// 校验动作绑定的输入源当前是否仍处于按下状态（原始状态不受 UI 截停影响），
+    /// 用于修正因 UI 截停 / 窗口失焦而丢失的松开事件
+    /// </summary>
+    private static bool IsAnySourceRawPressed(ActionSources sources)
+    {
+        foreach (Key key in sources.Keys)
+        {
+            if (Input.IsKeyPressed(key) || Input.IsPhysicalKeyPressed(key))
+            {
+                return true;
+            }
+        }
+
+        foreach (MouseButton button in sources.MouseButtons)
+        {
+            if (IsHoldableMouseButton(button) && Input.IsMouseButtonPressed(button))
+            {
+                return true;
+            }
+        }
+
+        foreach ((int device, JoyButton button) in sources.JoyButtons)
+        {
+            if (Input.IsJoyButtonPressed(device, button))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 判断鼠标按键是否为可保持按下状态的按键（左 / 右 / 中键），滚轮等瞬时按键返回 false
+    /// </summary>
+    private static bool IsHoldableMouseButton(MouseButton button)
+    {
+        return button >= MouseButton.Left && button <= MouseButton.Middle;
+    }
+
+    #endregion
 
     public override void Init()
     {
@@ -336,9 +644,19 @@ public partial class InputManager : ManagerBase
         var fields = typeof(Actions).GetFields(
             System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
 
+        // 键位可能已变更，重建输入源缓存与按下状态
+        _actionSources.Clear();
+        _unhandledPressedActions.Clear();
+        _actionPressFrame.Clear();
+        _actionReleaseFrame.Clear();
+
         foreach (var field in fields)
         {
             string actionName = (string)field.GetValue(null);
+
+            // 记录该动作绑定的输入源，供 _UnhandledInput 匹配与状态校验使用
+            ActionSources sources = new();
+            _actionSources[actionName] = sources;
 
             if (!InputMap.HasAction(actionName))
             {
@@ -357,12 +675,18 @@ public partial class InputManager : ManagerBase
                     // 鼠标按键 (Key 值 1-9 对应鼠标按键)
                     if (keyCode >= 1 && keyCode <= 9)
                     {
+                        // 记录为鼠标按键输入源
+                        sources.MouseButtons.Add((MouseButton)keyCode);
+
                         var inputEvent = new InputEventMouseButton();
                         inputEvent.ButtonIndex = (MouseButton)keyCode;
                         InputMap.ActionAddEvent(actionName, inputEvent);
                     }
                     else
                     {
+                        // 记录为键盘输入源
+                        sources.Keys.Add(key);
+
                         var inputEvent = new InputEventKey();
                         inputEvent.Keycode = key;
                         InputMap.ActionAddEvent(actionName, inputEvent);
@@ -375,6 +699,9 @@ public partial class InputManager : ManagerBase
             {
                 foreach (var btn in buttons)
                 {
+                    // 记录为手柄按钮输入源（设备号在收到实际按下事件时补全）
+                    sources.JoyButtons.Add((0, btn));
+
                     var inputEvent = new InputEventJoypadButton();
                     inputEvent.ButtonIndex = btn;
                     InputMap.ActionAddEvent(actionName, inputEvent);
@@ -409,45 +736,77 @@ public partial class InputManager : ManagerBase
     }
 
     /// <summary>
-    /// 检查指定动作是否被按下（当前帧）
+    /// 检查指定动作是否被按下（保持按下状态）。
+    /// 
+    /// 只有按下事件通过了 UI 层（未被 mouse_filter = Stop 的 Control 截停）才会返回 true，
+    /// 因此点击 UI 不会误触发游戏内动作；同时会与原始输入状态校验，避免长按状态卡死。
     /// </summary>
     public bool IsActionPressed(string action)
     {
-        return Input.IsActionPressed(action);
+        if (!_actionSources.TryGetValue(action, out ActionSources sources) || sources.IsEmpty)
+        {
+            return false;
+        }
+
+        if (!_unhandledPressedActions.Contains(action))
+        {
+            return false;
+        }
+
+        if (IsAnySourceRawPressed(sources))
+        {
+            return true;
+        }
+
+        // 输入源已全部松开却没收到松开事件（例如松开时鼠标位于 UI 上），在此清除标记
+        _unhandledPressedActions.Remove(action);
+        return false;
     }
 
     /// <summary>
-    /// 检查指定动作是否刚刚被按下（按下瞬间）
+    /// 检查指定动作是否刚刚被按下（按下当帧有效）。
+    /// 以主循环帧号为基准，同一帧内在 _Process / _PhysicsProcess 中查询结果一致。
     /// </summary>
     public bool IsActionJustPressed(string action)
     {
-        return Input.IsActionJustPressed(action);
+        return _actionSources.ContainsKey(action)
+            && _actionPressFrame.TryGetValue(action, out long frame)
+            && frame == (long)Engine.GetProcessFrames();
     }
 
     /// <summary>
-    /// 检查指定动作是否被释放
+    /// 检查指定动作是否刚刚被松开（松开当帧有效，以主循环帧号为基准）。
+    /// 若松开事件本身被 UI 截停（例如拖到 UI 上再松开），此方法不会返回 true。
     /// </summary>
     public bool IsActionJustReleased(string action)
     {
-        return Input.IsActionJustReleased(action);
+        return _actionSources.ContainsKey(action)
+            && _actionReleaseFrame.TryGetValue(action, out long frame)
+            && frame == (long)Engine.GetProcessFrames();
     }
 
     /// <summary>
-    /// 获取指定动作的输入强度（0-1）
+    /// 获取指定动作的输入强度。
+    /// 
+    /// 当前所有动作均绑定为数字输入（键盘 / 鼠标按键 / 手柄按钮），因此只返回 0 或 1；
+    /// 若后续需要支持摇杆轴等模拟输入，请在此扩展。
     /// </summary>
     public float GetActionStrength(string action)
     {
-        return Input.GetActionStrength(action);
+        return IsActionPressed(action) ? 1.0f : 0.0f;
     }
 
     /// <summary>
     /// 获取移动方向向量（Vector2）
+    /// 
+    /// 走本管理器的动作状态（会受 UI 截停影响），而非 Godot 原始输入状态，
+    /// 保证与 IsActionPressed 等接口行为一致。
     /// </summary>
     public Vector2 GetMoveDirection()
     {
         Vector2 direction = Vector2.Zero;
-        direction.Y += Input.GetActionStrength(Actions.MoveDown) - Input.GetActionStrength(Actions.MoveUp);
-        direction.X += Input.GetActionStrength(Actions.MoveRight) - Input.GetActionStrength(Actions.MoveLeft);
+        direction.Y += GetActionStrength(Actions.MoveDown) - GetActionStrength(Actions.MoveUp);
+        direction.X += GetActionStrength(Actions.MoveRight) - GetActionStrength(Actions.MoveLeft);
         return direction.Normalized();
     }
 

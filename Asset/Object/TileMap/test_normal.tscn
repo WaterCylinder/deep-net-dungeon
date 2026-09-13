@@ -17,7 +17,7 @@ tile_set = ExtResource("2_qs5h8")
 
 [node name="EnemyGenerator" type="Node2D" parent="." unique_id=1983415525]
 
-[node name="1" type="Node" parent="EnemyGenerator" unique_id=1030266454]
+[node name="1" type="Node2D" parent="EnemyGenerator" unique_id=762064661]
 
 [node name="EnemyGenerator" parent="EnemyGenerator/1" unique_id=463566022 instance=ExtResource("3_qs5h8")]
 position = Vector2(-416, -160)
@@ -25,7 +25,7 @@ position = Vector2(-416, -160)
 [node name="EnemyGenerator2" parent="EnemyGenerator/1" unique_id=2032736960 instance=ExtResource("3_qs5h8")]
 position = Vector2(-416, 160)
 
-[node name="2" type="Node" parent="EnemyGenerator" unique_id=870805617]
+[node name="2" type="Node2D" parent="EnemyGenerator" unique_id=2075223023]
 
 [node name="EnemyGenerator" parent="EnemyGenerator/2" unique_id=751047751 instance=ExtResource("3_qs5h8")]
 position = Vector2(416, -160)

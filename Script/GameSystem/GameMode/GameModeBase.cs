@@ -208,7 +208,9 @@ public abstract partial class GameModeBase : RefCounted
     /// </summary>
     public void CameraFollowPlayer()
     {
-        if (game != null && game.player != null && game.camera != null)
+        if(player == null || !IsInstanceValid(player) || player.IsQueuedForDeletion())return;
+        
+        if (game != null && game.camera != null)
         {
             game.camera.SetTargetPosition(game.player.Position);
         }

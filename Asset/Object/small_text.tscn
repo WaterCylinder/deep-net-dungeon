@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://v4ju6kob3bpp"]
+
+[ext_resource type="Script" uid="uid://cowo5amjtj4dx" path="res://Script/Object/GameObject/SmallText.cs" id="1_dexbj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_dexbj"]
+font_size = 32
+font_color = Color(0, 0, 0, 1)
+outline_size = 8
+
+[node name="SmallText" type="Node2D" unique_id=1438594835 node_paths=PackedStringArray("label")]
+script = ExtResource("1_dexbj")
+label = NodePath("Label")
+
+[node name="Label" type="Label" parent="." unique_id=603073677]
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+offset_bottom = 22.0
+pivot_offset = Vector2(20, 23)
+text = "0"
+label_settings = SubResource("LabelSettings_dexbj")
+horizontal_alignment = 1
+vertical_alignment = 1

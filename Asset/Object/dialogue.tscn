@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://xdycbavk7i52"]
+
+[ext_resource type="Script" uid="uid://cr8342v6watxl" path="res://Script/Object/GameObject/Dialogue.cs" id="1_h5o61"]
+
+[node name="Dialogue" type="Node2D" unique_id=1009267435 node_paths=PackedStringArray("label")]
+script = ExtResource("1_h5o61")
+label = NodePath("Label")
+contents = Array[String](["测试文本", "文本测试"])
+jitterStrength = 1.0
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=737337895]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20, 13)
+bbcode_enabled = true
+text = "  "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1

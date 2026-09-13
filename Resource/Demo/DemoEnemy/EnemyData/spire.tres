@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://wr1ywwr3q12k"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_thanq"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_j188n"]
+[ext_resource type="Texture2D" uid="uid://bdup5u0dj46k6" path="res://Resource/Demo/DemoEnemy/Sprite/Spire.png" id="3_52teh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_thanq"]
+size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j188n"]
+size = Vector2(60, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_52teh"]
+size = Vector2(64, 64)
+
+[resource]
+script = ExtResource("2_j188n")
+enemyName = "Spire"
+displayName = "Spire"
+description = "地刺"
+tags = Array[int]([1, 2, 3])
+attackSpeed = 0.2
+speed = 80.0
+sprite = ExtResource("3_52teh")
+layoutOffset = Vector2(0, 0)
+physicShape = SubResource("RectangleShape2D_52teh")
+areaShape = SubResource("RectangleShape2D_thanq")
+attackShape = SubResource("RectangleShape2D_j188n")
+metadata/_custom_type_script = "uid://mqed4halsexx"

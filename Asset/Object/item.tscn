@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://igsv0xlspfy2"]
+
+[ext_resource type="Script" uid="uid://b2fpn14ieum53" path="res://Script/Object/Item.cs" id="1_8b1ee"]
+[ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="2_7bd2y"]
+[ext_resource type="Resource" uid="uid://bu5bvdgk5c7bw" path="res://Asset/Default/Data/item_data.tres" id="2_dsgh2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dsgh2"]
+
+[node name="Item" type="Area2D" unique_id=1376092522]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_8b1ee")
+data = ExtResource("2_dsgh2")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1568232844]
+texture = ExtResource("2_7bd2y")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=812248713]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1712353604]
+shape = SubResource("CircleShape2D_dsgh2")
+debug_color = Color(1.2995303e-06, 0.6398507, 0.36322507, 0.41960785)

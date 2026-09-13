@@ -20,6 +20,14 @@ public partial class TestMode : GameModeBase
         player.OnTrans += camera.SetPosition;
     }
 
+    void Init()
+    {
+        //设置玩家子弹为Demo版的普通子弹
+        string dataPath = "Resource.Demo.Bullet.bullet_normal";
+        BulletData data = AssetManager.Instance.GetData(dataPath, Bullet.DefaultData);
+        player.ChangeBullet(data);
+    }
+
     public override void OnProcess(double delta)
     {
         base.OnProcess(delta);
@@ -27,6 +35,7 @@ public partial class TestMode : GameModeBase
         {
             case 0:
             //初始化
+            Init();
             game.Next();
             break;
             case 100:

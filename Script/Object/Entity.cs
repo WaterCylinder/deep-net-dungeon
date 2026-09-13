@@ -17,6 +17,8 @@ public enum EntityTag
 /// </summary>
 public abstract partial class Entity : RigidBody2D
 {
+    public const float BASE_ATTACK_SPEED_FACTOR = 5;
+
     #region 基础属性
 
     [Export]public Array<EntityTag> tags = new Array<EntityTag>();
@@ -66,6 +68,16 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     [Export] public Value speed = new(100f);
 
+    /// <summary>
+    /// 可变参数
+    /// </summary>
+    [Export] public Args args = new Args();
+
+    /// <summary>
+    /// 实体组件
+    /// </summary>
+    [Export] public Array<EntityComponent> components = new();
+
     #endregion
 
     #region 状态属性
@@ -95,16 +107,26 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     float attackTimer = 0f;
 
+    /// <summary>
+    /// 传送位置，非零时在IntegrateForces中重置位置
+    /// </summary>
     Vector2 transPos = Vector2.Zero;
+
+    /// <summary>
+    /// 旋转目标角度，Mathf.Inf表示未设置
+    /// </summary>
+    float rotateTarget = Mathf.Inf;
 
 
     #endregion
 
-    # region 信号
+    #region 信号
 
     [Signal] public delegate void OnTransEventHandler(Vector2 pos);
+    [Signal] public delegate void OnAttackSignalEventHandler();
+    [Signal] public delegate void OnHurtSignalEventHandler(float damageValue);
 
-    # endregion
+    #endregion
     
     #region 组件
 
@@ -192,7 +214,7 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="toward"></param>
     public void MoveTarget(Vector2 target, float stopDistance = 5f)
     {
-        Vector2 toward = target - Position;
+        Vector2 toward = target - GlobalPosition;
         if(toward.Length() > stopDistance)
         {
             MoveToward(toward);
@@ -212,12 +234,28 @@ public abstract partial class Entity : RigidBody2D
         Move();
     }
 
+    /// <summary>
+    /// 实体传送到指定位置
+    /// </summary>
+    /// <param name="pos"></param>
     public void TransTo(Vector2 pos)
     {
-        //传送到某地，同时重置移动状态防止RigidBody2D惯性漂移
-        GD.Print($"传送到{pos}");
         transPos = pos;
         EmitSignal(nameof(OnTrans), pos);
+    }
+
+    /// <summary>
+    /// 实体旋转到指定角度
+    /// </summary>
+    /// <param name="target"></param>
+    public void RotateTo(float target)
+    {
+        rotateTarget = target;
+    }
+
+    public Vector2 GetVelocity()
+    {
+        return velocity;
     }
 
     #endregion
@@ -537,6 +575,8 @@ public abstract partial class Entity : RigidBody2D
         // 触发受伤抽象方法
         OnHurt(damage, finalDamage);
 
+        EmitSignal(nameof(OnHurtSignal), finalDamage);
+
         // 检查死亡
         if (newHealth <= 0 && oldHealth > 0)
         {
@@ -713,14 +753,14 @@ public abstract partial class Entity : RigidBody2D
                 {
                     area = a;
                 }
-                break;
+                continue;
             }
             //初始化所有实体组件
             else if (child is EntityComponent component)
             {
-                GD.Print("初始化实体组件: " + component.Name);
                 component.Init(this);
-                break;
+                components.Add(component); 
+                continue;
             }
         }
         if(area != null)
@@ -742,7 +782,7 @@ public abstract partial class Entity : RigidBody2D
         // 更新攻击计时器
         if (attackTimer <= 1f)
         {
-            attackTimer += (float)delta * attackSpeed.Get();
+            attackTimer += (float)delta * attackSpeed.Get() * BASE_ATTACK_SPEED_FACTOR;
         }
         
         // 子类更新
@@ -767,6 +807,10 @@ public abstract partial class Entity : RigidBody2D
         OnPhysicsUpdate(delta);
     }
 
+    /// <summary>
+    /// 物理引擎整合回调方法，在这里同步修改刚体的Transforms属性
+    /// </summary>
+    /// <param name="state"></param>
     public override void _IntegrateForces(PhysicsDirectBodyState2D state)
     {
         base._IntegrateForces(state);
@@ -777,6 +821,14 @@ public abstract partial class Entity : RigidBody2D
             t.Origin = transPos;
             state.Transform = t;
             transPos = Vector2.Zero;
+        }
+
+        if(!Mathf.IsInf(rotateTarget))
+        {
+            Transform2D t = state.Transform;
+            t = t.RotatedLocal(rotateTarget - t.Rotation);
+            state.Transform = t;
+            rotateTarget = Mathf.Inf;
         }
     }
 
@@ -821,8 +873,21 @@ public abstract partial class Entity : RigidBody2D
         if(attackTimer >= 1f)
         {
             OnAttack();
+            EmitSignal(nameof(OnAttackSignal));
             attackTimer = 0;
         }
+    }
+
+    public T GetComponent<T>() where T : EntityComponent
+    {
+        foreach(var c in components)
+        {
+            if(c is T result)
+            {
+                return result;
+            }
+        }
+        return null;
     }
 
     /// <summary>

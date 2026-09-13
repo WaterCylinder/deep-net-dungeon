@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://b4w0fuohljph5"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_e1mk0"]
+[ext_resource type="Script" uid="uid://i1nqlccnmape" path="res://Resource/Demo/DemoEnemy/EnemyBehaviorDemo.cs" id="2_l75qf"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="3_8ri1n"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_l75qf"]
+[ext_resource type="Texture2D" uid="uid://bdf8607448kns" path="res://Resource/Demo/DemoEnemy/Sprite/TheVisionMelee.png" id="4_81xrl"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_f2l66"]
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_8ri1n"]
+script = ExtResource("2_l75qf")
+behaviorName = "UpdateCloseToPalyer"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_l75qf"]
+script = ExtResource("2_l75qf")
+behaviorName = "FaceToMove"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_81xrl"]
+script = ExtResource("3_l75qf")
+behaviorArray = Array[Object]([SubResource("Resource_8ri1n"), SubResource("Resource_l75qf")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[resource]
+script = ExtResource("3_8ri1n")
+enemyName = "DemoMelee"
+displayName = "DemoMelee"
+description = "Demo近战怪"
+speed = 80.0
+sprite = ExtResource("4_81xrl")
+attackShape = SubResource("CircleShape2D_f2l66")
+onUpdate = SubResource("Resource_81xrl")
+metadata/_custom_type_script = "uid://mqed4halsexx"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bu5bvdgk5c7bw"]
+
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="1_mjxl1"]
+[ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="2_wctlu"]
+
+[resource]
+script = ExtResource("1_mjxl1")
+ItemName = "Item"
+showName = "默认物品"
+intro = "默认物品。"
+tags = Array[int]([1])
+sprite = ExtResource("2_wctlu")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

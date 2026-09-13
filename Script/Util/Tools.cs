@@ -137,5 +137,25 @@ namespace Utils
             }
             return result;
         }
+
+        /// <summary>
+        /// 获取控件位置在相机中的世界坐标
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="camera"></param>
+        /// <returns></returns>
+        public static Vector2 ScreenToWorld(Control control, Camera2D camera)
+        {
+            // 1. Control 本地坐标 -> 屏幕坐标
+            //    用控件中心点作为参考，也可以改成其他本地坐标
+            Vector2 uiLocalPos = control.Size / 2f;
+            Vector2 screenPos = control.GetGlobalTransformWithCanvas() * uiLocalPos;
+
+            // 2. 屏幕坐标 -> 世界坐标
+            //    用相机的 canvas transform 反推
+            Vector2 worldPos = camera.GetCanvasTransform().AffineInverse() * screenPos;
+
+            return worldPos;
+        }
     }
 }

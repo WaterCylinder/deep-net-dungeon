@@ -237,6 +237,8 @@ public enum BulletTag
 /// </summary>
 public partial class Bullet : Entity
 {
+    public const float BASE_SHOT_SPEED_FECTOR = 100f;
+
     public static PackedScene _bulletPrefab = null;
     public static PackedScene BulletPrefab
     {
@@ -255,6 +257,14 @@ public partial class Bullet : Entity
     private static BulletData _defaultData = null;
 
     /// <summary>
+    /// 默认弹幕数据路径
+    /// </summary>
+    public static string DefaultDataPath
+    {
+        get => "Data/bullet_data.tres";
+    }
+
+    /// <summary>
     /// 默认弹幕数据（从Asset/Default/Data/bullet_data.tres加载）
     /// </summary>
     public static BulletData DefaultData
@@ -263,7 +273,7 @@ public partial class Bullet : Entity
         {
             if (_defaultData == null)
             {
-                _defaultData = AssetManager.Instance.GetDefault<BulletData>("Data/bullet_data.tres");
+                _defaultData = AssetManager.Instance.GetDefault<BulletData>(DefaultDataPath);
                 if (_defaultData == null)
                 {
                     GD.PrintErr("未找到默认弹幕数据，使用新建默认数据");
@@ -307,8 +317,9 @@ public partial class Bullet : Entity
     /// <param name="velocity">初速度</param>
     /// <param name="data">弹幕数据</param>
     /// <param name="parent">父节点（默认添加到当前场景）</param>
+    /// <param name="isVisible">是否可见(是否在数据图像为空的情况下显示默认图像)</param>
     /// <returns>创建的弹幕实例</returns>
-    public static Bullet Create(Entity owner, Vector2 pos, Vector2 velocity, BulletData data, Node parent = null)
+    public static Bullet Create(Entity owner, Vector2 pos, Vector2 velocity, BulletData data, Node parent = null, bool isVisible = true)
     {
         // 如果数据为空，使用默认数据
         if (data == null)
@@ -328,21 +339,17 @@ public partial class Bullet : Entity
             GD.PrintErr("无法创建弹幕：实例化失败");
             return null;
         }
-        //设置节点名称
-        bullet.Name = data.bulletName;
-
-        // 设置位置和速度
-        bullet.Position = pos;
-        bullet.moveTowards = velocity.Normalized();
 
         // 设置发射者
         bullet.owner = owner;
 
-        // 设置名称
-        bullet.Name = data.bulletName;
-
         // 初始化数据
         bullet.Initialize(data);
+
+        // 设置位置和速度
+        bullet.Position = pos;
+        bullet.moveTowards = velocity.Normalized();
+        bullet.speed = velocity.Length() * BASE_SHOT_SPEED_FECTOR;
 
         // 立即移动
         bullet.Move();
@@ -366,6 +373,13 @@ public partial class Bullet : Entity
             parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
         }
         parent?.AddChild(bullet);
+
+        //如果生成不可见弹幕，则清除弹幕的精灵图像。
+        var spriteNode = bullet.GetNodeOrNull<Sprite2D>("Sprite2D");
+        if (spriteNode != null && !isVisible)
+        {
+            spriteNode.Texture = null;
+        }
 
         bullet._onCreate?.Run(bullet, owner, null);
 
@@ -401,6 +415,8 @@ public partial class Bullet : Entity
     /// </summary>
     [Export] public float damageMultiplier = 1f;
 
+    private bool isRotateWithToward = true;
+
     /// <summary>
     /// 创建时的行为
     /// </summary>
@@ -423,6 +439,21 @@ public partial class Bullet : Entity
     #endregion
 
     #region 标签管理
+
+    /// <summary>
+    /// 检查弹幕是否属于玩家
+    /// </summary>
+    public bool IsPlayerBullet => CheckTag(BulletTag.PlayerOwned);
+
+    /// <summary>
+    /// 检查弹幕是否属于敌人
+    /// </summary>
+    public bool IsEnemyBullet => CheckTag(BulletTag.EnemyOwned);
+
+    /// <summary>
+    /// 检查弹幕是否会造成伤害
+    /// </summary>
+    public bool CanDamage => !CheckTag(BulletTag.NoDamage);
 
     /// <summary>
     /// 检查弹幕是否有指定标签
@@ -467,8 +498,16 @@ public partial class Bullet : Entity
     {
         if (CheckTag(BulletTag.PenetrateAll)) return true;
 
-        if (target.CheckTag(EntityTag.Player) && CheckTag(BulletTag.PenetratePlayer)) return true;
-        if (target.CheckTag(EntityTag.Enemy) && CheckTag(BulletTag.PenetrateEnemy)) return true;
+        if (target.CheckTag(EntityTag.Player))
+        {
+            if(CheckTag(BulletTag.PenetratePlayer))return true;
+            if(IsPlayerBullet)return true;
+        }
+        if (target.CheckTag(EntityTag.Enemy))
+        {
+            if(CheckTag(BulletTag.PenetrateEnemy))return true;
+            if(IsEnemyBullet)return true;
+        } 
         if (target.CheckTag(EntityTag.Obstacle) && CheckTag(BulletTag.PenetrateObstacle)) return true;
 
         return false;
@@ -483,36 +522,104 @@ public partial class Bullet : Entity
     {
         if (CheckTag(BulletTag.IgnoreAll)) return true;
 
-        if (target.CheckTag(EntityTag.Player) && CheckTag(BulletTag.IgnorePlayer)) return true;
-        if (target.CheckTag(EntityTag.Enemy) && CheckTag(BulletTag.IgnoreEnemy)) return true;
+        if (target.CheckTag(EntityTag.Player) && CheckTag(BulletTag.IgnorePlayer))
+        {
+            if(CheckTag(BulletTag.IgnorePlayer))return true;
+            if(IsPlayerBullet)return true;
+        }
+        if (target.CheckTag(EntityTag.Enemy))
+        {
+            if(CheckTag(BulletTag.IgnoreEnemy))return true;
+            if(target is Enemy enemy)
+            {
+                if(enemy.CheckTag(EnemyTag.IgnoreBullet))
+                    return true;
+            }
+            if(IsEnemyBullet)return true;
+        } 
         if (target.CheckTag(EntityTag.Obstacle) && CheckTag(BulletTag.IgnoreObstacle)) return true;
 
         return false;
     }
 
-    /// <summary>
-    /// 检查弹幕是否属于玩家
-    /// </summary>
-    public bool IsPlayerBullet => CheckTag(BulletTag.PlayerOwned);
+    #endregion
+
+    #region 初始化
 
     /// <summary>
-    /// 检查弹幕是否属于敌人
+    /// 使用BulletData初始化弹幕
     /// </summary>
-    public bool IsEnemyBullet => CheckTag(BulletTag.EnemyOwned);
+    /// <param name="data">弹幕数据</param>
+    public void Initialize(BulletData data)
+    {
+        // 如果数据为空，使用默认数据
+        if (data == null)
+        {
+            data = DefaultData;
+            GD.Print($"弹幕 {Name} 使用默认数据初始化");
+        }
 
-    /// <summary>
-    /// 检查弹幕是否会造成伤害
-    /// </summary>
-    public bool CanDamage => !CheckTag(BulletTag.NoDamage);
+        this.data = data;
+
+        // 设置名称
+        Name = data.bulletName + Time.GetUnixTimeFromSystem();
+
+        // 设置标签
+        bulletTags = [.. data.bulletTags];
+
+        // 设置生命周期
+        lifetime = data.lifetime;
+
+        // 设置伤害
+        attack = new Value(data.damage.baseValue);
+        damageMultiplier = data.damageMultiplier;
+
+        // 设置设置项
+        isRotateWithToward = data.isRotateWithToward;
+
+        // 设置行为和效果
+        _onCreate = data.onCreate;
+        _onUpdate = data.onUpdate;
+        _onCollision = data.onCollision;
+        _onLifetimeEnd = data.onLifetimeEnd;
+
+        // 设置贴图
+        if (data.sprite != null)
+        {
+            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
+            if (spriteNode != null)
+            {
+                spriteNode.Texture = data.sprite;
+                spriteNode.Scale = data.scale;
+            }
+        }
+    }
 
     #endregion
 
-    #region 生命周期管理
+    #region 生命周期
 
+    protected override void OnEnterTree()
+    {
+        base.OnEnterTree();
+        
+        // 设置子弹标签
+        AddTag(EntityTag.Bullet);
+    }
+    
     /// <summary>
     /// 弹幕已存在时间
     /// </summary>
-    private float _aliveTime = 0f;
+    private float aliveTime = 0f;
+
+    /// <summary>
+    /// 获取弹幕已存在时间
+    /// </summary>
+    /// <returns></returns>
+    public float GetAliveTime()
+    {
+        return aliveTime;
+    }
 
     /// <summary>
     /// 更新弹幕生命周期
@@ -522,10 +629,14 @@ public partial class Bullet : Entity
     {
         if (lifetime <= 0) return;
 
-        _aliveTime += (float)delta;
-        if (_aliveTime >= lifetime)
+        aliveTime += (float)delta;
+        if (aliveTime >= lifetime)
         {
             OnLifetimeEnd();
+        }
+        if(aliveTime > float.MaxValue - 1000f)
+        {
+            aliveTime = 9999999f; // 防止溢出
         }
     }
 
@@ -533,12 +644,37 @@ public partial class Bullet : Entity
     /// 生命周期结束时触发
     /// </summary>
     protected virtual void OnLifetimeEnd()
-    {
-        // 分裂弹幕处理
-        
+    {   
         _onLifetimeEnd?.Run(this, owner, null);
 
         Kill();
+    }
+
+
+    protected override void OnStart()
+    {
+        base.OnStart();
+        aliveTime = 0f;
+        // 障碍物碰撞
+        BodyEntered += OnWallEnter;
+    }
+
+    protected override void OnUpdate(double delta)
+    {
+        base.OnUpdate(delta);
+        UpdateLifetime(delta);
+
+        if(isRotateWithToward && moveTowards != Vector2.Zero)
+        {
+            RotateTo(moveTowards.Angle());
+        }
+
+        // 执行更新行为
+        _onUpdate?.Run(this, delta);
+    }
+
+    protected override void OnDeath(Damage damage, Entity other)
+    {
     }
 
     #endregion
@@ -557,8 +693,6 @@ public partial class Bullet : Entity
         {
             return; // 忽略与发射者的碰撞
         }
-
-        GD.Print($"弹幕 {Name} 碰撞到实体 {other.Name}");
 
         // 处理碰撞效果
         if (! IsIgnore(other))
@@ -585,7 +719,6 @@ public partial class Bullet : Entity
             DealDamage(other);
         }
 
-        GD.Print("触发碰撞事件");
         _onCollision?.Run(this, owner, other);
 
         // 默认行为：销毁弹幕
@@ -630,88 +763,18 @@ public partial class Bullet : Entity
         target.Hurt(damage);
     }
 
-    #endregion
-
-    #region 初始化
-
-    /// <summary>
-    /// 使用BulletData初始化弹幕
-    /// </summary>
-    /// <param name="data">弹幕数据</param>
-    public void Initialize(BulletData data)
+    protected void OnWallEnter(Node other)
     {
-        // 如果数据为空，使用默认数据
-        if (data == null)
+        //对于非实体碰撞如果子弹没有穿过障碍物标签则直接消失
+        if (!CheckTag(BulletTag.PenetrateObstacle))
         {
-            data = DefaultData;
-            GD.Print($"弹幕 {Name} 使用默认数据初始化");
+            Kill();
         }
-
-        this.data = data;
-
-        // 设置标签
-        bulletTags = [.. data.bulletTags];
-
-        // 设置生命周期
-        lifetime = data.lifetime;
-
-        // 设置伤害
-        attack = new Value(data.damage.baseValue);
-        damageMultiplier = data.damageMultiplier;
-
-        // 设置基础数值
-        speed = data.speed;
-
-        // 设置行为和效果
-        _onCreate = data.onCreate;
-        _onUpdate = data.onUpdate;
-        _onCollision = data.onCollision;
-        _onLifetimeEnd = data.onLifetimeEnd;
-
-        // 设置贴图
-        if (data.sprite != null)
-        {
-            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
-            if (spriteNode != null)
-            {
-                spriteNode.Texture = data.sprite;
-                spriteNode.Scale = data.scale;
-            }
-        }
-    }
-
-    #endregion
-
-    #region 生命周期重写
-
-    protected override void OnEnterTree()
-    {
-        base.OnEnterTree();
-        
-        // 设置子弹标签
-        AddTag(EntityTag.Bullet);
-    }
-
-    protected override void OnStart()
-    {
-        base.OnStart();
-        _aliveTime = 0f;
-    }
-
-    protected override void OnUpdate(double delta)
-    {
-        base.OnUpdate(delta);
-        UpdateLifetime(delta);
-
-        // 执行更新行为
-        _onUpdate?.Run(this, delta);
-    }
-
-    protected override void OnDeath(Damage damage, Entity other)
-    {
     }
 
     #endregion
 
    
 }
+
+

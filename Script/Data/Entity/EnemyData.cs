@@ -26,7 +26,7 @@ public partial class EnemyData : Resource
     /// <summary>
     /// 敌人标签
     /// </summary>
-    [Export] public Array<EntityTag> tags = new();
+    [Export] public Array<EnemyTag> tags = new();
 
     /// <summary>
     /// 最大生命值
@@ -79,6 +79,11 @@ public partial class EnemyData : Resource
     [Export] public SpriteFrames spriteFrames;
 
     /// <summary>
+    /// 动画/贴图的偏移量
+    /// </summary>
+    [Export] public Vector2 layoutOffset = new(0, -25);
+
+    /// <summary>
     /// 敌人物理形状
     /// </summary>
     [Export] public Shape2D physicShape;
@@ -87,19 +92,36 @@ public partial class EnemyData : Resource
     /// </summary>
     [Export] public Shape2D areaShape;
     /// <summary>
+    /// 碰撞区域偏移量
+    /// </summary>
+    [Export] public Vector2 areaOffset = Vector2.One;
+    /// <summary>
     /// 近战攻击形状，为空则不生成近战弹幕。
     /// </summary>
     [Export] public Shape2D attackShape;
+    /// <summary>
+    /// 近战弹幕偏移量
+    /// </summary>
+    [Export] public Vector2 meleeOffest = Vector2.One;
 
     /// <summary>
     /// 敌人缩放
     /// </summary>
     [Export] public Vector2 scale = Vector2.One;
 
-
-
     /// <summary>
     /// 敌人初始Buff列表
     /// </summary>
     [Export] public Array<BuffData> initialBuffs = new();
+
+    /// <summary>
+    /// 可变参数初始化列表
+    /// </summary>
+    [Export] public Dictionary<string, Variant> args = new Dictionary<string, Variant>();
+
+    // 敌人行为
+    [Export] public Behavior onGenerate;
+    [Export] public Behavior onUpdate;
+    [Export] public Behavior onAttack;
+    [Export] public Behavior onDeath;
 }

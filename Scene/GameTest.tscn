@@ -1,0 +1,183 @@
+[gd_scene format=3 uid="uid://b6nddhmfjd0ur"]
+
+[ext_resource type="Script" uid="uid://c3k0k360vv4vt" path="res://Script/Core/Game.cs" id="1_ky8wf"]
+[ext_resource type="Script" uid="uid://b6prhnpxeysfn" path="res://Script/Object/GameObject/Map.cs" id="2_gtx3h"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="3_7fqwc"]
+[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="4_hl0v2"]
+[ext_resource type="Script" uid="uid://bhxv43m4jvhx3" path="res://Script/Object/Entity/Player.cs" id="5_3vni8"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="6_s3vtu"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="7_07apt"]
+[ext_resource type="Texture2D" uid="uid://bq3tjiu206x63" path="res://Asset/Default/default_character_sprite.png" id="8_4cwiu"]
+[ext_resource type="PackedScene" uid="uid://dhjpw6yp5gchp" path="res://Asset/Object/Component/trigger.tscn" id="9_xbm2e"]
+[ext_resource type="Script" uid="uid://ugjrhfqe3hks" path="res://Script/Object/CameraController.cs" id="10_gjmwc"]
+
+[sub_resource type="Resource" id="Resource_aawhf"]
+script = ExtResource("4_hl0v2")
+roomDatas = Dictionary[int, Array]({
+0: Array[ExtResource("3_7fqwc")]([null]),
+1: Array[ExtResource("3_7fqwc")]([null]),
+2: Array[ExtResource("3_7fqwc")]([null]),
+3: Array[ExtResource("3_7fqwc")]([null]),
+4: Array[ExtResource("3_7fqwc")]([null])
+})
+metadata/_custom_type_script = "uid://cdikju4kdlymr"
+
+[sub_resource type="Resource" id="Resource_cohtu"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_tujvx"]
+script = ExtResource("7_07apt")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_cohtu")
+})
+
+[sub_resource type="Resource" id="Resource_2j816"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_g3fkh"]
+script = ExtResource("7_07apt")
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_2j816")
+})
+
+[sub_resource type="Resource" id="Resource_jwmyi"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_nspe4"]
+script = ExtResource("7_07apt")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_jwmyi")
+})
+
+[sub_resource type="Resource" id="Resource_13sni"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_bxrg2"]
+script = ExtResource("7_07apt")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_13sni")
+})
+
+[sub_resource type="Resource" id="Resource_ilbig"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_kfjtm"]
+script = ExtResource("7_07apt")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_ilbig")
+})
+
+[sub_resource type="Resource" id="Resource_1e3q2"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_3jynh"]
+script = ExtResource("7_07apt")
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_1e3q2")
+})
+
+[sub_resource type="Resource" id="Resource_hqtje"]
+script = ExtResource("6_s3vtu")
+
+[sub_resource type="Resource" id="Resource_0mc8i"]
+script = ExtResource("7_07apt")
+baseValue = 1.5
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_hqtje")
+})
+
+[sub_resource type="Resource" id="Resource_3xgnh"]
+script = ExtResource("6_s3vtu")
+id = "Base"
+
+[sub_resource type="Resource" id="Resource_48ymf"]
+script = ExtResource("7_07apt")
+baseValue = 200.0
+_multipliers = Dictionary[String, ExtResource("6_s3vtu")]({
+"Base": SubResource("Resource_3xgnh")
+})
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tujvx"]
+radius = 12.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_cohtu"]
+radius = 15.0
+height = 46.0
+
+[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("enemyNode", "roomNode")]
+script = ExtResource("1_ky8wf")
+enemyNode = NodePath("World/EnemyNode")
+roomNode = NodePath("World/RoomNode")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
+
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="World" type="Node2D" parent="." unique_id=1017394826]
+
+[node name="Map" type="Node2D" parent="World" unique_id=754966095]
+unique_name_in_owner = true
+script = ExtResource("2_gtx3h")
+data = SubResource("Resource_aawhf")
+metadata/_custom_type_script = "uid://b6prhnpxeysfn"
+
+[node name="RoomNode" type="Node2D" parent="World" unique_id=393952347]
+
+[node name="EnemyNode" type="Node2D" parent="World" unique_id=542090619]
+
+[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "area")]
+unique_name_in_owner = true
+gravity_scale = 0.0
+lock_rotation = true
+contact_monitor = true
+max_contacts_reported = 64
+script = ExtResource("5_3vni8")
+enemyTrigger = NodePath("Trigger")
+maxHealth = SubResource("Resource_tujvx")
+attack = SubResource("Resource_g3fkh")
+defense = SubResource("Resource_nspe4")
+attackSpeed = SubResource("Resource_bxrg2")
+attackRange = SubResource("Resource_kfjtm")
+critRate = SubResource("Resource_3jynh")
+critDamage = SubResource("Resource_0mc8i")
+speed = SubResource("Resource_48ymf")
+area = NodePath("Area2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Player" unique_id=1962542118]
+texture_filter = 1
+position = Vector2(0, -23)
+scale = Vector2(1.14, 1.14)
+texture = ExtResource("8_4cwiu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
+shape = SubResource("CircleShape2D_tujvx")
+
+[node name="Trigger" parent="World/Player" unique_id=653166855 instance=ExtResource("9_xbm2e")]
+radius = 3.0
+ignoreTags = Array[int]([2, 0])
+
+[node name="Area2D" type="Area2D" parent="World/Player" unique_id=1207618881]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player/Area2D" unique_id=433231473]
+position = Vector2(0, -11.245)
+shape = SubResource("CapsuleShape2D_cohtu")
+
+[node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
+unique_name_in_owner = true
+position = Vector2(500, 0)
+zoom = Vector2(0.24, 0.24)
+process_callback = 0
+script = ExtResource("10_gjmwc")
+moveSpeed = 8.0
+zoomLimit = Vector2(1, 4)

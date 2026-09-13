@@ -37,6 +37,14 @@ folder_colors={
 "res://Script/Util/": "gray"
 }
 
+[layer_names]
+
+2d_physics/layer_1="Normal"
+2d_physics/layer_2="Bag"
+2d_physics/layer_4="Item"
+2d_physics/layer_5="Bullet"
+2d_physics/layer_8="Wall"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

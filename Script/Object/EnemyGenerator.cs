@@ -32,6 +32,8 @@ public partial class EnemyGenerator : Node2D
 
     public override void _Ready()
     {
+        //生成器在运行时不可见
+        Visible = false;
         if (GenerateImmediately)
         {
             GenerateEnemy();

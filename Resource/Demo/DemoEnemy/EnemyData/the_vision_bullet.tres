@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://cekjslagvsnya"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_6cq6b"]
+[ext_resource type="Script" uid="uid://i1nqlccnmape" path="res://Resource/Demo/DemoEnemy/EnemyBehaviorDemo.cs" id="2_dbad0"]
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="3_dbad0"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_kankx"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="4_k2mpq"]
+[ext_resource type="Texture2D" uid="uid://d2iddwe2d5mdm" path="res://Resource/Demo/DemoEnemy/Sprite/TheVisionBullet.png" id="5_6cq6b"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_f2l66"]
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_6cq6b"]
+script = ExtResource("2_dbad0")
+behaviorName = "AttackShotPlayer"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_8ri1n"]
+script = ExtResource("2_dbad0")
+behaviorName = "KeepDistanceToPlayer"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_l75qf"]
+script = ExtResource("2_dbad0")
+behaviorName = "FaceToPlayer"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_kankx"]
+script = ExtResource("3_dbad0")
+behaviorName = "Attack"
+metadata/_custom_type_script = "uid://dblyxvivec0w8"
+
+[sub_resource type="Resource" id="Resource_81xrl"]
+script = ExtResource("3_kankx")
+behaviorArray = Array[Object]([SubResource("Resource_8ri1n"), SubResource("Resource_l75qf"), SubResource("Resource_kankx")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[resource]
+script = ExtResource("4_k2mpq")
+enemyName = "DemoBulet"
+displayName = "DemoBulet"
+description = "demo弹幕怪"
+attackSpeed = 0.2
+speed = 80.0
+sprite = ExtResource("5_6cq6b")
+attackShape = SubResource("CircleShape2D_f2l66")
+onUpdate = SubResource("Resource_81xrl")
+onAttack = SubResource("Resource_6cq6b")
+metadata/_custom_type_script = "uid://mqed4halsexx"

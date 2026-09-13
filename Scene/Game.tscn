@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://cmblg6cmcce1v"]
 
 [ext_resource type="Script" uid="uid://c3k0k360vv4vt" path="res://Script/Core/Game.cs" id="1_6igcf"]
+[ext_resource type="Texture2D" uid="uid://rhj1el00uwn2" path="res://Resource/Demo/UI/HUD/HealthBar.png" id="2_13sni"]
+[ext_resource type="Texture2D" uid="uid://cbr6o67kl5nkt" path="res://Resource/Demo/UI/HUD/InnerBar.png" id="2_bxrg2"]
 [ext_resource type="Script" uid="uid://b6prhnpxeysfn" path="res://Script/Object/GameObject/Map.cs" id="2_cohtu"]
+[ext_resource type="Script" uid="uid://dj6jcd3mvlvmn" path="res://Script/UI/PUIHealthBar.cs" id="2_ilbig"]
 [ext_resource type="Script" uid="uid://bhxv43m4jvhx3" path="res://Script/Object/Entity/Player.cs" id="2_ou18a"]
 [ext_resource type="Script" uid="uid://ugjrhfqe3hks" path="res://Script/Object/CameraController.cs" id="2_u6khg"]
 [ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="3_2j816"]
@@ -9,15 +12,26 @@
 [ext_resource type="Texture2D" uid="uid://bq3tjiu206x63" path="res://Asset/Default/default_character_sprite.png" id="4_3xgnh"]
 [ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="4_48ymf"]
 [ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="4_g3fkh"]
-[ext_resource type="Resource" uid="uid://ctljtlaj7b6xi" path="res://Resource/Demo/DemoRoom/room_test.tres" id="4_jwmyi"]
-[ext_resource type="PackedScene" uid="uid://dhjpw6yp5gchp" path="res://Asset/Object/trigger.tscn" id="6_48ymf"]
+[ext_resource type="Resource" uid="uid://dja8dgj1aoss1" path="res://Resource/Demo/DemoRoom/Level1/room_demo_start.tres" id="4_nspe4"]
+[ext_resource type="Texture2D" uid="uid://df0m6a7umosjq" path="res://Resource/Demo/UI/HUD/BagClose.png" id="5_3jynh"]
+[ext_resource type="Resource" uid="uid://bp6og717rqusk" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal.tres" id="5_aawhf"]
+[ext_resource type="Script" uid="uid://nivobqo3e8aw" path="res://Script/UI/BagUI.cs" id="5_hqtje"]
+[ext_resource type="Texture2D" uid="uid://dxmen587xujbn" path="res://Resource/Demo/UI/HUD/BagOpen.png" id="6_0mc8i"]
+[ext_resource type="PackedScene" uid="uid://dhjpw6yp5gchp" path="res://Asset/Object/Component/trigger.tscn" id="6_48ymf"]
+[ext_resource type="PackedScene" uid="uid://cnhkoacuwafyq" path="res://Asset/UI/item_layout_item.tscn" id="8_hbowo"]
+[ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="9_jwmyi"]
+[ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="9_p323j"]
+[ext_resource type="SpriteFrames" uid="uid://ctusjok3ndrff" path="res://Resource/Demo/Player/player_frames.tres" id="12_aawhf"]
+[ext_resource type="Texture2D" uid="uid://bklnxju76q73h" path="res://Resource/Demo/Player/Arrow.png" id="14_kcbv6"]
+[ext_resource type="Shader" uid="uid://bguaybsuni2ee" path="res://Resource/Shader/Flash.gdshader" id="16_kfjtm"]
+[ext_resource type="PackedScene" uid="uid://cleomu7wca23h" path="res://Asset/Object/Component/bag.tscn" id="19_1e3q2"]
 
 [sub_resource type="Resource" id="Resource_aawhf"]
 script = ExtResource("4_g3fkh")
 roomDatas = Dictionary[int, Array]({
-0: Array[ExtResource("3_2j816")]([ExtResource("4_jwmyi")]),
-1: Array[ExtResource("3_2j816")]([null]),
-2: Array[ExtResource("3_2j816")]([null]),
+0: Array[ExtResource("3_2j816")]([ExtResource("4_nspe4")]),
+1: Array[ExtResource("3_2j816")]([ExtResource("5_aawhf")]),
+2: Array[ExtResource("3_2j816")]([ExtResource("5_aawhf")]),
 3: Array[ExtResource("3_2j816")]([null]),
 4: Array[ExtResource("3_2j816")]([null])
 })
@@ -38,7 +52,6 @@ script = ExtResource("3_3xgnh")
 
 [sub_resource type="Resource" id="Resource_g3fkh"]
 script = ExtResource("4_48ymf")
-baseValue = 10.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_2j816")
 })
@@ -58,7 +71,7 @@ script = ExtResource("3_3xgnh")
 
 [sub_resource type="Resource" id="Resource_bxrg2"]
 script = ExtResource("4_48ymf")
-baseValue = 5.0
+baseValue = 1.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_13sni")
 })
@@ -98,10 +111,18 @@ id = "Base"
 
 [sub_resource type="Resource" id="Resource_48ymf"]
 script = ExtResource("4_48ymf")
-baseValue = 200.0
+baseValue = 300.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_3xgnh")
 })
+
+[sub_resource type="Resource" id="Resource_kcbv6"]
+script = ExtResource("9_jwmyi")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1e3q2"]
+shader = ExtResource("16_kfjtm")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tujvx"]
 radius = 12.0
@@ -110,10 +131,12 @@ radius = 12.0
 radius = 15.0
 height = 46.0
 
-[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("enemyNode", "roomNode")]
+[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("enemyNode", "roomNode", "dropItemNode", "smallObjectNode")]
 script = ExtResource("1_6igcf")
 enemyNode = NodePath("World/EnemyNode")
 roomNode = NodePath("World/RoomNode")
+dropItemNode = NodePath("World/ItemNode")
+smallObjectNode = NodePath("World/SmallObject")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
 
@@ -125,6 +148,322 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+
+[node name="PUI" type="Control" parent="CanvasLayer/HUD" unique_id=898275018]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("healthInnerBar", "healthCover", "healthSlowCover", "smallTextPoint")]
+layout_mode = 1
+anchor_left = 0.03
+anchor_top = 0.03
+anchor_right = 0.5
+anchor_bottom = 0.23
+mouse_filter = 2
+script = ExtResource("2_ilbig")
+healthInnerBar = NodePath("Bar/Inner/TextureRect")
+healthCover = NodePath("Bar/Inner/Cover")
+healthSlowCover = NodePath("Bar/Inner/SlowCover")
+smallTextPoint = NodePath("SmallTextPoint")
+
+[node name="Bar" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=190942017]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.2
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Inner" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar/Bar" unique_id=673392172]
+clip_contents = true
+layout_mode = 1
+anchor_top = 0.111
+anchor_right = 1.0
+anchor_bottom = 0.854
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/Bar/Inner" unique_id=465672254]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 1)
+pivot_offset_ratio = Vector2(1, 0)
+texture = ExtResource("2_bxrg2")
+expand_mode = 1
+
+[node name="SlowCover" type="ColorRect" parent="CanvasLayer/HUD/PUI/HealthBar/Bar/Inner" unique_id=748649720]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.3, 1)
+pivot_offset_ratio = Vector2(1, 0.5)
+color = Color(0.36, 0.36, 0.36, 1)
+
+[node name="Cover" type="ColorRect" parent="CanvasLayer/HUD/PUI/HealthBar/Bar/Inner" unique_id=1378079870]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.5, 1)
+pivot_offset_ratio = Vector2(1, 0.5)
+color = Color(0.23, 0.23, 0.23, 0.5803922)
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/Bar" unique_id=1593869367]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_13sni")
+expand_mode = 1
+
+[node name="SmallTextPoint" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=2071235060]
+anchors_preset = 0
+offset_left = 255.44
+offset_top = 12.560001
+offset_right = 295.44
+offset_bottom = 52.56
+mouse_filter = 2
+
+[node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_hqtje")
+buttonOpen = ExtResource("6_0mc8i")
+buttonClose = ExtResource("5_3jynh")
+button = NodePath("BagButton/TextureButton")
+bagUI = NodePath("BagUI")
+itemsNode = NodePath("BagUI/Items/ScrollContainer/VBoxContainer")
+layoutItemPrefab = ExtResource("8_hbowo")
+introNode = NodePath("BagUI/Intro")
+introImage = NodePath("BagUI/Intro/Image/TextureRect")
+introLabel = NodePath("BagUI/Intro/IntroText")
+introLevel = NodePath("BagUI/Intro/ItemInfo/InfoItem2/Level")
+introName = NodePath("BagUI/Intro/ItemInfo/InfoItem/Name")
+introTag = NodePath("BagUI/Intro/ItemInfo/InfoItem3/Tag")
+
+[node name="BagButton" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag" unique_id=1419786458]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.75
+anchor_top = 0.75
+anchor_right = 0.97
+anchor_bottom = 0.97
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/HUD/Bag/BagButton" unique_id=807879300]
+layout_mode = 2
+texture_normal = ExtResource("5_3jynh")
+stretch_mode = 0
+
+[node name="BagUI" type="Control" parent="CanvasLayer/HUD/Bag" unique_id=1961105832]
+visible = false
+layout_mode = 1
+anchor_left = 0.2
+anchor_top = 0.2
+anchor_right = 0.8
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI" unique_id=1427191138]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="Items" type="Control" parent="CanvasLayer/HUD/Bag/BagUI" unique_id=81381468]
+layout_mode = 1
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items" unique_id=1441731664]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+follow_focus = true
+draw_focus_border = true
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer" unique_id=459599286]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+alignment = 1
+
+[node name="ItemLayoutItem" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=1457596014 instance=ExtResource("8_hbowo")]
+layout_mode = 2
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=1038278009]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer" unique_id=343697480]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=1212600380]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer2" unique_id=547908975]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer4" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=787159898]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer4" unique_id=1033722144]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer5" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=627802085]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer5" unique_id=1693975998]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer6" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=798709971]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer6" unique_id=572481836]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer7" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=787094679]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer7" unique_id=301226459]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="AspectRatioContainer8" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer" unique_id=1898570630]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Bag/BagUI/Items/ScrollContainer/VBoxContainer/AspectRatioContainer8" unique_id=1348087788]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+
+[node name="Intro" type="Control" parent="CanvasLayer/HUD/Bag/BagUI" unique_id=1578701791]
+layout_mode = 1
+anchor_left = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ItemInfo" type="VBoxContainer" parent="CanvasLayer/HUD/Bag/BagUI/Intro" unique_id=1287744466]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="InfoItem" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo" unique_id=421995558]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Name" type="Label" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo/InfoItem" unique_id=467170290]
+layout_mode = 2
+
+[node name="InfoItem2" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo" unique_id=1438069344]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Front" type="Label" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo/InfoItem2" unique_id=1680856455]
+layout_mode = 2
+text = "等级"
+
+[node name="Level" type="Label" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo/InfoItem2" unique_id=1241820265]
+layout_mode = 2
+text = "1"
+
+[node name="InfoItem3" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo" unique_id=2100493601]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Front" type="Label" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo/InfoItem3" unique_id=1541478330]
+layout_mode = 2
+text = "标签"
+
+[node name="Tag" type="Label" parent="CanvasLayer/HUD/Bag/BagUI/Intro/ItemInfo/InfoItem3" unique_id=565016112]
+layout_mode = 2
+text = "无"
+
+[node name="IntroText" type="RichTextLabel" parent="CanvasLayer/HUD/Bag/BagUI/Intro" unique_id=1501302556]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 3.9999847
+offset_right = -4.0
+offset_bottom = -4.0000305
+grow_horizontal = 2
+grow_vertical = 2
+text = "介绍文案"
+scroll_following = true
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 171
+
+[node name="Image" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag/BagUI/Intro" unique_id=1702608617]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/Bag/BagUI/Intro/Image" unique_id=388863814]
+layout_mode = 2
+texture = ExtResource("9_p323j")
 
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
 
@@ -138,14 +477,19 @@ metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="EnemyNode" type="Node2D" parent="World" unique_id=542090619]
 
-[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "area")]
+[node name="ItemNode" type="Node2D" parent="World" unique_id=2040611529]
+
+[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "animeNode", "arrowNode", "area")]
 unique_name_in_owner = true
+collision_mask = 129
 gravity_scale = 0.0
 lock_rotation = true
 contact_monitor = true
 max_contacts_reported = 64
 script = ExtResource("2_ou18a")
 enemyTrigger = NodePath("Trigger")
+animeNode = NodePath("AnimatedSprite2D")
+arrowNode = NodePath("Arrow")
 maxHealth = SubResource("Resource_tujvx")
 attack = SubResource("Resource_g3fkh")
 defense = SubResource("Resource_nspe4")
@@ -154,13 +498,34 @@ attackRange = SubResource("Resource_kfjtm")
 critRate = SubResource("Resource_3jynh")
 critDamage = SubResource("Resource_0mc8i")
 speed = SubResource("Resource_48ymf")
+args = SubResource("Resource_kcbv6")
 area = NodePath("Area2D")
 
+[node name="Arrow" type="Node2D" parent="World/Player" unique_id=907568952]
+position = Vector2(0, -14)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Player/Arrow" unique_id=673943103]
+position = Vector2(24, 2.9999976)
+rotation = 1.9778539
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("14_kcbv6")
+
+[node name="ShootPoint" type="Node2D" parent="World/Player/Arrow" unique_id=419850343]
+position = Vector2(21, 0)
+
 [node name="Sprite2D" type="Sprite2D" parent="World/Player" unique_id=1962542118]
+visible = false
 texture_filter = 1
 position = Vector2(0, -23)
 scale = Vector2(1.14, 1.14)
 texture = ExtResource("4_3xgnh")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player" unique_id=651792546]
+material = SubResource("ShaderMaterial_1e3q2")
+position = Vector2(0, -23)
+sprite_frames = ExtResource("12_aawhf")
+animation = &"idle"
+frame_progress = 0.9366417
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
 shape = SubResource("CircleShape2D_tujvx")
@@ -174,6 +539,10 @@ ignoreTags = Array[int]([2, 0])
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player/Area2D" unique_id=433231473]
 position = Vector2(0, -11.245)
 shape = SubResource("CapsuleShape2D_cohtu")
+
+[node name="Bag" parent="World/Player" unique_id=301600655 instance=ExtResource("19_1e3q2")]
+
+[node name="SmallObject" type="Node2D" parent="World" unique_id=1589920352]
 
 [node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
 unique_name_in_owner = true
