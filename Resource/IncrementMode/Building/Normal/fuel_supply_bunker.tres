@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://cqawbrxlnvqha"]
+
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="1_pk22o"]
+[ext_resource type="Script" uid="uid://dm2m4nmotp5mm" path="res://Resource/IncrementMode/BuildingBehaviorMachine.cs" id="2_4v2yi"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_058as"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_p3i51"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="5_s7yio"]
+[ext_resource type="Texture2D" uid="uid://2urpv0dpys80" path="res://Resource/IncrementMode/Building/Sprite/machine/machine1.png" id="6_iaxqh"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="7_oeer1"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="8_dreaw"]
+
+[sub_resource type="Resource" id="Resource_epk46"]
+script = ExtResource("2_4v2yi")
+behaviorName = "AroundPromoteEffect"
+metadata/_custom_type_script = "uid://dm2m4nmotp5mm"
+
+[sub_resource type="Resource" id="Resource_j0qqx"]
+script = ExtResource("4_p3i51")
+condition = ExtResource("3_058as")
+behavior = SubResource("Resource_epk46")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_ni70p"]
+script = ExtResource("7_oeer1")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_lvu4m"]
+script = ExtResource("8_dreaw")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("7_oeer1")]({
+"Base": SubResource("Resource_ni70p")
+})
+
+[resource]
+script = ExtResource("5_s7yio")
+id = "fuel_supply_bunker"
+buildingName = "燃料供给仓"
+rarity = 1
+intro = "周围四格的建筑数值增加{{value}}"
+defaultArgs = null
+sprite = ExtResource("6_iaxqh")
+buyPrice = 20
+onUpdate = SubResource("Resource_j0qqx")
+onLevelUp = ExtResource("1_pk22o")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="BuildingPool" format=3 uid="uid://bpoalp53ks5u5"]
+
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="1_83c4l"]
+[ext_resource type="Resource" uid="uid://c84kr1oiessmj" path="res://Resource/IncrementMode/Building/Machine/standard_machinery.tres" id="1_273q5"]
+[ext_resource type="Resource" uid="uid://02u1liskea8v" path="res://Resource/IncrementMode/Building/Machine/machine_clock.tres" id="2_m43xs"]
+[ext_resource type="Resource" uid="uid://cmxp8ofhfxmcg" path="res://Resource/IncrementMode/Building/Machine/machine_gear_set.tres" id="3_p1n15"]
+[ext_resource type="Resource" uid="uid://dh2msxdb5muss" path="res://Resource/IncrementMode/Building/Machine/machine_forging_anvil.tres" id="4_lxkde"]
+[ext_resource type="Resource" uid="uid://bvavk0yr25kee" path="res://Resource/IncrementMode/Building/Machine/central_control_machine.tres" id="5_tje13"]
+[ext_resource type="Resource" uid="uid://cqawbrxlnvqha" path="res://Resource/IncrementMode/Building/Normal/fuel_supply_bunker.tres" id="6_4owqr"]
+
+[resource]
+script = ExtResource("1_83c4l")
+pool = Dictionary[Object, int]({
+ExtResource("1_273q5"): 32,
+ExtResource("2_m43xs"): 32,
+ExtResource("3_p1n15"): 4,
+ExtResource("4_lxkde"): 16,
+ExtResource("5_tje13"): 1,
+ExtResource("6_4owqr"): 16
+})
+metadata/_custom_type_script = "uid://jetqew8yttgm"

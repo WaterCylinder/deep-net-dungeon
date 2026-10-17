@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://xdycbavk7i52"]
 
 [ext_resource type="Script" uid="uid://cr8342v6watxl" path="res://Script/Object/GameObject/Dialogue.cs" id="1_h5o61"]
+[ext_resource type="AudioStream" uid="uid://cl2gqh8brl8n3" path="res://Asset/Sound/kick.wav" id="2_vwlxn"]
 
-[node name="Dialogue" type="Node2D" unique_id=1009267435 node_paths=PackedStringArray("label")]
+[node name="Dialogue" type="Node2D" unique_id=1009267435 node_paths=PackedStringArray("label", "audioPlayer")]
 script = ExtResource("1_h5o61")
 label = NodePath("Label")
+audioPlayer = NodePath("AudioStreamPlayer2D")
 contents = Array[String](["测试文本", "文本测试"])
 jitterStrength = 1.0
 
@@ -22,3 +24,7 @@ scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=806450971]
+stream = ExtResource("2_vwlxn")
+bus = &"Sound"

@@ -311,8 +311,8 @@ namespace Utils
         /// <summary>
         /// 按权重抽取物件
         /// </summary>
-        /// <param name="weights"></param>
-        /// <param name="n"></param>
+        /// <param name="weights">权重列表</param>
+        /// <param name="n">抽取数量</param>
         /// <param name="rng"></param>
         /// <returns></returns>
         public static System.Collections.Generic.List<T> PickWeighted<T>(

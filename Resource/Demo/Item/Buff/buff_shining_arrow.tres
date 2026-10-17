@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://j0yxyne1r8vv"]
+
+[ext_resource type="Script" uid="uid://cq0demo1buffx" path="res://Resource/Demo/DemoBuff/BuffBehaviorDemo.cs" id="1_3ypdk"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_80b3y"]
+[ext_resource type="Texture2D" uid="uid://eipqv5oq28v0" path="res://Resource/Demo/Item/Sprite/ShiningArrow.png" id="2_fgfo6"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_vdlmw"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_pwarv"]
+
+[sub_resource type="Resource" id="Resource_mkf6x"]
+script = ExtResource("1_3ypdk")
+behaviorName = "MultiAttack"
+args = Dictionary[String, Variant]({
+"num": 1.3
+})
+metadata/_custom_type_script = "uid://cq0demo1buffx"
+
+[sub_resource type="Resource" id="Resource_501m2"]
+script = ExtResource("3_pwarv")
+condition = ExtResource("2_vdlmw")
+behavior = SubResource("Resource_mkf6x")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_80b3y")
+sprite = ExtResource("2_fgfo6")
+id = "shining_arrow"
+name = "闪耀箭头"
+intro = "箭头弹幕的伤害增加30%"
+tags = null
+isUnique = true
+onStart = SubResource("Resource_501m2")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

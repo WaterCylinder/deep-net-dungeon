@@ -41,10 +41,10 @@ public partial class EnemyBehavior : Behavior
     public void FaceToMove(Enemy enemy)
     {
         float diff = enemy.GetVelocity().X;
-        if(diff > 0)
-            diff = 1;
-        else if(diff < 0)
+        if(diff < 0)
             diff = -1;
+        else
+            diff = 1;
         enemy.ScaleLayout(new Vector2(diff, 1));
     }
 

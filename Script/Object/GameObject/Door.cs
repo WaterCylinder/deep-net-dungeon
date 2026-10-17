@@ -47,6 +47,21 @@ public partial class Door : Area2D
     /// </summary>
     private ulong _transFrame = 0;
 
+    /// <summary>
+    /// 是否已经绑定了有效目标。
+    /// 只有绑定了目标房间或目标门的门才会被打开：没有目标的门保持关闭且不可见，
+    /// 这样玩家不会走进去却没有任何反应（Trans里那条"未绑定任何目标"的警告也就不会出现）
+    /// </summary>
+    public bool IsBound
+    {
+        get
+        {
+            bool hasDoor = targetDoor != null && GodotObject.IsInstanceValid(targetDoor);
+            bool hasRoom = targetRoom != null && GodotObject.IsInstanceValid(targetRoom);
+            return hasDoor || hasRoom;
+        }
+    }
+
     public void Initialize()
     {
         Close();

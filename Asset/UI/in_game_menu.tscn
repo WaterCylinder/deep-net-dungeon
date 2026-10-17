@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://c7oqfb5lw1enf"]
+
+[ext_resource type="Script" uid="uid://d0dkptfu0uahb" path="res://Script/UI/InGameMenu.cs" id="1_ingamemenu"]
+
+[node name="InGameMenu" type="Control" unique_id=1230599352 node_paths=PackedStringArray("menuPanel")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_ingamemenu")
+menuPanel = NodePath("MenuPanel")
+
+[node name="MenuPanel" type="Control" parent="." unique_id=1867992808]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="MenuPanel" unique_id=343002615]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.1254902)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel" unique_id=1528083668]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -70.0
+offset_right = 100.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="MenuPanel/VBoxContainer" unique_id=136501172]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "菜单"
+horizontal_alignment = 1
+
+[node name="ReturnButton" type="Button" parent="MenuPanel/VBoxContainer" unique_id=227128470]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "回到游戏"
+
+[node name="MainMenuButton" type="Button" parent="MenuPanel/VBoxContainer" unique_id=763209472]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "返回主菜单"

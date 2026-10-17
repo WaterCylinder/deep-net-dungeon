@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://catp5j2jkj4ft"]
+
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_es0wc"]
+[ext_resource type="SpriteFrames" uid="uid://ujefgkbb7rpm" path="res://Resource/Demo/Bullet/Sprite/rift_sprite_frames.tres" id="2_5wcfo"]
+[ext_resource type="AudioStream" uid="uid://dbfjq8lntkmf3" path="res://Resource/Sounds/fire_001.wav" id="2_ig68k"]
+
+[resource]
+script = ExtResource("1_es0wc")
+bulletName = "RiftFire"
+spriteFrames = ExtResource("2_5wcfo")
+layoutOffset = Vector2(-10, 0)
+scale = Vector2(2, 2)
+soundOnShot = ExtResource("2_ig68k")
+metadata/_custom_type_script = "uid://draiigge0qptw"

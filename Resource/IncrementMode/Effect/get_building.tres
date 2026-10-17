@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Effect" format=3 uid="uid://sj1mx6yc0a4v"]
+
+[ext_resource type="Script" uid="uid://be4xvnqp06v4n" path="res://Resource/IncrementMode/BuildingBehavior.cs" id="1_6uqb3"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="1_hh6so"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_d7dia"]
+
+[sub_resource type="Resource" id="Resource_ajrgv"]
+script = ExtResource("1_6uqb3")
+behaviorName = "GetBuilding"
+metadata/_custom_type_script = "uid://be4xvnqp06v4n"
+
+[resource]
+script = ExtResource("1_hh6so")
+effectName = "获取建筑"
+condition = ExtResource("2_d7dia")
+behavior = SubResource("Resource_ajrgv")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"

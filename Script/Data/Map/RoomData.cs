@@ -25,6 +25,7 @@ public partial class RoomData : Resource
     [Export] public bool useDefaultRoomProcess = true;
     [Export] public Effect onCreate;
     [Export] public Effect onFirstEnter;
+    [Export] public Effect onGenerateEnemy;
     [Export] public Effect onEnter;
     [Export] public Effect onExit;
     [Export] public Effect onUpdate;

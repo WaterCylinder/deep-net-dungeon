@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Godot;
 using Godot.Collections;
@@ -63,11 +64,30 @@ public partial class Args : Resource
 
     public void Init(Dictionary<string, Variant> initialArgs)
     {
+        if(initialArgs == null)
+        {
+            return;
+        }
         args = initialArgs.Duplicate(true);
     }
 
-    public bool Check(string key)
+    public bool Check(string key, Type type = null)
     {
+        if(type != null)
+        {
+            if (args.ContainsKey(key))
+            {
+                return args[key].GetType() == type;
+            }else return false;
+        }
         return args.ContainsKey(key);
+    }
+
+    public void ForEach(Action<string, Variant> action)
+    {
+        foreach(var arg in args)
+        {
+            action?.Invoke(arg.Key, arg.Value);
+        }
     }
 }

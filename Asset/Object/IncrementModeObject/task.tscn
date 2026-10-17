@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://t3w8kdtkunxj"]
+
+[ext_resource type="Script" uid="uid://byq2iyel88kw7" path="res://Script/IncrementMode/UI/IncrementTaskLabel.cs" id="1_gddlb"]
+
+[node name="Task" type="Label" unique_id=2117317558]
+custom_minimum_size = Vector2(0, 32)
+size_flags_vertical = 0
+text = "任务"
+vertical_alignment = 1
+script = ExtResource("1_gddlb")

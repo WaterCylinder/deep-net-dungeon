@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://hr22d8rhmty3"]
+
+[ext_resource type="Script" uid="uid://cq0demo1buffx" path="res://Resource/Demo/DemoBuff/BuffBehaviorDemo.cs" id="1_hwvm4"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_xkvmm"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_abcy0"]
+[ext_resource type="Texture2D" uid="uid://npljtf7qvdfg" path="res://Resource/Demo/Item/Sprite/FireArrow.png" id="2_ye6nd"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_nbaoi"]
+
+[sub_resource type="Resource" id="Resource_kh237"]
+script = ExtResource("1_hwvm4")
+behaviorName = "AddFireBulletBuff"
+metadata/_custom_type_script = "uid://cq0demo1buffx"
+
+[sub_resource type="Resource" id="Resource_xhdt4"]
+script = ExtResource("3_nbaoi")
+condition = ExtResource("2_abcy0")
+behavior = SubResource("Resource_kh237")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_xkvmm")
+sprite = ExtResource("2_ye6nd")
+id = "fire_arrow"
+name = "燃烧箭头"
+intro = "弹幕附带灼烧"
+tags = null
+onStart = SubResource("Resource_xhdt4")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

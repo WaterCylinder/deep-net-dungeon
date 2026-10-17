@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://ht5q7xcutoh3"]
 
 [ext_resource type="Script" uid="uid://wdxydd0mmwxh" path="res://Script/UI/Demo/TempStartMenu.cs" id="1_y846o"]
+[ext_resource type="AudioStream" uid="uid://cx88l8ea8tw6x" path="res://Resource/Music/Circulation.wav" id="2_7dlpr"]
+[ext_resource type="Texture2D" uid="uid://bfpivcp3h2f71" path="res://Resource/Demo/UI/StartMenu/主菜单背景图.jpg" id="2_dcb3i"]
 
 [node name="StartMenu" type="Control" unique_id=1497403549]
 layout_mode = 3
@@ -10,6 +12,28 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_y846o")
+
+[node name="BG" type="Control" parent="." unique_id=1120496205]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="BG" unique_id=1592651256]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_dcb3i")
+expand_mode = 1
 
 [node name="v1" type="VBoxContainer" parent="." unique_id=1837043539]
 layout_mode = 1
@@ -41,7 +65,13 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
-text = "开始游戏"
+text = "开始探索"
+
+[node name="IncrementButton" type="Button" parent="v1" unique_id=1923780396]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "虚构工厂"
 
 [node name="SettingButton" type="Button" parent="v1" unique_id=1985693313]
 unique_name_in_owner = true
@@ -54,3 +84,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "退出游戏"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=386388483]
+stream = ExtResource("2_7dlpr")
+autoplay = true
+bus = &"Music"

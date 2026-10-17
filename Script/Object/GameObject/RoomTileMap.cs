@@ -15,7 +15,7 @@ public partial class RoomTileMap : Node2D
     Array<ItemGenerator> itemGenerators = [];
     Array<EnemyGenerator> generatorNow = [];
     int enemyGeneratorIndex = 0;
-    Array<Enemy> enemiesNow = [];
+    public Array<Enemy> enemiesNow = [];
 
     public void Initialize(Room room)
     {
@@ -83,6 +83,10 @@ public partial class RoomTileMap : Node2D
         {
             generatorNow.Add(generator);
             generator.AfterGenerate += enemiesNow.Add;
+            generator.AfterGenerate += e =>
+            {
+                room.onGenerateEnemy?.Run(room, e);
+            };
             generator.GenerateEnemy(room.enemyNode);
             count++;
         }

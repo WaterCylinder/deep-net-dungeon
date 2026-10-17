@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://ckf0x7xce1nr7"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_xto4r"]
+[ext_resource type="Resource" uid="uid://catp5j2jkj4ft" path="res://Resource/Demo/Bullet/bullet_rift_fire.tres" id="2_0wm3n"]
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="2_xto4r"]
+[ext_resource type="Script" uid="uid://i1nqlccnmape" path="res://Resource/Demo/DemoEnemy/EnemyBehaviorDemo.cs" id="2_y5inp"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_0wm3n"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="4_ox3tc"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_21aoy"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="6_nsy1u"]
+[ext_resource type="SpriteFrames" uid="uid://ccrmleow7f0km" path="res://Resource/Demo/DemoEnemy/Sprite/rift_defener_sprite_frames.tres" id="7_xto4r"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_f2l66"]
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_ox3tc"]
+script = ExtResource("2_y5inp")
+behaviorName = "AttackShotPlayerThree"
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("2_0wm3n")
+})
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_21aoy"]
+script = ExtResource("5_21aoy")
+condition = ExtResource("4_ox3tc")
+behavior = SubResource("Resource_ox3tc")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_y5inp"]
+script = ExtResource("2_xto4r")
+behaviorName = "FaceToMove"
+metadata/_custom_type_script = "uid://dblyxvivec0w8"
+
+[sub_resource type="Resource" id="Resource_0wm3n"]
+script = ExtResource("2_y5inp")
+behaviorName = "UpdateRiftDefener"
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("2_0wm3n"),
+"shot_num": 12
+})
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_pex1t"]
+script = ExtResource("3_0wm3n")
+behaviorArray = Array[Object]([SubResource("Resource_y5inp"), SubResource("Resource_0wm3n")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_xto4r"]
+script = ExtResource("5_21aoy")
+effectName = "RiftDefenerUpdate"
+condition = ExtResource("4_ox3tc")
+behavior = SubResource("Resource_pex1t")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("6_nsy1u")
+enemyName = "RiftDefener"
+displayName = "RiftDefener"
+description = "裂隙守卫"
+tags = Array[int]([4, 3])
+maxHealth = 1440.0
+attack = 20.0
+defense = 11.0
+speed = 60.0
+spriteFrames = ExtResource("7_xto4r")
+layoutOffset = Vector2(0, -35)
+attackShape = SubResource("CircleShape2D_f2l66")
+meleeOffest = Vector2(0, 0)
+scale = Vector2(2, 2)
+onUpdate = SubResource("Resource_xto4r")
+onAttack = SubResource("Resource_21aoy")
+metadata/_custom_type_script = "uid://mqed4halsexx"

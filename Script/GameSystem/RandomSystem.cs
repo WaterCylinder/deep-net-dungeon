@@ -35,6 +35,12 @@ public partial class RandomSystem
 		GD.Print("随机数系统种子基数：", result);
 	}
 
+	/// <summary>
+	/// 设置生成器，未配置则随机名称和种子
+	/// </summary>
+	/// <param name="seed"></param>
+	/// <param name="generatorName"></param>
+	/// <returns>返回生成器名称</returns>
 	public string SetRandomGenerator(int seed = -1, string generatorName = null)
 	{
 		if (seed == -1)
@@ -53,7 +59,7 @@ public partial class RandomSystem
 	}
 
 	/// <summary>
-	/// 获取随机数生成器
+	/// 获取随机数生成器，未配置或不存在则获取默认生成器
 	/// </summary>
 	/// <param name="generator"></param>
 	/// <returns></returns>

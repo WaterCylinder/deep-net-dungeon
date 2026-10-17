@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://djarb6t6g4vc2"]
+
+[ext_resource type="Resource" uid="uid://s7glfe0intyt" path="res://Resource/IncrementMode/Building/Chemical/chemical_liquid_storage_tank.tres" id="1_i1x3m"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_liken"]
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="2_gxfs4"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_i1x3m"]
+[ext_resource type="Texture2D" uid="uid://yxh1edn5qjkg" path="res://Resource/IncrementMode/Building/Sprite/chemical/chemical5.png" id="3_b051s"]
+[ext_resource type="Resource" uid="uid://datue1fm17186" path="res://Resource/IncrementMode/Effect/get_building_by_value.tres" id="3_gxfs4"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_jdt8r"]
+
+[sub_resource type="Resource" id="Resource_rrin1"]
+script = ExtResource("2_i1x3m")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_3q7wq"]
+script = ExtResource("3_jdt8r")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("2_i1x3m")]({
+"Base": SubResource("Resource_rrin1")
+})
+
+[resource]
+script = ExtResource("1_liken")
+id = "chemical_experimental_platform"
+buildingName = "化工实验台"
+rarity = 2
+intro = "回合开始时，获得{{value}}个【化工储液罐】"
+tags = Array[int]([3])
+defaultArgs = Dictionary[String, Variant]({
+"building": ExtResource("1_i1x3m")
+})
+sprite = ExtResource("3_b051s")
+buyPrice = 100
+onTurnStart = ExtResource("3_gxfs4")
+onLevelUp = ExtResource("2_gxfs4")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

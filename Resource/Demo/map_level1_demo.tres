@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="MapData" format=3 uid="uid://cmtrb3xognbvq"]
+
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_t5ple"]
+[ext_resource type="Resource" uid="uid://dja8dgj1aoss1" path="res://Resource/Demo/DemoRoom/Level1/room_demo_start.tres" id="2_fkjrj"]
+[ext_resource type="Resource" uid="uid://cmw8rahcmat20" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal_1.tres" id="3_my855"]
+[ext_resource type="Resource" uid="uid://hpoc51jlbx45" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_boss.tres" id="3_x5y27"]
+[ext_resource type="Resource" uid="uid://bbgrg777pdxng" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_treasure.tres" id="4_my855"]
+[ext_resource type="Resource" uid="uid://ckfo00f38supi" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal_2.tres" id="4_w7h8w"]
+[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="5_w7h8w"]
+
+[resource]
+script = ExtResource("5_w7h8w")
+roomDatas = Dictionary[int, Array]({
+0: Array[ExtResource("1_t5ple")]([ExtResource("2_fkjrj")]),
+1: Array[ExtResource("1_t5ple")]([ExtResource("3_my855"), ExtResource("4_w7h8w")]),
+2: Array[ExtResource("1_t5ple")]([ExtResource("3_x5y27")]),
+3: Array[ExtResource("1_t5ple")]([null]),
+4: Array[ExtResource("1_t5ple")]([ExtResource("4_my855")])
+})
+metadata/_custom_type_script = "uid://cdikju4kdlymr"

@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://drmxhd8xb6cbo"]
+
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_ngwk1"]
+[ext_resource type="Script" uid="uid://dokvjku1hcyu7" path="res://Resource/IncrementMode/BuildingBehaviorChemical.cs" id="1_pr1kg"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_0qrid"]
+[ext_resource type="Texture2D" uid="uid://c15opqar34xrd" path="res://Resource/IncrementMode/Building/Sprite/chemical/chemical4.png" id="2_6fiug"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_g4roe"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_6fiug"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_8krdj"]
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="5_8krdj"]
+[ext_resource type="Resource" uid="uid://c71v8tsb41doa" path="res://Resource/IncrementMode/Effect/level_up_after_turn.tres" id="5_xwk1a"]
+
+[sub_resource type="Resource" id="Resource_xwk1a"]
+script = ExtResource("1_pr1kg")
+behaviorName = "ChemicalDistillationUnit"
+metadata/_custom_type_script = "uid://dokvjku1hcyu7"
+
+[sub_resource type="Resource" id="Resource_rar8a"]
+script = ExtResource("3_8krdj")
+condition = ExtResource("2_g4roe")
+behavior = SubResource("Resource_xwk1a")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_8krdj"]
+script = ExtResource("2_0qrid")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_g4roe"]
+script = ExtResource("3_6fiug")
+baseValue = 10.0
+_multipliers = Dictionary[String, ExtResource("2_0qrid")]({
+"Base": SubResource("Resource_8krdj")
+})
+
+[resource]
+script = ExtResource("1_ngwk1")
+id = "chemical_distillation_unit"
+buildingName = "化工分馏装置"
+rarity = 3
+intro = "出售任意建筑时，场上所有【化工储液罐】的资源点上升{{value}}， {{turn}}回合后升级。"
+tags = Array[int]([3])
+defaultArgs = Dictionary[String, Variant]({
+"turn": 5,
+"turn_max": 5
+})
+value = SubResource("Resource_g4roe")
+sprite = ExtResource("2_6fiug")
+buyPrice = 1200
+onTurnEnd = ExtResource("5_xwk1a")
+onLevelUp = ExtResource("5_8krdj")
+onSomeBuildingBeSell = SubResource("Resource_rar8a")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

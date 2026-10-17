@@ -1,4 +1,5 @@
 {
+	"version": 2,
 	"gameVersion": "0.1.0",
 	"audio": {
 		"masterVolume": 0.8,

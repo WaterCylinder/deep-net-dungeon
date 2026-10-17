@@ -37,7 +37,14 @@ public partial class BuffData : Resource
     /// <summary>
     /// 最大层数
     /// </summary>
-    [Export] public int level;
+    [Export] public int maxStack;
+
+    /// <summary>
+    /// 挂载时的默认层数。
+    /// 挂载时不显式传层数（或传入 ≤0）时使用本值；叠加层数（isAdded）时每层也按本值增加。
+    /// ≤0 时按 1 层处理。会被 level（最大层数）截断
+    /// </summary>
+    [Export] public int baseStack = 1;
 
     /// <summary>
     /// 定时触发间隔（秒），0表示不定时触发
@@ -58,6 +65,13 @@ public partial class BuffData : Resource
     /// 是否是唯一Buff（同类Buff只能存在一个）
     /// </summary>
     [Export] public bool isUnique = false;
+
+    /// <summary>
+    /// 重复挂载同类Buff时是否叠加层数（仅在 isUnique = true 时生效）：
+    /// true = 在已有Buff上叠加 baseStack 指定的层数；
+    /// false = 只重置持续时间，层数不变
+    /// </summary>
+    [Export] public bool isAdded = false;
 
     #region Effect行为
 

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://x680qks46w13"]
+
+[ext_resource type="Script" uid="uid://cq0demo1buffx" path="res://Resource/Demo/DemoBuff/BuffBehaviorDemo.cs" id="1_0vq1p"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_mbfwe"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_kon3f"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_8i0n6"]
+
+[sub_resource type="Resource" id="Resource_qxaem"]
+script = ExtResource("1_0vq1p")
+behaviorName = "FireBullet"
+metadata/_custom_type_script = "uid://cq0demo1buffx"
+
+[sub_resource type="Resource" id="Resource_1ymkn"]
+script = ExtResource("3_8i0n6")
+condition = ExtResource("2_kon3f")
+behavior = SubResource("Resource_qxaem")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_mbfwe")
+id = "fire_bullet"
+tags = null
+onStart = SubResource("Resource_1ymkn")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

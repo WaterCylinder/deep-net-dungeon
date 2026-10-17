@@ -1,13 +1,15 @@
 {
+	"version": 3,
 	"keyboard": {
-		"move_up": ["87", "16777233"],
-		"move_down": ["83", "16777235"],
-		"move_left": ["65", "16777231"],
-		"move_right": ["68", "16777234"],
-		"active_skill": ["1"],
-		"other_skill": ["2"],
-		"menu": ["16777217"],
-		"confirm": ["16777221", "16777319"]
+		"move_up": ["W", "Up"],
+		"move_down": ["S", "Down"],
+		"move_left": ["A", "Left"],
+		"move_right": ["D", "Right"],
+		"active_skill": ["MouseLeft"],
+		"other_skill": ["MouseRight"],
+		"zoom": ["MouseWheelUp", "MouseWheelDown"],
+		"menu": ["Escape"],
+		"confirm": ["Enter"]
 	},
 	"gamepad": {
 		"move_up": ["13"],
@@ -16,6 +18,7 @@
 		"move_right": ["15"],
 		"active_skill": ["7"],
 		"other_skill": ["1"],
+		"zoom": [],
 		"menu": ["6"],
 		"confirm": ["3"]
 	}

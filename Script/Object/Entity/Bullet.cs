@@ -379,13 +379,13 @@ public partial class Bullet : Entity
         parent?.AddChild(bullet);
 
         //如果生成不可见弹幕，则清除弹幕的精灵图像。
-        var spriteNode = bullet.GetNodeOrNull<Sprite2D>("Sprite2D");
-        if (spriteNode != null && !isVisible)
+        if (bullet.spriteNode != null && !isVisible)
         {
-            spriteNode.Texture = null;
+            bullet.spriteNode.Texture = null;
         }
 
         bullet._onCreate?.Run(bullet, owner, null);
+        bullet.EmitSignal(nameof(bullet.OnCreate));
 
         return bullet;
     }
@@ -419,7 +419,12 @@ public partial class Bullet : Entity
     /// </summary>
     [Export] public float damageMultiplier = 1f;
 
+    [Export] public Node2D layout;
+
     private bool isRotateWithToward = true;
+
+    public Sprite2D spriteNode;
+    public AnimatedSprite2D animNode;
 
     /// <summary>
     /// 创建时的行为
@@ -431,14 +436,33 @@ public partial class Bullet : Entity
     private BulletBehavior _onUpdate;
 
     /// <summary>
-    /// 碰撞时触发的效果
+    /// 击中实体时触发的效果（伤害结算后触发）
     /// </summary>
-    private Effect _onCollision;
+    private Effect _onHit;
 
     /// <summary>
     /// 生命周期结束时触发的效果
     /// </summary>
     private Effect _onLifetimeEnd;
+
+    public AudioStream soundOnShot;
+    public AudioStream soundOnHit;
+
+    #endregion
+
+    #region 信号
+
+    /// <summary>
+    /// 创建时
+    /// </summary>
+    [Signal]
+    public delegate void OnCreateEventHandler();
+    /// <summary>
+    /// 击中实体时（每个被击中的实体触发一次，与 onHit 效果同时机）
+    /// </summary>
+    /// <param name="target">被击中的实体</param>
+    [Signal]
+    public delegate void OnHitEventHandler(Entity target);
 
     #endregion
 
@@ -583,19 +607,39 @@ public partial class Bullet : Entity
         // 设置行为和效果
         _onCreate = data.onCreate;
         _onUpdate = data.onUpdate;
-        _onCollision = data.onCollision;
+        _onHit = data.onHit;
         _onLifetimeEnd = data.onLifetimeEnd;
+
+        spriteNode = layout.GetNodeOrNull<Sprite2D>("Sprite");
+        animNode = layout.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
+
+        soundOnHit = data.soundOnHit;
+        soundOnShot = data.soundOnShot;
 
         // 设置贴图
         if (data.sprite != null)
         {
-            var spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
             if (spriteNode != null)
             {
                 spriteNode.Texture = data.sprite;
-                spriteNode.Scale = data.scale;
             }
         }
+
+        if(data.spriteFrames != null)
+        {
+            if(animNode != null)
+            {
+                if(data.spriteFrames != null)
+                {
+                    spriteNode.Visible = false;
+                    animNode.SpriteFrames = data.spriteFrames;
+                    animNode.Play("normal");
+                }
+            }
+        }
+
+        layout.Scale = data.scale;
+        layout.Position = data.layoutOffset;
     }
 
     #endregion
@@ -660,6 +704,8 @@ public partial class Bullet : Entity
         aliveTime = 0f;
         // 障碍物碰撞
         BodyEntered += OnWallEnter;
+        //播放音频
+        PlaySoundGlobal(soundOnShot);
     }
 
     protected override void OnUpdate(double delta)
@@ -711,7 +757,7 @@ public partial class Bullet : Entity
     }
 
     /// <summary>
-    /// 处理碰撞效果
+    /// 处理碰撞：先结算伤害，再统一触发命中
     /// </summary>
     /// <param name="other">碰撞的实体</param>
     protected virtual void HandleCollision(Entity other)
@@ -722,10 +768,24 @@ public partial class Bullet : Entity
             DealDamage(other);
         }
 
-        _onCollision?.Run(this, owner, other);
+        // 命中实体：触发命中效果与命中信号（伤害已结算）
+        OnHitEntity(other);
 
         // 默认行为：销毁弹幕
         QueueFree();
+    }
+
+    /// <summary>
+    /// 击中实体时触发：执行 onHit 效果并发出 OnHit 信号。
+    /// 弹幕与实体的所有交互效果统一走这里，不再区分"碰撞"与"造成伤害"两套时机。
+    /// </summary>
+    /// <param name="target">被击中的实体</param>
+    protected virtual void OnHitEntity(Entity target)
+    {
+        // 参数顺序与 onCreate 保持一致：(弹幕, 发射者, 被击中者)
+        _onHit?.Run(this, owner, target);
+        PlaySoundGlobal(soundOnHit);
+        EmitSignal(nameof(OnHit), target);
     }
 
     /// <summary>
@@ -734,29 +794,8 @@ public partial class Bullet : Entity
     /// <param name="target">目标实体</param>
     protected virtual void DealDamage(Entity target)
     {
-        // 友军免疫检查
-        if (CheckTag(BulletTag.FriendlyFireImmune))
-        {
-            // 检查是否与发射者阵营相同
-            // 具体实现需要根据游戏逻辑调整
-        }
-
         // 计算最终伤害
         float finalDamage = attack.Get() * damageMultiplier;
-
-        // 护甲穿透处理
-        if (CheckTag(BulletTag.ArmorPiercing))
-        {
-            // 忽略部分或全部防御
-            // 具体实现需要根据伤害系统调整
-        }
-
-        // 暴击处理
-        if (CheckTag(BulletTag.Critical))
-        {
-            // 增加暴击几率
-            // 具体实现需要根据暴击系统调整
-        }
 
         Damage damage = new Damage
         {

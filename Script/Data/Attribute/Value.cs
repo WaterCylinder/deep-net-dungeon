@@ -56,6 +56,11 @@ public partial class Value : Resource
     private int _revision = 0;
 
     /// <summary>
+    /// 是否已经就"字典里存在非ValueMultiplier的坏条目"告警过（避免每帧/每次刷新刷屏）
+    /// </summary>
+    private bool _warnedBadMultiplier = false;
+
+    /// <summary>
     /// 添加乘区事件 (id, source, oldValue, newValue)
     /// </summary>
     public Action<Value> onMultiplierAdded;
@@ -94,9 +99,16 @@ public partial class Value : Resource
     /// </summary>
     private ValueMultiplier GetMultiplier(string id, Value source = null, int sortCode = 0)
     {
-        if (_multipliers.TryGetValue(id, out var multiplier))
+        if (TryGetMultiplier(id, out ValueMultiplier multiplier))
         {
             return multiplier;
+        }
+
+        //键存在但值不是ValueMultiplier（坏数据）：先清掉再重建，否则Add会因为键重复而失败
+        if (_multipliers.ContainsKey(id))
+        {
+            _multipliers.Remove(id);
+            _multiplierOrder.Remove(id);
         }
 
         var newMultiplier = new ValueMultiplier(id, 0f, 1f, source, sortCode);
@@ -108,14 +120,41 @@ public partial class Value : Resource
     }
 
     /// <summary>
-    /// 按sortCode升序把乘区ID插入计算顺序，sortCode相同时保持插入先后
+    /// 安全地读取乘区。
+    /// 不能直接调用_multipliers.TryGetValue：带类型的Dictionary包装会在取值时把原生对象转换成
+    /// ValueMultiplier，一旦字典里存在没有挂ValueMultiplier脚本的坏条目（例如检查器里误建的空Resource），
+    /// 就会抛InvalidCastException并打断整条计算链（Get/Recalculate/调试输出全部失效）。
+    /// 这里捕获该异常并按"该项不存在"处理，只告警一次，避免刷屏。
+    /// </summary>
+    private bool TryGetMultiplier(string id, out ValueMultiplier multiplier)
+    {
+        multiplier = null;
+
+        try
+        {
+            return _multipliers.TryGetValue(id, out multiplier);
+        }
+        catch (InvalidCastException)
+        {
+            if (!_warnedBadMultiplier)
+            {
+                _warnedBadMultiplier = true;
+                GD.PushWarning($"[Value] 乘区'{id}'的值不是ValueMultiplier（存在没有挂ValueMultiplier脚本的坏条目），已跳过。请检查该Value的_multipliers");
+            }
+            multiplier = null;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 按sortCode升序把乘区ID插入计算顺序，sortCode相同时保持插入先后。优先计算小的sortCode。
     /// </summary>
     private void InsertOrder(string id, int sortCode)
     {
         int index = _multiplierOrder.Count;
         for (int i = 0; i < _multiplierOrder.Count; i++)
         {
-            if(_multipliers.TryGetValue(_multiplierOrder[i], out var exist) && exist.sortCode > sortCode)
+            if(TryGetMultiplier(_multiplierOrder[i], out ValueMultiplier exist) && exist.sortCode > sortCode)
             {
                 index = i;
                 break;
@@ -130,6 +169,9 @@ public partial class Value : Resource
     private void MarkDirty()
     {
         _revision++;
+
+        //通知检查器/监听者该资源已变化
+        EmitChanged();
     }
 
     /// <summary>
@@ -156,12 +198,21 @@ public partial class Value : Resource
         }
 
         _multiplierOrder.Clear();
-        foreach (var pair in _multipliers)
+        //只遍历"键"：泛型包装的枚举器与索引器都会转换"值"，遇到坏条目会抛InvalidCastException
+        foreach (string id in _multipliers.Keys)
         {
-            _multiplierOrder.Add(pair.Key);
+            _multiplierOrder.Add(id);
         }
-        _multiplierOrder.Sort((a, b) => _multipliers[a].sortCode.CompareTo(_multipliers[b].sortCode));
+        _multiplierOrder.Sort((a, b) => GetMultiplierSortCode(a).CompareTo(GetMultiplierSortCode(b)));
         MarkDirty();
+    }
+
+    /// <summary>
+    /// 读取指定乘区的排序码，坏条目按0处理（只读，不抛异常）
+    /// </summary>
+    private int GetMultiplierSortCode(string id)
+    {
+        return TryGetMultiplier(id, out ValueMultiplier multiplier) ? multiplier.sortCode : 0;
     }
 
     /// <summary>
@@ -221,8 +272,7 @@ public partial class Value : Resource
             MarkDirty();
             return true;
         }
-
-        GD.PrintErr($"乘区'{id}'不存在，移除失败");
+        
         return false;
     }
 
@@ -232,6 +282,25 @@ public partial class Value : Resource
     public bool HasMultiplier(string id)
     {
         return _multipliers.ContainsKey(id);
+    }
+
+    /// <summary>
+    /// 获取乘区的数值
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="isAdd"></param>
+    /// <returns></returns>
+    public float GetMultiplierValue(string id, bool isAdd = true)
+    {
+        ValueMultiplier multiplier = GetMultiplier(id);
+        if (isAdd)
+        {
+            return multiplier.additive;
+        }
+        else
+        {
+            return multiplier.multiplier;
+        }
     }
 
     /// <summary>
@@ -263,9 +332,9 @@ public partial class Value : Resource
     /// <summary>
     /// 快捷方法：增加基础乘区的加成值
     /// </summary>
-    public void Add(float value, int sortCode)
+    public void Add(float value)
     {
-        ModifyMultiplier(BASE_ID, sortCode, additive: value);
+        ModifyMultiplier(BASE_ID,  BASE_SORT_CODE, additive: value);
     }
 
     /// <summary>
@@ -281,11 +350,21 @@ public partial class Value : Resource
     }
 
     /// <summary>
+    /// 快捷方法：增减乘区数值
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="id"></param>
+    public void AddModify(float value, string id)
+    {
+        ModifyMultiplier(id, GetMultiplierSortCode(id), additive: GetMultiplierValue(id,true) + value);
+    }
+
+    /// <summary>
     /// 快捷方法：增加基础乘区的乘数
     /// </summary>
-    public void Multi(float multiplier, int sortCode)
+    public void Multi(float multiplier)
     {
-        ModifyMultiplier(BASE_ID, sortCode, multiplier: multiplier);
+        ModifyMultiplier(BASE_ID,  BASE_SORT_CODE, multiplier: multiplier);
     }
 
     /// <summary>
@@ -298,6 +377,17 @@ public partial class Value : Resource
     public void Multi(float value, string id, int sortCode)
     {
         ModifyMultiplier(id, sortCode, multiplier: value);
+    }
+
+    /// <summary>
+    /// 快捷方法：增减乘区数值
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="id"></param>
+    public void MultiModify(float value, string id)
+    {
+        
+        ModifyMultiplier(id, GetMultiplierSortCode(id), multiplier: GetMultiplierValue(id,false) + value);
     }
 
     /// <summary>
@@ -330,7 +420,7 @@ public partial class Value : Resource
 
         foreach (var id in _multiplierOrder)
         {
-            if(!_multipliers.TryGetValue(id, out var multiplier))
+            if(!TryGetMultiplier(id, out ValueMultiplier multiplier))
             {
                 continue;
             }
@@ -411,7 +501,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator +(Value value, float num)
     {
-        value?.Add(num, BASE_SORT_CODE);
+        value?.AddBase(num);
         return value;
     }
 
@@ -420,7 +510,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator +(float num, Value value)
     {
-        value?.Add(num, BASE_SORT_CODE);
+        value?.AddBase(num);
         return value;
     }
 
@@ -429,7 +519,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator -(Value value, float num)
     {
-        value?.Add(-num, BASE_SORT_CODE);
+        value?.AddBase(-num);
         return value;
     }
 
@@ -438,7 +528,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator *(Value value, float num)
     {
-        value?.Multi(num, BASE_SORT_CODE);
+        value?.Multi(num);
         return value;
     }
 
@@ -447,7 +537,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator *(float num, Value value)
     {
-        value?.Multi(num, BASE_SORT_CODE);
+        value?.Multi(num);
         return value;
     }
 
@@ -458,7 +548,7 @@ public partial class Value : Resource
     {
         if (num != 0)
         {
-            value?.Multi(1f / num, BASE_SORT_CODE);
+            value?.Multi(1f / num);
         }
         return value;
     }

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bm7l7b0cjoeg5"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_l3yfh"]
+[ext_resource type="Resource" uid="uid://hr22d8rhmty3" path="res://Resource/Demo/Item/Buff/buff_fire_arrow.tres" id="2_csv25"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_n4ttn"]
+[ext_resource type="Texture2D" uid="uid://npljtf7qvdfg" path="res://Resource/Demo/Item/Sprite/FireArrow.png" id="3_n4ttn"]
+
+[resource]
+script = ExtResource("2_n4ttn")
+ItemName = "FireArrow"
+showName = "燃烧箭头"
+intro = "你的箭头弹幕附带灼烧效果"
+tags = Array[int]([2])
+itemLevel = 1
+sprite = ExtResource("3_n4ttn")
+maxCount = 1
+carryBuffs = Dictionary[ExtResource("1_l3yfh"), int]({
+ExtResource("2_csv25"): 1
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

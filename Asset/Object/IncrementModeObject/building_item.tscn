@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bgrwjdl2jpkcg"]
+
+[ext_resource type="Script" uid="uid://bof22bt1eo08y" path="res://Script/IncrementMode/UI/BuildingPanelItem.cs" id="1_2xsua"]
+[ext_resource type="Texture2D" uid="uid://xrbw8r6j4xyj" path="res://Resource/IncrementMode/Building/Sprite/sprite_build_001.png" id="2_nhwvk"]
+
+[node name="BuildingItem" type="Control" unique_id=1903176545 node_paths=PackedStringArray("button")]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_2xsua")
+button = NodePath("TextureRect")
+
+[node name="TextureRect" type="TextureButton" parent="." unique_id=1329280429]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("2_nhwvk")
+ignore_texture_size = true
+stretch_mode = 5

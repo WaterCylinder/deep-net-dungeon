@@ -1,0 +1,1011 @@
+[gd_scene format=4 uid="uid://dynh4vsfym832"]
+
+[ext_resource type="Script" uid="uid://c3k0k360vv4vt" path="res://Script/Core/Game.cs" id="1_3j1c3"]
+[ext_resource type="Script" uid="uid://c4uh4w2l8r4hj" path="res://Script/UI/Demo/BGAutoRotateZoom.cs" id="2_05cjt"]
+[ext_resource type="Script" uid="uid://qvustp4o4lq4" path="res://Script/IncrementMode/IncrementWorld.cs" id="2_7yyro"]
+[ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="2_g01mh"]
+[ext_resource type="Script" uid="uid://ugjrhfqe3hks" path="res://Script/Object/CameraController.cs" id="2_mx78j"]
+[ext_resource type="Script" uid="uid://qu2qkatm2ttd" path="res://Script/IncrementMode/IncrementModeUI.cs" id="2_sle33"]
+[ext_resource type="PackedScene" uid="uid://bgrwjdl2jpkcg" path="res://Asset/Object/IncrementModeObject/building_item.tscn" id="3_4hyi3"]
+[ext_resource type="Resource" uid="uid://cutvjhjm1uc5n" path="res://Resource/IncrementMode/Building/core.tres" id="3_gayc5"]
+[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="3_j1v2w"]
+[ext_resource type="Texture2D" uid="uid://cn7iu5s8lfbsw" path="res://Resource/Demo/DemoRoom/Bg/bg_abyss.png" id="3_kdd63"]
+[ext_resource type="Texture2D" uid="uid://bf1oun6b16vq2" path="res://Resource/IncrementMode/返回.png" id="3_q8mgd"]
+[ext_resource type="TileSet" uid="uid://dtdusdklw7ca4" path="res://Resource/IncrementMode/increment_tile_set.tres" id="4_kdd63"]
+[ext_resource type="PackedScene" uid="uid://bhkwvwtltyc8n" path="res://Asset/Object/IncrementModeObject/shop_item.tscn" id="4_trvfj"]
+[ext_resource type="Script" uid="uid://b6prhnpxeysfn" path="res://Script/Object/GameObject/Map.cs" id="5_pim4h"]
+[ext_resource type="Texture2D" uid="uid://cd271w0vkbkeg" path="res://Resource/IncrementMode/down.png" id="5_s81mx"]
+[ext_resource type="AudioStream" uid="uid://cl2gqh8brl8n3" path="res://Asset/Sound/kick.wav" id="6_ai0q7"]
+[ext_resource type="Script" uid="uid://b2y4ihua3k4yb" path="res://Script/IncrementMode/BuildPointMap.cs" id="6_l5dth"]
+[ext_resource type="PackedScene" uid="uid://byvst7n31ukjh" path="res://Asset/Object/IncrementModeObject/build_point.tscn" id="6_vij87"]
+[ext_resource type="PackedScene" uid="uid://t3w8kdtkunxj" path="res://Asset/Object/IncrementModeObject/task.tscn" id="7_05iap"]
+[ext_resource type="AudioStream" uid="uid://bs1gxr1thlihv" path="res://Asset/Sound/score.wav" id="7_eqr41"]
+[ext_resource type="PackedScene" uid="uid://c7oqfb5lw1enf" path="res://Asset/UI/in_game_menu.tscn" id="7_ingamemenu"]
+[ext_resource type="Texture2D" uid="uid://xrbw8r6j4xyj" path="res://Resource/IncrementMode/Building/Sprite/sprite_build_001.png" id="7_j40oa"]
+[ext_resource type="Script" uid="uid://ctwhfo5kmxt6t" path="res://Script/IncrementMode/UI/BuildingInfo.cs" id="7_rigjy"]
+[ext_resource type="Script" uid="uid://bvrt88okqpi0v" path="res://Script/IncrementMode/UI/BuildingItemController.cs" id="8_7eq5t"]
+[ext_resource type="Texture2D" uid="uid://bdt81batlttkg" path="res://Resource/IncrementMode/Shop.png" id="9_rigjy"]
+[ext_resource type="Texture2D" uid="uid://mta5gyw12yih" path="res://Asset/Sprite/White.png" id="13_serhd"]
+[ext_resource type="Script" uid="uid://dywqu0xq2xtsw" path="res://Plugin/AutoSizedText/addons/AutoSizeText/ui/AutoSizeLabel.gd" id="16_2dn4r"]
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="16_yu6n2"]
+[ext_resource type="Script" uid="uid://cqum6tff5jn8u" path="res://Script/IncrementMode/IncrementTask.cs" id="17_3htsc"]
+[ext_resource type="Resource" uid="uid://b7w8mr1ucxyoi" path="res://Resource/IncrementMode/Building/RarityPool/1_pool.tres" id="18_yu6n2"]
+[ext_resource type="Resource" uid="uid://pkv6dp5jhfr8" path="res://Resource/IncrementMode/Building/RarityPool/2_pool.tres" id="19_ai0q7"]
+[ext_resource type="Resource" uid="uid://disn52tsupxhl" path="res://Resource/IncrementMode/Building/RarityPool/3_pool.tres" id="20_eqr41"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_34lxj"]
+font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_g01mh"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rigjy"]
+font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_yu6n2"]
+line_spacing = 0.0
+font_size = 64
+
+[sub_resource type="LabelSettings" id="LabelSettings_ai0q7"]
+line_spacing = 0.0
+font_size = 32
+
+[sub_resource type="Resource" id="Resource_ai0q7"]
+script = ExtResource("16_yu6n2")
+pool = Dictionary[Object, int]({})
+metadata/_custom_type_script = "uid://jetqew8yttgm"
+
+[sub_resource type="Resource" id="Resource_eg0h7"]
+script = ExtResource("17_3htsc")
+intro = "在16回合前累计获得1000资源"
+targetTurn = 16
+targetResourcePoint = 1000
+metadata/_custom_type_script = "uid://cqum6tff5jn8u"
+
+[sub_resource type="Resource" id="Resource_6bp8m"]
+script = ExtResource("17_3htsc")
+intro = "在32回合前累计获得10000资源"
+targetTurn = 32
+targetResourcePoint = 10000
+metadata/_custom_type_script = "uid://cqum6tff5jn8u"
+
+[sub_resource type="Resource" id="Resource_yu6n2"]
+script = ExtResource("17_3htsc")
+intro = "在64回合前累计获得100000资源"
+targetTurn = 64
+targetResourcePoint = 100000
+metadata/_custom_type_script = "uid://cqum6tff5jn8u"
+
+[node name="IncrementGame" type="Node" unique_id=1551903590 node_paths=PackedStringArray("musicPlayer", "soundPlayeyPoolNode", "enemyNode", "dropItemNode", "smallObjectNode", "incrementWorld")]
+script = ExtResource("1_3j1c3")
+gameMode = "Increment"
+musicPlayer = NodePath("MainCamera/MusicPlayer")
+soundPlayeyPoolNode = NodePath("SoundPlayerPool")
+enemyNode = NodePath("World/EnemyNode")
+dropItemNode = NodePath("World/ItemNode")
+smallObjectNode = NodePath("World/SmallObject")
+incrementWorld = NodePath("World")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=182841788]
+
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=1712351867 node_paths=PackedStringArray("nextTurnButton", "turnLabel", "resourceLabel", "resourceTip", "cumulativeLabel", "buildingPanelNode", "buildingPanelButton", "buildingPanelContainer", "buildingItemfollow", "buildingItemController", "info", "shopNode", "shopContainer", "shopRefreshCostLabel", "shopRefresh", "shopEnd", "shopStow", "taskContainer", "end", "endLabel", "endScore", "returnButton", "tipsNode", "showNode", "showLabel")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_sle33")
+nextTurnButton = NodePath("NextTurn/AspectRatioContainer/TextureButton")
+turnLabel = NodePath("Info/Turn/Label")
+resourceLabel = NodePath("Info/ResourcePoint/Label")
+resourceTip = NodePath("Info/Tip")
+cumulativeLabel = NodePath("Info/CumulativePoint/Label")
+buildingPanelNode = NodePath("BuildingPanel")
+buildingPanelButton = NodePath("BuildingPanel/Button")
+buildingPanelContainer = NodePath("BuildingPanel/AspectRatioContainer/HBoxContainer")
+buildingPanelItemPrefab = ExtResource("3_4hyi3")
+buildingItemfollow = NodePath("../BuildingItemFollow")
+buildingItemController = NodePath("BuildingPanel/BuildingItemController")
+info = NodePath("BuildingInfo")
+shopNode = NodePath("Shop")
+shopContainer = NodePath("Shop/Commodities/AspectRatioContainer/HBoxContainer")
+shopItemPrefab = ExtResource("4_trvfj")
+shopRefreshCostLabel = NodePath("Shop/Label")
+shopRefresh = NodePath("Shop/Button2")
+shopEnd = NodePath("Shop/Button")
+shopStow = NodePath("Shop/Button3")
+taskContainer = NodePath("Task/VBoxContainer")
+taskLabel = ExtResource("7_05iap")
+end = NodePath("../End")
+endLabel = NodePath("../End/Label")
+endScore = NodePath("../End/Label/Score")
+returnButton = NodePath("../End/Button")
+tipsNode = NodePath("../Tips")
+showNode = NodePath("ShowText")
+showLabel = NodePath("ShowText/Label")
+uiSound = ExtResource("6_ai0q7")
+scoreSound = ExtResource("7_eqr41")
+
+[node name="NextTurn" type="Control" parent="CanvasLayer/HUD" unique_id=1891626505]
+layout_mode = 1
+anchor_left = 0.9
+anchor_top = 0.8
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="CanvasLayer/HUD/NextTurn" unique_id=14401290]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/HUD/NextTurn/AspectRatioContainer" unique_id=332736301]
+layout_mode = 2
+texture_normal = ExtResource("3_q8mgd")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Info" type="Control" parent="CanvasLayer/HUD" unique_id=1890200650]
+layout_mode = 1
+anchor_left = 0.01
+anchor_top = 0.01
+anchor_right = 0.2
+anchor_bottom = 0.2
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Turn" type="Control" parent="CanvasLayer/HUD/Info" unique_id=1720881586]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Info/Turn" unique_id=1156956678]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.2509804)
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/Info/Turn" unique_id=1014889459]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "第1回合"
+label_settings = SubResource("LabelSettings_34lxj")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResourcePoint" type="Control" parent="CanvasLayer/HUD/Info" unique_id=1934416561]
+layout_mode = 1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.75
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Info/ResourcePoint" unique_id=953096875]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.000001
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.2509804)
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/Info/ResourcePoint" unique_id=643084434]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_g01mh")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Label2" type="Label" parent="CanvasLayer/HUD/Info/ResourcePoint" unique_id=666923153]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "资源"
+label_settings = SubResource("LabelSettings_g01mh")
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/Info/ResourcePoint" unique_id=190275952]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+label_settings = SubResource("LabelSettings_g01mh")
+vertical_alignment = 1
+
+[node name="CumulativePoint" type="Control" parent="CanvasLayer/HUD/Info" unique_id=1906027055]
+layout_mode = 1
+anchor_top = 0.75
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/Info/CumulativePoint" unique_id=1156058092]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.000001
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.2509804)
+
+[node name="Label2" type="Label" parent="CanvasLayer/HUD/Info/CumulativePoint" unique_id=253397127]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "累计"
+label_settings = SubResource("LabelSettings_g01mh")
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/Info/CumulativePoint" unique_id=1102119304]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+label_settings = SubResource("LabelSettings_g01mh")
+vertical_alignment = 1
+
+[node name="Tip" type="Control" parent="CanvasLayer/HUD/Info" unique_id=936828520]
+layout_mode = 1
+anchor_left = 0.12
+anchor_top = 0.55
+anchor_right = 0.12
+anchor_bottom = 0.6
+offset_left = 16.000015
+offset_right = 20.000015
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Task" type="Control" parent="CanvasLayer/HUD" unique_id=220057448]
+layout_mode = 1
+anchor_top = 0.25
+anchor_right = 0.3
+anchor_bottom = 0.75
+offset_left = 10.0
+offset_right = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/Task" unique_id=292457846]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BuildingInfo" type="Control" parent="CanvasLayer/HUD" unique_id=1218946250 node_paths=PackedStringArray("texture", "nameLabel", "levelLabel", "introLabel", "rarity", "tag", "returnButton", "sellButton", "sellTips", "logPanel")]
+visible = false
+layout_mode = 1
+anchor_left = 0.3
+anchor_right = 1.0
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_rigjy")
+texture = NodePath("Info/TextureRect")
+nameLabel = NodePath("Info/Intro/AspectRatioContainer/VBoxContainer/Label")
+levelLabel = NodePath("Info/Intro/AspectRatioContainer/VBoxContainer/Label2")
+introLabel = NodePath("Info/Intro/AspectRatioContainer/VBoxContainer/RichTextLabel")
+rarity = NodePath("Center/OtherInfo/HBoxContainer/TextureRect")
+tag = NodePath("Center/OtherInfo/HBoxContainer2/Label2")
+returnButton = NodePath("Return")
+sellButton = NodePath("Center/Buttons/VBoxContainer/Sell")
+sellTips = NodePath("Center/Buttons/VBoxContainer/Label")
+logPanel = NodePath("Log/RichTextLabel")
+
+[node name="BG" type="TextureRect" parent="CanvasLayer/HUD/BuildingInfo" unique_id=603391163]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -128.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_s81mx")
+expand_mode = 1
+
+[node name="Info" type="Control" parent="CanvasLayer/HUD/BuildingInfo" unique_id=452258414]
+layout_mode = 1
+anchor_right = 0.4
+anchor_bottom = 0.9
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/BuildingInfo/Info" unique_id=1900744209]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_j40oa")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Intro" type="Control" parent="CanvasLayer/HUD/BuildingInfo/Info" unique_id=476151663]
+layout_mode = 1
+anchor_top = 0.4
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro" unique_id=1031064558]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro" unique_id=1871304241]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro/AspectRatioContainer" unique_id=1438396147]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro/AspectRatioContainer/VBoxContainer" unique_id=810162097]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "建筑名称"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro/AspectRatioContainer/VBoxContainer" unique_id=755558023]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "等级1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/HUD/BuildingInfo/Info/Intro/AspectRatioContainer/VBoxContainer" unique_id=136489370]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "建筑介绍"
+horizontal_alignment = 1
+
+[node name="Return" type="Button" parent="CanvasLayer/HUD/BuildingInfo" unique_id=2037985116]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.9
+anchor_right = 1.0
+anchor_bottom = 0.1
+grow_horizontal = 2
+grow_vertical = 2
+text = "返回"
+
+[node name="Center" type="Control" parent="CanvasLayer/HUD/BuildingInfo" unique_id=1135864709]
+layout_mode = 1
+anchor_left = 0.4
+anchor_right = 0.6
+anchor_bottom = 0.9
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OtherInfo" type="Control" parent="CanvasLayer/HUD/BuildingInfo/Center" unique_id=695154752]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.3
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo" unique_id=2019733970]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.2
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo/HBoxContainer" unique_id=644873508]
+layout_mode = 2
+text = "稀有度：  "
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo/HBoxContainer" unique_id=1945665826]
+layout_mode = 2
+texture = ExtResource("13_serhd")
+expand_mode = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo" unique_id=1218669557]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo/HBoxContainer2" unique_id=1554482760]
+layout_mode = 2
+text = "标签：   "
+
+[node name="Label2" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Center/OtherInfo/HBoxContainer2" unique_id=1145218104]
+layout_mode = 2
+text = "机械"
+
+[node name="Buttons" type="AspectRatioContainer" parent="CanvasLayer/HUD/BuildingInfo/Center" unique_id=1700745940]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.3
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/BuildingInfo/Center/Buttons" unique_id=853522703]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Sell" type="Button" parent="CanvasLayer/HUD/BuildingInfo/Center/Buttons/VBoxContainer" unique_id=1640496020]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_vertical = 3
+text = "出售"
+
+[node name="UpLevel" type="Button" parent="CanvasLayer/HUD/BuildingInfo/Center/Buttons/VBoxContainer" unique_id=533055426]
+visible = false
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_vertical = 3
+text = "升级"
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/BuildingInfo/Center/Buttons/VBoxContainer" unique_id=402078003]
+layout_mode = 2
+text = "获得0资源"
+horizontal_alignment = 1
+
+[node name="Log" type="Control" parent="CanvasLayer/HUD/BuildingInfo" unique_id=32605930]
+layout_mode = 1
+anchor_left = 0.6
+anchor_top = 0.1
+anchor_right = 1.0
+anchor_bottom = 0.9
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -10.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/BuildingInfo/Log" unique_id=1019342582]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.76862746)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/HUD/BuildingInfo/Log" unique_id=1428472480]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志建筑物日志"
+
+[node name="Shop" type="Control" parent="CanvasLayer/HUD" unique_id=1394466233]
+visible = false
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.2
+anchor_right = 0.9
+anchor_bottom = 0.78
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/Shop" unique_id=113678475]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_rigjy")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/Shop/TextureRect" unique_id=1438421492]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_right = 0.7
+anchor_bottom = 0.2
+offset_top = 16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "商店"
+label_settings = SubResource("LabelSettings_rigjy")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Commodities" type="Control" parent="CanvasLayer/HUD/Shop" unique_id=929430121]
+layout_mode = 1
+anchor_left = 0.065
+anchor_top = 0.224
+anchor_right = 0.845
+anchor_bottom = 0.884
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="CanvasLayer/HUD/Shop/Commodities" unique_id=1603124]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Shop/Commodities/AspectRatioContainer" unique_id=1043029533]
+layout_mode = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="CanvasLayer/HUD/Shop" unique_id=1814821880]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.85
+anchor_top = 0.7
+anchor_right = 0.937
+anchor_bottom = 0.881
+grow_horizontal = 2
+grow_vertical = 2
+text = "下一回合"
+
+[node name="Button2" type="Button" parent="CanvasLayer/HUD/Shop" unique_id=1693967016]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.85
+anchor_top = 0.5
+anchor_right = 0.937
+anchor_bottom = 0.7
+grow_horizontal = 2
+grow_vertical = 2
+text = "刷新"
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/Shop" unique_id=1114984709]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.85
+anchor_top = 0.35
+anchor_right = 0.937
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "消耗0"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Button3" type="Button" parent="CanvasLayer/HUD/Shop" unique_id=1394873828]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.85
+anchor_top = 0.22
+anchor_right = 0.937
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+text = "收起"
+
+[node name="BuildingPanel" type="Control" parent="CanvasLayer/HUD" unique_id=2014621892]
+layout_mode = 1
+anchor_top = 0.8
+anchor_right = 0.9
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/BuildingPanel" unique_id=1883703498]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_s81mx")
+expand_mode = 1
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="CanvasLayer/HUD/BuildingPanel" unique_id=218735362]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 16.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/BuildingPanel/AspectRatioContainer" unique_id=463593250]
+layout_mode = 2
+alignment = 1
+
+[node name="Button" type="TextureButton" parent="CanvasLayer/HUD/BuildingPanel" unique_id=2051599445]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4
+anchor_right = 0.6
+anchor_bottom = 0.15
+offset_top = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BuildingItemController" type="Control" parent="CanvasLayer/HUD/BuildingPanel" unique_id=54635997 node_paths=PackedStringArray("name", "intro", "sellButton")]
+visible = false
+layout_mode = 1
+anchor_left = 0.45
+anchor_right = 0.6
+anchor_bottom = 1.0
+offset_top = -160.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0, 1)
+script = ExtResource("8_7eq5t")
+name = NodePath("Label")
+intro = NodePath("RichTextLabel")
+sellButton = NodePath("Sell")
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/BuildingPanel/BuildingItemController" unique_id=1482177287]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/BuildingPanel/BuildingItemController" unique_id=2086036296]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
+grow_horizontal = 2
+grow_vertical = 2
+text = "建筑名称"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/HUD/BuildingPanel/BuildingItemController" unique_id=1837115811]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.1
+anchor_right = 1.0
+anchor_bottom = 0.85
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "建筑介绍"
+scroll_following = true
+
+[node name="Sell" type="Button" parent="CanvasLayer/HUD/BuildingPanel/BuildingItemController" unique_id=1510646763]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.85
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "出售(0)"
+
+[node name="ShowText" type="Control" parent="CanvasLayer/HUD" unique_id=2049119103]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.064
+offset_top = -72.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/ShowText" unique_id=1529315511]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/ShowText" unique_id=1039563581]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 34
+text = "回合结束"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("16_2dn4r")
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
+
+[node name="BuildingItemFollow" type="TextureRect" parent="CanvasLayer" unique_id=149247266]
+offset_right = 40.0
+offset_bottom = 40.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InGameMenu" parent="CanvasLayer" unique_id=1808063091 instance=ExtResource("7_ingamemenu")]
+
+[node name="End" type="Control" parent="CanvasLayer" unique_id=1695396540]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/End" unique_id=193363977]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="Button" type="Button" parent="CanvasLayer/End" unique_id=151963649]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.45
+anchor_top = 0.5
+anchor_right = 0.55
+anchor_bottom = 0.6
+grow_horizontal = 2
+grow_vertical = 2
+text = "返回主菜单"
+
+[node name="Label" type="Label" parent="CanvasLayer/End" unique_id=353983396]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_right = 0.7
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "文本"
+label_settings = SubResource("LabelSettings_yu6n2")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score" type="Label" parent="CanvasLayer/End/Label" unique_id=1314961794]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "文本"
+label_settings = SubResource("LabelSettings_ai0q7")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tips" type="Control" parent="CanvasLayer" unique_id=25027953]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="World" type="Node2D" parent="." unique_id=1687788022 node_paths=PackedStringArray("buildPointMap", "ui")]
+script = ExtResource("2_7yyro")
+coreData = ExtResource("3_gayc5")
+buildPointMap = NodePath("Map/BuildPoints")
+ui = NodePath("../CanvasLayer/HUD")
+shopItemPool = SubResource("Resource_ai0q7")
+tasks = Array[Resource]([SubResource("Resource_eg0h7"), SubResource("Resource_6bp8m"), SubResource("Resource_yu6n2")])
+rarityPools = Array[Object]([ExtResource("18_yu6n2"), ExtResource("19_ai0q7"), ExtResource("20_eqr41")])
+
+[node name="BG" type="Node2D" parent="World" unique_id=236564426 node_paths=PackedStringArray("camera", "bg")]
+script = ExtResource("2_05cjt")
+camera = NodePath("../../MainCamera")
+bg = NodePath("Sprite2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/BG" unique_id=715214681]
+position = Vector2(-15, 24)
+scale = Vector2(2, 2)
+texture = ExtResource("3_kdd63")
+
+[node name="Map" type="TileMapLayer" parent="World" unique_id=86118032]
+unique_name_in_owner = true
+tile_map_data = PackedByteArray("AAD/////AAACAAIAAAD//wAAAAACAAMAAAAAAP//AAADAAIAAAAAAAAAAAADAAMAAAD///z/AAACAAIAAAD///3/AAACAAMAAAAAAPz/AAADAAIAAAAAAP3/AAADAAMAAAACAPz/AAACAAIAAAACAP3/AAACAAMAAAADAPz/AAADAAIAAAADAP3/AAADAAMAAAACAP//AAACAAIAAAACAAAAAAACAAMAAAADAP//AAADAAIAAAADAAAAAAADAAMAAAD8//z/AAACAAIAAAD8//3/AAACAAMAAAD9//z/AAADAAIAAAD9//3/AAADAAMAAAD8////AAACAAIAAAD8/wAAAAACAAMAAAD9////AAADAAIAAAD9/wAAAAADAAMAAAD8/wIAAAACAAIAAAD8/wMAAAACAAMAAAD9/wIAAAADAAIAAAD9/wMAAAADAAMAAAD//wIAAAACAAIAAAD//wMAAAACAAMAAAAAAAIAAAADAAIAAAAAAAMAAAADAAMAAAACAAIAAAACAAIAAAACAAMAAAACAAMAAAADAAIAAAADAAIAAAADAAMAAAADAAMAAAAFAP//AAACAAIAAAAFAAAAAAACAAMAAAAGAP//AAADAAIAAAAGAAAAAAADAAMAAAAFAPz/AAACAAIAAAAFAP3/AAACAAMAAAAGAPz/AAADAAIAAAAGAP3/AAADAAMAAAACAPn/AAACAAIAAAACAPr/AAACAAMAAAADAPn/AAADAAIAAAADAPr/AAADAAMAAAD///n/AAACAAIAAAD///r/AAACAAMAAAAAAPn/AAADAAIAAAAAAPr/AAADAAMAAAD8//n/AAACAAIAAAD8//r/AAACAAMAAAD9//n/AAADAAIAAAD9//r/AAADAAMAAAD5//n/AAACAAIAAAD5//r/AAACAAMAAAD6//n/AAADAAIAAAD6//r/AAADAAMAAAAFAPn/AAACAAIAAAAFAPr/AAACAAMAAAAGAPn/AAADAAIAAAAGAPr/AAADAAMAAAD5//z/AAACAAIAAAD5//3/AAACAAMAAAD6//z/AAADAAIAAAD6//3/AAADAAMAAAD5////AAACAAIAAAD5/wAAAAACAAMAAAD6////AAADAAIAAAD6/wAAAAADAAMAAAD5/wIAAAACAAIAAAD5/wMAAAACAAMAAAD6/wIAAAADAAIA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AAD///b/AAAEAAQAAAD///f/AAACAAQAAAAAAPf/AAACAAQAAAABAPf/AAAEAAQAAAD1//b/AAADAAQAAAD1//f/AAAEAAQAAAD1//j/AAACAAQAAAD2//b/AAADAAQAAAD2//f/AAADAAQAAAD2//j/AAADAAQAAAD3//X/AAADAAQAAAD3//f/AAAEAAQAAAD3//j/AAADAAQAAAD4//X/AAAEAAQAAAD4//f/AAACAAQAAAD4//j/AAAEAAQAAAD5//X/AAADAAQAAAD5//f/AAAEAAQAAAD5//j/AAACAAQAAAD6//X/AAAEAAQAAAD6//f/AAAEAAQAAAD6//j/AAACAAQAAAD7//X/AAAEAAQAAAD7//f/AAAEAAQAAAD7//j/AAAEAAQAAAD8//X/AAADAAQAAAD8//f/AAACAAQAAAD8//j/AAADAAQAAAD9//X/AAAEAAQAAAD9//f/AAACAAQAAAD9//j/AAACAAQAAAD+//X/AAAEAAQAAAD+//f/AAACAAQAAAD+//j/AAADAAQAAAD///X/AAACAAQAAAD///j/AAACAAQAAAAAAPX/AAADAAQAAAAAAPb/AAADAAQAAAAAAPj/AAAEAAQAAAABAPX/AAAEAAQAAAABAPb/AAAEAAQAAAABAPj/AAACAAQAAAACAPX/AAAEAAQAAAACAPb/AAADAAQAAAACAPf/AAACAAQAAAACAPj/AAADAAQAAAADAPX/AAADAAQAAAADAPb/AAADAAQAAAADAPf/AAADAAQAAAADAPj/AAADAAQAAAAEAPX/AAADAAQAAAAEAPb/AAACAAQAAAAEAPf/AAAEAAQAAAAEAPj/AAACAAQAAAAFAPX/AAACAAQAAAAFAPb/AAAEAAQAAAAFAPf/AAACAAQAAAAFAPj/AAADAAQAAAAGAPX/AAACAAQAAAAGAPb/AAAEAAQAAAAGAPf/AAAEAAQAAAAGAPj/AAADAAQAAAAHAPX/AAAEAAQAAAAHAPb/AAACAAQAAAAHAPf/AAACAAQAAAAHAPj/AAADAAQAAAAIAPX/AAAEAAQAAAAIAPb/AAACAAQAAAAIAPf/AAADAAQAAAAIAPj/AAAEAAQAAAAJAPX/AAADAAQAAAAJAPb/AAACAAQAAAAJAPf/AAADAAQAAAAJAPj/AAACAAQAAAAKAPX/AAADAAQAAAAKAPb/AAACAAQAAAAKAPf/AAADAAQAAAAKAPj/AAACAAQAAAAHAPn/AAAEAAQAAAAHAPr/AAAEAAQAAAAHAPv/AAACAAQAAAAHAPz/AAAEAAQAAAAHAP3/AAACAAQAAAAHAP7/AAADAAQAAAAHAP//AAADAAQAAAAHAAAAAAADAAQAAAAHAAEAAAACAAQAAAAHAAIAAAACAAQAAAAHAAMAAAADAAQAAAAHAAQAAAADAAQAAAAHAAUAAAAEAAQAAAAHAAYAAAAEAAQAAAAHAAcAAAACAAQAAAAHAAgAAAACAAQAAAAHAAkAAAAEAAQAAAAHAAoAAAAEAAQAAAAIAPn/AAACAAQAAAAIAPr/AAAEAAQAAAAIAPv/AAACAAQAAAAIAPz/AAACAAQAAAAIAP3/AAACAAQAAAAIAP7/AAAEAAQAAAAIAP//AAACAAQAAAAIAAAAAAACAAQAAAAIAAEAAAADAAQAAAAIAAIAAAACAAQAAAAIAAMAAAAEAAQAAAAIAAQAAAACAAQAAAAIAAUAAAAEAAQAAAAIAAYAAAAEAAQAAAAIAAcAAAADAAQAAAAIAAgAAAACAAQAAAAIAAkAAAACAAQAAAAIAAoAAAADAAQAAAAJAPn/AAADAAQAAAAJAPr/AAADAAQAAAAJAPv/AAADAAQAAAAJAPz/AAAEAAQAAAAJAP3/AAACAAQAAAAJAP7/AAADAAQAAAAJAP//AAAEAAQAAAAJAAAAAAADAAQAAAAJAAEAAAACAAQAAAAJAAIAAAAEAAQAAAAJAAMAAAACAAQAAAAJAAQAAAACAAQAAAAJAAUAAAADAAQAAAAJAAYAAAACAAQAAAAJAAcAAAACAAQAAAAJAAgAAAAEAAQAAAAJAAkAAAADAAQAAAAJAAoAAAAEAAQAAAAKAPn/AAAEAAQAAAAKAPr/AAAEAAQAAAAKAPv/AAADAAQAAAAKAPz/AAAEAAQAAAAKAP3/AAAEAAQAAAAKAP7/AAAEAAQAAAAKAP//AAADAAQAAAAKAAAAAAAEAAQAAAAKAAEAAAADAAQAAAAKAAIAAAACAAQAAAAKAAMAAAADAAQAAAAKAAQAAAADAAQAAAAKAAUAAAAEAAQAAAAKAAYAAAACAAQAAAAKAAcAAAADAAQAAAAKAAgAAAAEAAQAAAAKAAkAAAADAAQAAAAKAAoAAAADAAQAAAD1/wcAAAADAAQAAAD1/wgAAAADAAQAAAD1/wkAAAACAAQAAAD1/woAAAAEAAQAAAD2/wcAAAAEAAQAAAD2/wgAAAAEAAQAAAD2/wkAAAADAAQAAAD2/woAAAACAAQAAAD3/wcAAAAEAAQAAAD3/wgAAAADAAQAAAD3/wkAAAADAAQAAAD3/woAAAAEAAQAAAD4/wcAAAADAAQAAAD4/wgAAAAEAAQAAAD4/wkAAAADAAQAAAD4/woAAAAEAAQAAAD5/wcAAAADAAQAAAD5/wgAAAADAAQAAAD5/wkAAAACAAQAAAD5/woAAAAEAAQAAAD6/wcAAAAEAAQAAAD6/wgAAAACAAQAAAD6/wkAAAAEAAQAAAD6/woAAAACAAQAAAD7/wcAAAAEAAQAAAD7/wgAAAADAAQAAAD7/wkAAAADAAQAAAD7/woAAAACAAQAAAD8/wcAAAADAAQAAAD8/wgAAAAEAAQAAAD8/wkAAAAEAAQAAAD8/woAAAACAAQAAAD9/wcAAAACAAQAAAD9/wgAAAAEAAQAAAD9/wkAAAADAAQAAAD9/woAAAACAAQAAAD+/wcAAAACAAQAAAD+/wgAAAAEAAQAAAD+/wkAAAADAAQAAAD+/woAAAACAAQAAAD//wcAAAAEAAQAAAD//wgAAAADAAQAAAD//wkAAAACAAQAAAD//woAAAADAAQAAAAAAAcAAAADAAQAAAAAAAgAAAACAAQAAAAAAAkAAAAEAAQAAAAAAAoAAAADAAQAAAABAAcAAAACAAQAAAABAAgAAAACAAQAAAABAAkAAAADAAQAAAABAAoAAAADAAQAAAACAAcAAAADAAQAAAACAAgAAAACAAQAAAACAAkAAAACAAQAAAACAAoAAAADAAQAAAADAAcAAAAEAAQAAAADAAgAAAAEAAQAAAADAAkAAAADAAQAAAADAAoAAAACAAQAAAAEAAcAAAADAAQAAAAEAAgAAAACAAQAAAAEAAkAAAACAAQAAAAEAAoAAAAEAAQAAAAFAAcAAAACAAQAAAAFAAgAAAAEAAQAAAAFAAkAAAADAAQAAAAFAAoAAAADAAQAAAAGAAcAAAAEAAQAAAAGAAgAAAACAAQAAAAGAAkAAAADAAQAAAAGAAoAAAACAAQAAAD1//n/AAADAAQAAAD1//r/AAAEAAQAAAD1//v/AAAEAAQAAAD1//z/AAACAAQAAAD1//3/AAACAAQAAAD1//7/AAACAAQAAAD1////AAADAAQAAAD1/wAAAAACAAQAAAD1/wEAAAACAAQAAAD1/wIAAAADAAQAAAD1/wMAAAACAAQAAAD1/wQAAAAEAAQAAAD1/wUAAAADAAQAAAD1/wYAAAACAAQAAAD2//n/AAACAAQAAAD2//r/AAAEAAQAAAD2//v/AAADAAQAAAD2//z/AAAEAAQAAAD2//3/AAACAAQAAAD2//7/AAAEAAQAAAD2////AAADAAQAAAD2/wAAAAACAAQAAAD2/wEAAAADAAQAAAD2/wIAAAAEAAQAAAD2/wMAAAADAAQAAAD2/wQAAAAEAAQAAAD2/wUAAAACAAQAAAD2/wYAAAACAAQAAAD3//n/AAACAAQAAAD3//r/AAADAAQAAAD3//v/AAAEAAQAAAD3//z/AAADAAQAAAD3//3/AAADAAQAAAD3//7/AAACAAQAAAD3////AAACAAQAAAD3/wAAAAAEAAQAAAD3/wEAAAAEAAQAAAD3/wIAAAAEAAQAAAD3/wMAAAAEAAQAAAD3/wQAAAADAAQAAAD3/wUAAAACAAQAAAD3/wYAAAAEAAQAAAD4//n/AAADAAQAAAD4//r/AAAEAAQAAAD4//v/AAACAAQAAAD4//z/AAACAAQAAAD4//3/AAACAAQAAAD4//7/AAADAAQAAAD4////AAADAAQAAAD4/wAAAAAEAAQAAAD4/wEAAAAEAAQAAAD4/wIAAAAEAAQAAAD4/wMAAAADAAQAAAD4/wQAAAADAAQAAAD4/wUAAAAEAAQAAAD4/wYAAAADAAQAAAD5/wQAAAAEAAQAAAD6/wQAAAADAAQAAAD7/wQAAAADAAQAAAD8/wQAAAADAAQAAAD9/wQAAAACAAQAAAD+/wQAAAAEAAQAAAD//wQAAAAEAAQAAAAAAAQAAAADAAQAAAABAAQAAAACAAQAAAACAAQAAAADAAQAAAADAAQAAAAEAAQAAAAEAAQAAAACAAQAAAAFAAQAAAADAAQAAAAGAAQAAAAEAAQAAAD5/wEAAAACAAQAAAD6/wEAAAADAAQAAAD7/wEAAAAEAAQAAAD8/wEAAAADAAQAAAD9/wEAAAADAAQAAAD+/wEAAAACAAQAAAD//wEAAAADAAQAAAAAAAEAAAAEAAQAAAABAAEAAAACAAQAAAACAAEAAAACAAQAAAADAAEAAAADAAQAAAAEAAEAAAADAAQAAAAFAAEAAAAEAAQAAAAGAAEAAAACAAQAAAD5//7/AAACAAQAAAD6//7/AAACAAQAAAD7//7/AAACAAQAAAD8//7/AAACAAQAAAD9//7/AAAEAAQAAAD+//7/AAACAAQAAAD///7/AAAEAAQAAAAAAP7/AAACAAQAAAABAP7/AAAEAAQAAAACAP7/AAADAAQAAAADAP7/AAACAAQAAAAEAP7/AAAEAAQAAAAFAP7/AAACAAQAAAAGAP7/AAADAAQAAAD5//v/AAAEAAQAAAD6//v/AAACAAQAAAD7//v/AAAEAAQAAAD8//v/AAAEAAQAAAD9//v/AAACAAQAAAD+//v/AAADAAQAAAD///v/AAACAAQAAAAAAPv/AAACAAQAAAABAPv/AAAEAAQAAAACAPv/AAAEAAQAAAADAPv/AAACAAQAAAAEAPv/AAACAAQAAAAFAPv/AAACAAQAAAAGAPv/AAACAAQAAAAEAPn/AAAEAAQAAAAEAPr/AAACAAQAAAAEAPz/AAAEAAQAAAAEAP3/AAAEAAQAAAAEAP//AAACAAQAAAAEAAAAAAAEAAQAAAAEAAIAAAAEAAQAAAAEAAMAAAAEAAQAAAAEAAUAAAACAAQAAAAEAAYAAAADAAQAAAABAPn/AAACAAQAAAABAPr/AAAEAAQAAAABAPz/AAACAAQAAAABAP3/AAACAAQAAAABAP//AAAEAAQAAAABAAAAAAACAAQAAAABAAIAAAADAAQAAAABAAMAAAADAAQAAAABAAUAAAAEAAQAAAABAAYAAAAEAAQAAAD+//n/AAADAAQAAAD+//r/AAACAAQAAAD+//z/AAACAAQAAAD+//3/AAACAAQAAAD+////AAACAAQAAAD+/wAAAAACAAQAAAD+/wIAAAAEAAQAAAD+/wMAAAADAAQAAAD+/wUAAAACAAQAAAD+/wYAAAAEAAQAAAD7//n/AAAEAAQAAAD7//r/AAADAAQAAAD7//z/AAADAAQAAAD7//3/AAADAAQAAAD7////AAACAAQAAAD7/wAAAAADAAQAAAD7/wIAAAADAAQAAAD7/wMAAAAEAAQAAAD7/wUAAAAEAAQAAAD7/wYAAAACAAQAAAAMAAQAAAAGAAIAAAAMAAUAAAAGAAMAAAA=")
+tile_set = ExtResource("4_kdd63")
+script = ExtResource("5_pim4h")
+
+[node name="BuildPoints" type="Node2D" parent="World/Map" unique_id=2005484746]
+script = ExtResource("6_l5dth")
+
+[node name="Line1" type="Node2D" parent="World/Map/BuildPoints" unique_id=1438560795]
+position = Vector2(0, -384)
+
+[node name="Point1" parent="World/Map/BuildPoints/Line1" unique_id=342016709 instance=ExtResource("6_vij87")]
+position = Vector2(-384, 0)
+
+[node name="Point2" parent="World/Map/BuildPoints/Line1" unique_id=1080093409 instance=ExtResource("6_vij87")]
+position = Vector2(-192, 0)
+
+[node name="Point3" parent="World/Map/BuildPoints/Line1" unique_id=599395494 instance=ExtResource("6_vij87")]
+
+[node name="Point4" parent="World/Map/BuildPoints/Line1" unique_id=2048694789 instance=ExtResource("6_vij87")]
+position = Vector2(192, 0)
+
+[node name="Point5" parent="World/Map/BuildPoints/Line1" unique_id=1257654964 instance=ExtResource("6_vij87")]
+position = Vector2(384, 0)
+
+[node name="Line2" type="Node2D" parent="World/Map/BuildPoints" unique_id=1134028059]
+position = Vector2(0, -192)
+
+[node name="Point1" parent="World/Map/BuildPoints/Line2" unique_id=1998400140 instance=ExtResource("6_vij87")]
+position = Vector2(-384, 0)
+
+[node name="Point2" parent="World/Map/BuildPoints/Line2" unique_id=980076202 instance=ExtResource("6_vij87")]
+position = Vector2(-192, 0)
+
+[node name="Point3" parent="World/Map/BuildPoints/Line2" unique_id=1906698401 instance=ExtResource("6_vij87")]
+
+[node name="Point4" parent="World/Map/BuildPoints/Line2" unique_id=2006316869 instance=ExtResource("6_vij87")]
+position = Vector2(192, 0)
+
+[node name="Point5" parent="World/Map/BuildPoints/Line2" unique_id=764207834 instance=ExtResource("6_vij87")]
+position = Vector2(384, 0)
+
+[node name="Line3" type="Node2D" parent="World/Map/BuildPoints" unique_id=660620468]
+
+[node name="Point1" parent="World/Map/BuildPoints/Line3" unique_id=1661863594 instance=ExtResource("6_vij87")]
+position = Vector2(-384, 0)
+
+[node name="Point2" parent="World/Map/BuildPoints/Line3" unique_id=540044078 instance=ExtResource("6_vij87")]
+position = Vector2(-192, 0)
+
+[node name="Point3" parent="World/Map/BuildPoints/Line3" unique_id=1772141640 instance=ExtResource("6_vij87")]
+
+[node name="Point4" parent="World/Map/BuildPoints/Line3" unique_id=724790486 instance=ExtResource("6_vij87")]
+position = Vector2(192, 0)
+
+[node name="Point5" parent="World/Map/BuildPoints/Line3" unique_id=583021820 instance=ExtResource("6_vij87")]
+position = Vector2(384, 0)
+
+[node name="Line4" type="Node2D" parent="World/Map/BuildPoints" unique_id=341963014]
+position = Vector2(0, 192)
+
+[node name="Point1" parent="World/Map/BuildPoints/Line4" unique_id=1666596330 instance=ExtResource("6_vij87")]
+position = Vector2(-384, 0)
+
+[node name="Point2" parent="World/Map/BuildPoints/Line4" unique_id=1007220260 instance=ExtResource("6_vij87")]
+position = Vector2(-192, 0)
+
+[node name="Point3" parent="World/Map/BuildPoints/Line4" unique_id=146307343 instance=ExtResource("6_vij87")]
+
+[node name="Point4" parent="World/Map/BuildPoints/Line4" unique_id=1524751305 instance=ExtResource("6_vij87")]
+position = Vector2(192, 0)
+
+[node name="Point5" parent="World/Map/BuildPoints/Line4" unique_id=1490107918 instance=ExtResource("6_vij87")]
+position = Vector2(384, 0)
+
+[node name="Line5" type="Node2D" parent="World/Map/BuildPoints" unique_id=674079038]
+position = Vector2(0, 384)
+
+[node name="Point1" parent="World/Map/BuildPoints/Line5" unique_id=955828605 instance=ExtResource("6_vij87")]
+position = Vector2(-384, 0)
+
+[node name="Point2" parent="World/Map/BuildPoints/Line5" unique_id=104901641 instance=ExtResource("6_vij87")]
+position = Vector2(-192, 0)
+
+[node name="Point3" parent="World/Map/BuildPoints/Line5" unique_id=1613649150 instance=ExtResource("6_vij87")]
+
+[node name="Point4" parent="World/Map/BuildPoints/Line5" unique_id=878869357 instance=ExtResource("6_vij87")]
+position = Vector2(192, 0)
+
+[node name="Point5" parent="World/Map/BuildPoints/Line5" unique_id=468621335 instance=ExtResource("6_vij87")]
+position = Vector2(384, 0)
+
+[node name="EnemyNode" type="Node2D" parent="World" unique_id=569514050]
+
+[node name="ItemNode" type="Node2D" parent="World" unique_id=1254647605]
+
+[node name="SmallObject" type="Node2D" parent="World" unique_id=1607040326]
+
+[node name="MainCamera" type="Camera2D" parent="." unique_id=933073687]
+unique_name_in_owner = true
+process_callback = 0
+script = ExtResource("2_mx78j")
+moveSpeed = 8.0
+posLimitX = Vector2(-500, 500)
+posLimitY = Vector2(-500, 500)
+zoomLimit = Vector2(0.25, 4)
+
+[node name="SoundPlayer" type="AudioStreamPlayer2D" parent="MainCamera" unique_id=1254991701]
+max_polyphony = 10
+bus = &"Sound"
+
+[node name="MusicPlayer" type="AudioStreamPlayer2D" parent="MainCamera" unique_id=1596719429]
+stream = ExtResource("3_j1v2w")
+autoplay = true
+bus = &"Music"
+
+[node name="SoundPlayerPool" type="Node" parent="." unique_id=756111343]

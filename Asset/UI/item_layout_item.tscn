@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cnhkoacuwafyq"]
 
-[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Temp.png" id="1_jfn5g"]
+[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Sprite/Temp.png" id="1_jfn5g"]
 
 [node name="ItemLayoutItem" type="AspectRatioContainer" unique_id=1457596014]
 custom_minimum_size = Vector2(64, 64)

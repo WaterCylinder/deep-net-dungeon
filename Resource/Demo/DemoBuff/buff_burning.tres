@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://db712gf1ugxlp"]
+
+[ext_resource type="Script" uid="uid://cq0demo1buffx" path="res://Resource/Demo/DemoBuff/BuffBehaviorDemo.cs" id="1_askg6"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_k36uo"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_obt1q"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_vgfr4"]
+
+[sub_resource type="Resource" id="Resource_ex4id"]
+script = ExtResource("1_askg6")
+behaviorName = "Burning"
+metadata/_custom_type_script = "uid://cq0demo1buffx"
+
+[sub_resource type="Resource" id="Resource_pcg3x"]
+script = ExtResource("3_vgfr4")
+condition = ExtResource("2_obt1q")
+behavior = SubResource("Resource_ex4id")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_k36uo")
+id = "burning"
+name = "灼烧效果"
+intro = "持续掉血"
+maxStack = 9999999
+processTime = 0.5
+tags = null
+isVisible = false
+isUnique = true
+isAdded = true
+onTimer = SubResource("Resource_pcg3x")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

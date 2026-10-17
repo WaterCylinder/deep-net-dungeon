@@ -116,6 +116,7 @@ public partial class EnemyGenerator : Node2D
             pos = GlobalPosition;
         }
         enemyNow = GameManager.Instance.game.SpawnEnemy(data, pos, parent);
+        GD.Print($"生成敌怪 {enemyNow.Name}");
         EmitSignal(nameof(AfterGenerate), enemyNow);
         return enemyNow;
     }

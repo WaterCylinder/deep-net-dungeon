@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://b7uqe8y4x1y6w"]
+
+[ext_resource type="Resource" uid="uid://dadqydmcp58f1" path="res://Resource/IncrementMode/Building/Core/core_server.tres" id="1_50wc4"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_437rb"]
+[ext_resource type="Texture2D" uid="uid://uybm5fbokena" path="res://Resource/IncrementMode/Building/Sprite/core/core3.png" id="2_50wc4"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_ghsq2"]
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="2_n803y"]
+[ext_resource type="Resource" uid="uid://lkvstjm2p3ln" path="res://Resource/IncrementMode/Effect/get_building_by_value_after_turn.tres" id="3_3q7wq"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_50wc4"]
+
+[sub_resource type="Resource" id="Resource_rrin1"]
+script = ExtResource("2_ghsq2")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_3q7wq"]
+script = ExtResource("3_50wc4")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("2_ghsq2")]({
+"Base": SubResource("Resource_rrin1")
+})
+
+[resource]
+script = ExtResource("1_437rb")
+id = "core_monitoring"
+buildingName = "核心监控台"
+rarity = 2
+intro = "{{turn}}回合开始时，获得{{value}}个【核心服务器】。"
+defaultArgs = Dictionary[String, Variant]({
+"building": ExtResource("1_50wc4"),
+"turn": 3,
+"turn_max": 3
+})
+sprite = ExtResource("2_50wc4")
+buyPrice = 100
+onTurnStart = ExtResource("3_3q7wq")
+onLevelUp = ExtResource("2_n803y")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

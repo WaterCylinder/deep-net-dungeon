@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://lj3ve3rqv826"]
+
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_bl6th"]
+[ext_resource type="Texture2D" uid="uid://xrbw8r6j4xyj" path="res://Resource/IncrementMode/Building/Sprite/sprite_build_001.png" id="2_a7dmv"]
+
+[resource]
+script = ExtResource("1_bl6th")
+buildingName = "默认建筑"
+intro = "默认建筑"
+tags = Array[int]([0])
+sprite = ExtResource("2_a7dmv")
+buyPrice = 10
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

@@ -66,7 +66,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                 }
                 //参数匹配性检查
                 bool isFormat = true;
-                if(parameters.Length != args.Length)
+                if(parameters == null || args == null || parameters.Length != args.Length)
                     isFormat = false;
                 else
                 {
@@ -97,7 +97,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                 {
                     Log($"参数数量不匹配，正在截取可用参数");
                     List<object> temp = [];
-                    List<object> argsList = [.. args];
+                    List<object> argsList = args == null ? [] : [.. args];
                     string parameterNames ="";
                     foreach(ParameterInfo para in parameters)
                     {
@@ -176,7 +176,9 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
     }
 
     /// <summary>
-    /// 获取行为参数
+    /// 获取行为参数。
+    /// 支持值类型（float/int/string/bool等）与资源类型，统一走 Variant 的值转换。
+    /// 会让 float/int/string 等值类型参数静默回退到默认值。
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
@@ -184,18 +186,43 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
     /// <returns></returns>
     public T Arg<[MustBeVariant] T>(string key, T defaultValue = default)
     {
-        if (args.ContainsKey(key))
-        {
-            if(args[key].As<GodotObject>() is T value)
-            {
-                return value;
-            }
-            return defaultValue;
-        }
-        else
+        if (args == null || !args.TryGetValue(key, out Variant value) || value.VariantType == Variant.Type.Nil)
         {
             return defaultValue;
         }
+
+        try
+        {
+            return value.As<T>();
+        }
+        catch (System.Exception e)
+        {
+            //数据里填错类型时告警并使用默认值，避免一条错误数据打断数据驱动流程
+            GD.PushWarning($"[Behavior:{behaviorName}] 参数'{key}'无法转换为{typeof(T).Name}（实际为{value.VariantType}），已使用默认值。{e.Message}");
+            return defaultValue;
+        }
+    }
+
+    /// <summary>
+    /// 设置行为参数
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    public void SetArg<[MustBeVariant] T>(string key, T value)
+    {
+        if (args == null)
+        {
+            GD.PushWarning($"[Behavior:{behaviorName}] args 未初始化，SetArg('{key}') 被忽略。");
+            return;
+        }
+        if (string.IsNullOrEmpty(key))
+        {
+            GD.PushWarning($"[Behavior:{behaviorName}] SetArg 收到空 key，已忽略。");
+            return;
+        }
+
+        args[key] = Variant.From(value);
     }
 
     #region 全局行为方法

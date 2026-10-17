@@ -16,6 +16,10 @@ public enum EnemyTag
     /// 忽略物理效果(不会推开玩家和被玩家推开)
     /// </summary>
     IgnorePhysical,
+    /// <summary>
+    /// BOSS怪物
+    /// </summary>
+    BOSS,
 }
 
 /// <summary>
@@ -135,7 +139,9 @@ public partial class Enemy : Entity
     public Sprite2D spriteNode;
     public AnimatedSprite2D animNode;
 
-    public Array<EnemyTag> enemyTags = new();
+    public Vector2 scale;
+
+    [Export] public Array<EnemyTag> enemyTags = new();
 
     /// <summary>
     /// 敌人数据源
@@ -278,6 +284,9 @@ public partial class Enemy : Entity
             if (animNode != null)
             {
                 animNode.SpriteFrames = data.spriteFrames;
+                spriteNode.Visible = false;
+                //初始播放默认静止动画
+                animNode.Play("idle");
             }
         }
         layoutNode.Position = data.layoutOffset;
@@ -304,7 +313,7 @@ public partial class Enemy : Entity
         }
 
         //设置尺寸
-        Scale = data.scale;
+        scale = data.scale;
 
         //设置初始额外参数
         args.Init(data.args);
@@ -317,7 +326,6 @@ public partial class Enemy : Entity
         {
             //移除该物体的碰撞层
             SetCollisionLayerValue(1, false);
-            Freeze = true;
         }
     }
 
@@ -383,6 +391,13 @@ public partial class Enemy : Entity
     protected override void OnDeath(Damage damage, Entity other)
     {
         base.OnDeath(damage, other);
+        //如果有死亡动画，则在死亡时播放死亡动画。
+        if(animNode.SpriteFrames != null && animNode.SpriteFrames.HasAnimation("death"))
+        {
+            queueFreeOnDeath = false;
+            animNode.Play("death");
+            animNode.AnimationFinished += QueueFree;
+        }
         onDeath?.Run(this);
     }
 
@@ -394,7 +409,7 @@ public partial class Enemy : Entity
     {
         if(layoutNode != null)
         {
-            layoutNode.Scale = scale;
+            layoutNode.Scale = this.scale * scale;
         }
     }
 

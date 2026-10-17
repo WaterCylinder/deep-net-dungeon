@@ -102,7 +102,7 @@ radius = 6.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_n75pv"]
 radius = 12.165525
 
-[node name="Bullet" type="RigidBody2D" unique_id=1624697840 node_paths=PackedStringArray("area")]
+[node name="Bullet" type="RigidBody2D" unique_id=1624697840 node_paths=PackedStringArray("layout", "area")]
 collision_layer = 16
 collision_mask = 128
 gravity_scale = 0.0
@@ -110,6 +110,7 @@ freeze_mode = 1
 contact_monitor = true
 max_contacts_reported = 4
 script = ExtResource("1_w427c")
+layout = NodePath("Layout")
 maxHealth = SubResource("Resource_odvyn")
 attack = SubResource("Resource_fbc4d")
 defense = SubResource("Resource_7nfri")
@@ -121,15 +122,21 @@ speed = SubResource("Resource_eyawp")
 args = SubResource("Resource_rh1hm")
 area = NodePath("Area2D")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1525363217]
+[node name="Layout" type="Node2D" parent="." unique_id=628100857]
+
+[node name="Sprite" type="Sprite2D" parent="Layout" unique_id=1525363217]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_fbc4d")
 
+[node name="AnimatedSprite" type="AnimatedSprite2D" parent="Layout" unique_id=1213396733]
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=112950675]
 shape = SubResource("CircleShape2D_tujvx")
+debug_color = Color(0.7764706, 0.19215687, 1, 0.6039216)
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1899331667]
 collision_mask = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=92653158]
 shape = SubResource("CircleShape2D_n75pv")
+debug_color = Color(0.98039216, 0, 0.37254903, 0.019607844)

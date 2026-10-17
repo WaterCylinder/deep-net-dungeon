@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BuildingPool" format=3 uid="uid://l87up2eek0sp"]
+
+[ext_resource type="Resource" uid="uid://dadqydmcp58f1" path="res://Resource/IncrementMode/Building/Core/core_server.tres" id="1_8mp8w"]
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="1_vhju4"]
+[ext_resource type="Resource" uid="uid://dd7ur6orvu8dr" path="res://Resource/IncrementMode/Building/Core/core_switch.tres" id="2_g8365"]
+[ext_resource type="Resource" uid="uid://b7uqe8y4x1y6w" path="res://Resource/IncrementMode/Building/Core/core_monitoring.tres" id="3_t3whn"]
+[ext_resource type="Resource" uid="uid://7eh6mim7xc0e" path="res://Resource/IncrementMode/Building/Core/core_host.tres" id="4_ifp0n"]
+[ext_resource type="Resource" uid="uid://bekthf1mjdq7a" path="res://Resource/IncrementMode/Building/Core/core_energy.tres" id="5_g8365"]
+
+[resource]
+script = ExtResource("1_vhju4")
+pool = Dictionary[Object, int]({
+ExtResource("1_8mp8w"): 32,
+ExtResource("2_g8365"): 32,
+ExtResource("3_t3whn"): 10,
+ExtResource("4_ifp0n"): 1,
+ExtResource("5_g8365"): 12
+})
+metadata/_custom_type_script = "uid://jetqew8yttgm"

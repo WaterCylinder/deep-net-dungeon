@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BuildingPool" format=3 uid="uid://tbdamxkrsqbr"]
+
+[ext_resource type="Resource" uid="uid://c84kr1oiessmj" path="res://Resource/IncrementMode/Building/Machine/standard_machinery.tres" id="1_2bevh"]
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="1_7xxgr"]
+[ext_resource type="Resource" uid="uid://02u1liskea8v" path="res://Resource/IncrementMode/Building/Machine/machine_clock.tres" id="2_hxxld"]
+[ext_resource type="Resource" uid="uid://cmxp8ofhfxmcg" path="res://Resource/IncrementMode/Building/Machine/machine_gear_set.tres" id="3_27o7b"]
+[ext_resource type="Resource" uid="uid://dh2msxdb5muss" path="res://Resource/IncrementMode/Building/Machine/machine_forging_anvil.tres" id="4_tnhjp"]
+[ext_resource type="Resource" uid="uid://bvavk0yr25kee" path="res://Resource/IncrementMode/Building/Machine/central_control_machine.tres" id="5_itg27"]
+
+[resource]
+script = ExtResource("1_7xxgr")
+pool = Dictionary[Object, int]({
+ExtResource("1_2bevh"): 32,
+ExtResource("2_hxxld"): 32,
+ExtResource("4_tnhjp"): 16,
+ExtResource("5_itg27"): 1,
+ExtResource("3_27o7b"): 4
+})
+metadata/_custom_type_script = "uid://jetqew8yttgm"

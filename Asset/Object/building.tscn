@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cmy5ocq2aq7ej"]
+
+[ext_resource type="Script" uid="uid://df5cloop83qj8" path="res://Script/IncrementMode/Object/Building.cs" id="1_s5y8p"]
+[ext_resource type="Resource" uid="uid://lj3ve3rqv826" path="res://Asset/Default/Data/building_data.tres" id="2_cbq68"]
+[ext_resource type="Texture2D" uid="uid://jtyq74ufvab1" path="res://Resource/IncrementMode/Building/Sprite/sprite_core.png" id="2_g4m53"]
+
+[node name="Building" type="Node2D" unique_id=155482464]
+script = ExtResource("1_s5y8p")
+data = ExtResource("2_cbq68")
+
+[node name="Layout" type="Node2D" parent="." unique_id=1630135798]
+position = Vector2(0, -20)
+
+[node name="Sprite2D" type="Sprite2D" parent="Layout" unique_id=775443944]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_g4m53")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Layout" unique_id=1980274334]

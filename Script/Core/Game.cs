@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using Godot.Collections;
 
 /// <summary>
 /// 游戏核心类
@@ -13,11 +13,18 @@ public partial class Game : Node
 {
     #region 游戏工具
 
-    public static bool IsAble(Node2D node)
+    public static bool IsAble(Node node)
     {
         if(node == null || !IsInstanceValid(node) || node.IsQueuedForDeletion())
         {
             return false;
+        }
+        if(node is Entity entity)
+        {
+            if (entity.isDead)
+            {
+                return false;
+            }
         }
         return true;
     }
@@ -80,6 +87,9 @@ public partial class Game : Node
 
     #region 父类节点
 
+    [Export] public HUD hud;
+    [Export] public AudioStreamPlayer2D musicPlayer;
+    [Export] public Node soundPlayeyPoolNode;
     [Export] public Node enemyNode;
 
     [Export] public Node roomNode;
@@ -87,6 +97,8 @@ public partial class Game : Node
     [Export] public Node2D dropItemNode;
 
     [Export] public Node smallObjectNode;
+
+    [Export] public IncrementWorld incrementWorld;
 
     # endregion
 
@@ -275,6 +287,50 @@ public partial class Game : Node
     {
      currentMode?.OnEnd(isVictory);
     }
+
+    #region 音效池
+
+    public Array<AudioStreamPlayer> soundPlayerPool = new();
+    bool init = false;
+    int maxSoundCount = 16;
+
+    public void SoundPlayerPoolInit()
+    {
+        for(int i = 1; i<=maxSoundCount; i++)
+        {
+            AudioStreamPlayer player = new AudioStreamPlayer();
+            soundPlayeyPoolNode.AddChild(player);
+            player.Name = "SoundPlayer" + i.ToString();
+            player.Bus = "Sound";
+            player.MaxPolyphony = 4;
+            soundPlayerPool.Add(player);
+        }
+    }
+
+    /// <summary>
+    /// 尽可能获取空闲的音效播放器，没有空闲的则获取第一个
+    /// </summary>
+    /// <returns></returns>
+    public AudioStreamPlayer GetFreeSoundPlayer()
+    {
+        foreach(var player in soundPlayerPool)
+        {
+            if(!player.Playing)return player;
+        }
+        return soundPlayerPool[0];
+    }
+
+    public void PlaySound(AudioStream sound)
+    {
+        if(sound == null)return;
+        if(soundPlayeyPoolNode == null)return;
+        if(!init)SoundPlayerPoolInit();
+        AudioStreamPlayer soundPlayer = GetFreeSoundPlayer();
+        soundPlayer.Stream = sound;
+        soundPlayer.Play();
+    }
+
+    #endregion
 
     #region 通用方法
 

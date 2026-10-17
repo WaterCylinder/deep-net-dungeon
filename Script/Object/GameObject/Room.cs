@@ -144,9 +144,11 @@ public partial class Room : Node2D
     [Export] public int level = 1;
 
     [Export] public RoomTileMap tileMap = null;
+    public Array<Enemy> enemiesNow => tileMap.enemiesNow;
 
     public Effect onCreate;
     public Effect onFirstEnter;
+    public Effect onGenerateEnemy;
     public Effect onEnter;
     public Effect onExit;
     public Effect onUpdate;
@@ -226,6 +228,7 @@ public partial class Room : Node2D
         
         onCreate = data.onCreate?.Duplicate() as Effect;
         onFirstEnter = data.onFirstEnter?.Duplicate() as Effect;
+        onGenerateEnemy = data.onGenerateEnemy?.Duplicate() as Effect;
         onEnter = data.onEnter?.Duplicate() as Effect;
         onExit = data.onExit?.Duplicate() as Effect;
         onUpdate = data.onUpdate?.Duplicate() as Effect;
@@ -270,13 +273,27 @@ public partial class Room : Node2D
             if(door.targetRoom == null)
             {
                 door.targetRoom = room;
+
                 //反向链接：让目标房间的返回门指向本门。
+                //一个房间可能被多个房间连入（例如主线房间和资源房间都通向同一个普通房间），
+                //但返回门只有一个，所以这里只保留首次绑定、后续连入不再覆盖，
+                //返回门因此固定指向该房间在地图上的主线父房间（Map.LinkRooms 先链接主线、后链接支路）。
+                string returnBindInfo = "返回门=无";
                 if(room != null && room.returnDoor != null)
                 {
-                    room.returnDoor.targetDoor = door;
+                    if(room.returnDoor.targetDoor == null)
+                    {
+                        room.returnDoor.targetDoor = door;
+                        returnBindInfo = $"返回门绑定到{door.Name}";
+                    }
+                    else
+                    {
+                        returnBindInfo = $"返回门保持{room.returnDoor.targetDoor.Name}";
+                    }
                     door.targetDoor = room.returnDoor;
                 }
-                GD.Print($"[链接] {Name}.{door.Name} -> {room?.Name}【targetDoor={(door.targetDoor != null ? door.targetDoor.Name : "null")}】");
+
+                GD.Print($"[链接] {Name}.{door.Name} -> {room?.Name}【targetDoor={(door.targetDoor != null ? door.targetDoor.Name : "null")}，{returnBindInfo}】");
                 return true;
             }
         }
@@ -396,6 +413,10 @@ public partial class Room : Node2D
         OnEnter();
     }
 
+    /// <summary>
+    /// 打开房间里所有"已经绑定目标"的门。
+    /// 没有绑定目标的门会被保持关闭（不可见），避免玩家走进去却没有任何反应
+    /// </summary>
     public void OpenAllDoor()
     {
         if(doorNode == null)
@@ -406,7 +427,14 @@ public partial class Room : Node2D
         {
             if(child is Door door)
             {
-                door.Open();
+                if(door.IsBound)
+                {
+                    door.Open();
+                }
+                else
+                {
+                    door.Close();
+                }
             }
         }
     }

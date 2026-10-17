@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://b2fpn14ieum53" path="res://Script/Object/Item.cs" id="1_8b1ee"]
 [ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="2_7bd2y"]
 [ext_resource type="Resource" uid="uid://bu5bvdgk5c7bw" path="res://Asset/Default/Data/item_data.tres" id="2_dsgh2"]
+[ext_resource type="AudioStream" uid="uid://coqs1mhkxvm06" path="res://Asset/Sound/pick.wav" id="3_7sflo"]
+[ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="4_2ocfx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dsgh2"]
 
@@ -11,6 +13,11 @@ collision_layer = 8
 collision_mask = 2
 script = ExtResource("1_8b1ee")
 data = ExtResource("2_dsgh2")
+pickSound = ExtResource("3_7sflo")
+
+[node name="Shadow" parent="." unique_id=1652518647 instance=ExtResource("4_2ocfx")]
+position = Vector2(0, 15)
+scale = Vector2(0.3, 0.1)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1568232844]
 texture = ExtResource("2_7bd2y")

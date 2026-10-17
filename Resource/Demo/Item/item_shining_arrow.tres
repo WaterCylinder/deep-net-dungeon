@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cadch27n41eha"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_e2i46"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_e6s8s"]
+[ext_resource type="Resource" uid="uid://j0yxyne1r8vv" path="res://Resource/Demo/Item/Buff/buff_shining_arrow.tres" id="2_pvofg"]
+[ext_resource type="Texture2D" uid="uid://eipqv5oq28v0" path="res://Resource/Demo/Item/Sprite/ShiningArrow.png" id="3_e6s8s"]
+
+[resource]
+script = ExtResource("2_e6s8s")
+ItemName = "ShiningArrow"
+showName = "闪光箭头"
+intro = "箭头弹幕的伤害增加30%"
+sprite = ExtResource("3_e6s8s")
+carryBuffs = Dictionary[ExtResource("1_e2i46"), int]({
+ExtResource("2_pvofg"): 1
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

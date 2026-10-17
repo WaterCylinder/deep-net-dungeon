@@ -6,7 +6,11 @@ public enum SmallTextType
     /// <summary>
     /// 快速显示文本，用于伤害显示等
     /// </summary>
-    QuickShow
+    QuickShow,
+    /// <summary>
+    /// 显示数值的变化
+    /// </summary>
+    ValueChangeShow
 }
 
 public partial class SmallText : Node2D
@@ -27,15 +31,24 @@ public partial class SmallText : Node2D
         }
     }
 
-    public static SmallText CreateSmallText(SmallTextType _type, Vector2 pos, string text)
+    public static SmallText CreateSmallText(SmallTextType _type, Vector2 pos, string text, Color color = default, Node parent = null)
     {
         SmallText smallText = Prefab.Instantiate<SmallText>();
 
         smallText.textType = _type;
         smallText.GlobalPosition = pos;
         smallText.SetText(text);
+        smallText.SetColor(color);
 
-        GameManager.Instance.game.smallObjectNode.AddChild(smallText);
+        if(parent == null)
+        {
+            GameManager.Instance.game.smallObjectNode.AddChild(smallText);
+        }
+        else
+        {
+            parent.AddChild(smallText);
+        }
+        
 
         return smallText;
     }
@@ -82,20 +95,42 @@ public partial class SmallText : Node2D
                 }),
                 1f, 0f, 0.2
             );
-            tween.Finished += () => onFinish?.Invoke();
-            tween.Finished += QueueFree;
+            break;
+
+            case SmallTextType.ValueChangeShow:
+            tween.TweenMethod(
+                Callable.From((float v) =>
+                {
+                    Vector2 pos = label.Position;
+                    pos.Y = v;
+                    label.Position = pos;
+                }),
+                0f, -32f, 0.1
+            );
+            tween.TweenInterval(0.64);
             break;
         }
+
+        tween.Finished += () => onFinish?.Invoke();
+        tween.Finished += QueueFree;
     }
 
-    public void SetText(string text)
+    public SmallText SetText(string text)
     {
         label.Text = text;
+        return this;
     }
 
-    public void SetColor(Color color)
+    public SmallText SetColor(Color color)
     {
-        label.LabelSettings.FontColor = color;
+        label.SelfModulate = color;
+        return this;
+    }
+
+    public SmallText SetScale(int scale)
+    {
+        label.Scale = new Vector2(scale, scale);
+        return this;
     }
 
 

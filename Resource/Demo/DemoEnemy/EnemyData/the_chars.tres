@@ -9,6 +9,9 @@
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_1vx6b"]
 [ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="5_1vx6b"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_1vx6b"]
+radius = 20.0
+
 [sub_resource type="Resource" id="Resource_bod2f"]
 script = ExtResource("2_mho08")
 behaviorName = "AttackShotPlayerThree"
@@ -41,6 +44,9 @@ condition = ExtResource("3_bod2f")
 behavior = SubResource("Resource_wmq1f")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_vcfg8"]
+radius = 20.0
+
 [resource]
 script = ExtResource("2_xol1m")
 enemyName = "字符团"
@@ -50,6 +56,9 @@ defense = 0.0
 attackSpeed = 0.1
 speed = 150.0
 sprite = ExtResource("3_xol1m")
+layoutOffset = Vector2(0, -10)
+physicShape = SubResource("CircleShape2D_vcfg8")
+areaShape = SubResource("CircleShape2D_1vx6b")
 onUpdate = SubResource("Resource_x878i")
 onAttack = SubResource("Resource_1vx6b")
 metadata/_custom_type_script = "uid://mqed4halsexx"

@@ -32,6 +32,7 @@ public partial class GameManager : Node
         config = new Config();
         config.LoadConfig();           // config.json
         config.LoadConfig("key_mapper"); // key_mapper.json
+        ApplyAudioConfig();            // 把保存的三个音量应用到音频总线
 
         // 注册所有游戏模式
         RegisterGameModes();
@@ -46,6 +47,31 @@ public partial class GameManager : Node
     }
 
     /// <summary>
+    /// 把配置中保存的音量应用到音频总线，配置缺项时保留总线默认布局
+    /// </summary>
+    private void ApplyAudioConfig()
+    {
+        ApplyBusVolume(AudioUtil.BUS_MASTER, "audio.masterVolume");
+        ApplyBusVolume(AudioUtil.BUS_SOUND, "audio.sfxVolume");
+        ApplyBusVolume(AudioUtil.BUS_MUSIC, "audio.musicVolume");
+    }
+
+    /// <summary>
+    /// 应用单个总线的音量配置
+    /// </summary>
+    /// <param name="busName">总线名称</param>
+    /// <param name="configPath">配置键路径</param>
+    private void ApplyBusVolume(string busName, string configPath)
+    {
+        Variant value = config.GetConfig(configPath);
+        if (value.VariantType == Variant.Type.Nil)
+        {
+            return;
+        }
+        AudioUtil.SetVolume(busName, value.AsSingle());
+    }
+
+    /// <summary>
     /// 注册所有游戏模式到工厂
     /// </summary>
     private void RegisterGameModes()
@@ -53,6 +79,7 @@ public partial class GameManager : Node
         GameModeFactory.Clear();
         GameModeFactory.Register<ClassicMode>("Classic");
         GameModeFactory.Register<TestMode>("Test");
+        GameModeFactory.Register<IncrementMode>("Increment");
         // 在此处注册更多游戏模式...
         // GameModeFactory.Register<RushMode>("Rush");
         // GameModeFactory.Register<ChallengeMode>("Challenge");

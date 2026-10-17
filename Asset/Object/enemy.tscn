@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="4_q0m5t"]
 [ext_resource type="Texture2D" uid="uid://bq3tjiu206x63" path="res://Asset/Default/default_character_sprite.png" id="4_qwyrd"]
 [ext_resource type="PackedScene" uid="uid://dk1elvus77kdw" path="res://Resource/Global/EntityComponent/health_bar.tscn" id="5_126kb"]
+[ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="5_dwg6m"]
 
 [sub_resource type="Resource" id="Resource_aawhf"]
 script = ExtResource("2_126kb")
@@ -123,6 +124,9 @@ speed = SubResource("Resource_ct3sx")
 args = SubResource("Resource_dwg6m")
 area = NodePath("Area")
 
+[node name="Shadow" parent="." unique_id=1652518647 instance=ExtResource("5_dwg6m")]
+position = Vector2(0, 12)
+
 [node name="Layout" type="Node2D" parent="." unique_id=368242966]
 position = Vector2(0, -25)
 
@@ -143,6 +147,7 @@ position = Vector2(0, -11.245)
 shape = SubResource("CapsuleShape2D_qwyrd")
 
 [node name="HealthBar" parent="." unique_id=1727495241 node_paths=PackedStringArray("entity") instance=ExtResource("5_126kb")]
+visible = false
 z_index = 1
 position = Vector2(-20, -66)
 scale = Vector2(0.3, 0.3)

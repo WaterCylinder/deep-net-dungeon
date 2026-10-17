@@ -34,6 +34,16 @@ public partial class BulletData : Resource
     [Export] public Texture2D sprite;
 
     /// <summary>
+    /// 弹幕动态贴图
+    /// </summary>
+    [Export] public SpriteFrames spriteFrames;
+
+    /// <summary>
+    /// 弹幕贴图偏移
+    /// </summary>
+    [Export] public Vector2 layoutOffset = Vector2.Zero;
+
+    /// <summary>
     /// 弹幕缩放
     /// </summary>
     [Export] public Vector2 scale = Vector2.One;
@@ -64,13 +74,20 @@ public partial class BulletData : Resource
     [Export] public BulletBehavior onUpdate;
 
     /// <summary>
-    /// 碰撞时触发的效果
+    /// 击中实体时触发的效果（伤害结算后触发，未造成伤害时同样触发）。
+    /// 传给 Behavior 的参数顺序为 (Bullet bullet, Entity owner, Entity target)
     /// </summary>
-    [Export] public Effect onCollision;
+    [Export] public Effect onHit;
 
     /// <summary>
     /// 生命周期结束时触发的效果
     /// </summary>
     [Export] public Effect onLifetimeEnd;
 
+    /// <summary>
+    /// 弹幕音频 
+    /// </summary>
+    [Export] public AudioStream soundOnShot;
+    [Export] public AudioStream soundOnHit;
+ 
 }

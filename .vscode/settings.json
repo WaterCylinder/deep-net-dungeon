@@ -1,10 +1,3 @@
 {
-    "godotTools.editorPath.godot4": "e:\\DeepNetDungeon\\DeepNetDungeon\\Godot_v4.6.1-stable_mono_win64.exe",
-    "files.exclude": {
-        // 在这里添加你想要隐藏的文件后缀规则
-        "**/*.cs.uid": true,      // 隐藏所有 .cs.meta 文件
-    },
-    "chat.disableAIFeatures": false,
-    "dotnet.projects.enableFileBasedPrograms": false,
     "dotnet.defaultSolution": "DeepNetDungeon.sln"
 }

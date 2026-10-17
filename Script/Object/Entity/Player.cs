@@ -10,12 +10,11 @@ public partial class Player : Entity
     [Export] AnimatedSprite2D animeNode;
 
     [Export] Node2D shotPoint;
+    [Export] AudioStream hitSound;
 
     #region 玩家即时属性
 
     public float bulletSpeed = 10f;
-
-    public BulletData bulletData = null;
 
     public Enemy targetEnemy = null;
 
@@ -146,14 +145,7 @@ public partial class Player : Entity
 
     protected override void OnAttack()
     {
-        if(bulletData == null)
-            return;
-        Bullet but = Bullet.Create(
-            this,
-            shotPoint.GlobalPosition,
-            targetShotToward * bulletSpeed,
-            bulletData
-        );
+        Shot(targetShotToward * bulletSpeed, shotPoint.GlobalPosition);
     }
 
     protected override void OnHurt(Damage damage, float finalDamage)
@@ -166,6 +158,7 @@ public partial class Player : Entity
             Callable.From((float v) => mat.SetShaderParameter("flash_modifier", v)),
             0.0f, 1.0f, 0.05f
         );
+        PlaySoundGlobal(hitSound);
         // 保持一瞬间
         tween.TweenInterval(0.05f);
         // 恢复：0.2 秒
@@ -176,16 +169,6 @@ public partial class Player : Entity
     }
 
     #region 工具方法
-
-    /// <summary>
-    /// 修改当前发射的子弹数据
-    /// </summary>
-    /// <param name="newBulletData"></param>
-    public void ChangeBullet(BulletData newBulletData)
-    {
-        GD.Print($"切换弹幕为{newBulletData}");
-        bulletData = newBulletData;
-    }
 
     #endregion
 }

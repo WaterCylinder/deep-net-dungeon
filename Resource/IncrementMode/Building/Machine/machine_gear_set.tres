@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://cmxp8ofhfxmcg"]
+
+[ext_resource type="Resource" uid="uid://c6ptel4arygcn" path="res://Resource/IncrementMode/Effect/get_building_from_machine_pool.tres" id="1_rybci"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="3_vlavq"]
+[ext_resource type="Texture2D" uid="uid://bmt6jlqs8hpil" path="res://Resource/IncrementMode/Building/Sprite/machine/machine3.png" id="4_b3vv2"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="5_ejlje"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="6_6ppww"]
+
+[sub_resource type="Resource" id="Resource_ni70p"]
+script = ExtResource("5_ejlje")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_rybci"]
+script = ExtResource("6_6ppww")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("5_ejlje")]({
+"Base": SubResource("Resource_ni70p")
+})
+
+[resource]
+script = ExtResource("3_vlavq")
+id = "machine_gear_set"
+buildingName = "机械齿轮组"
+rarity = 2
+intro = "购买时、出售时、回合结束时随机获得{{value}}个【机械】建筑。"
+defaultArgs = null
+value = SubResource("Resource_rybci")
+sprite = ExtResource("4_b3vv2")
+buyPrice = 60
+onBuy = ExtResource("1_rybci")
+onTurnEnd = ExtResource("1_rybci")
+onSell = ExtResource("1_rybci")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

@@ -1,7 +1,6 @@
 using Godot;
 using Godot.Collections;
 using System;
-using System.Collections.Generic;
 
 public enum EntityTag
 {
@@ -78,6 +77,11 @@ public abstract partial class Entity : RigidBody2D
     /// 实体组件
     /// </summary>
     [Export] public Array<EntityComponent> components = new();
+    
+    /// <summary>
+    /// 音频播放器
+    /// </summary>
+    [Export] public AudioStreamPlayer2D audioPlayer;
 
     #endregion
 
@@ -129,6 +133,25 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     [Export] Godot.Collections.Dictionary<string, Timer> tempTimerList = new();
 
+    /// <summary>
+    /// 当前弹幕
+    /// </summary>
+    public BulletData bulletData;
+
+    /// <summary>
+    /// 最新的弹幕
+    /// </summary>
+    public Bullet latestBullet;
+
+    /// <summary>
+    /// 是否在死亡时立刻移除
+    /// </summary>
+    public bool queueFreeOnDeath = true;
+
+    /// <summary>
+    /// 是否在状态上已死亡
+    /// </summary>
+    public bool isDead = false;
 
     #endregion
 
@@ -159,6 +182,15 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="posList"></param>
     /// <param name="normalList"></param>
     [Signal] public delegate void OnContactEventHandler(Array<Vector2> posList, Array<Vector2> normalList);
+    /// <summary>
+    /// 发射弹幕时
+    /// </summary>
+    /// <param name="bullet"></param>
+    [Signal] public delegate void OnShotEventHandler(Bullet bullet);
+    /// <summary>
+    /// 死亡时信号
+    /// </summary>
+    [Signal] public delegate void OnDeathSignalEventHandler(Damage damage);
 
     #endregion
     
@@ -305,7 +337,7 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 当前碰撞中的Entity集合
     /// </summary>
-    private HashSet<Entity> _collidingEntities = new();
+    private System.Collections.Generic.HashSet<Entity> _collidingEntities = new();
 
     #endregion
 
@@ -314,20 +346,16 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 当前挂载的所有Buff
     /// </summary>
-    private List<Buff> _buffs = new();
-
-    /// <summary>
-    /// 获取所有Buff的只读列表
-    /// </summary>
-    public IReadOnlyList<Buff> Buffs => _buffs.AsReadOnly();
+    [Export] public Array<Buff> buffs = new();
 
     /// <summary>
     /// 挂载Buff
     /// </summary>
     /// <param name="buff">Buff实例</param>
-    /// <param name="baseLayer">基础层数</param>
-    /// <returns>挂载后的Buff（可能已存在并叠加）</returns>
-    public Buff AttachBuff(Buff buff, int baseLayer = 1)
+    /// <param name="stack">层数。传null（默认）表示使用该实例自身的基础层数 buff.baseStack</param>
+    /// <returns>挂载后的Buff（可能已存在并被叠加）；层数非法时返回null且不挂载</returns>
+    /// <remarks>同类Buff已存在时的处理方式由 BuffData.isAdded 决定：叠加层数或只重置持续时间（仅对 isUnique 的Buff生效）</remarks>
+    public Buff AttachBuff(Buff buff, int? stack = null)
     {
         if (buff == null || buff.data == null)
         {
@@ -335,22 +363,35 @@ public abstract partial class Entity : RigidBody2D
             return null;
         }
 
-        // 检查是否是唯一Buff
+        int? finalStack = ValidateStack(stack ?? buff.baseStack, buff.data);
+        if (!finalStack.HasValue)
+        {
+            return null;
+        }
+
+        // 唯一Buff：同类只保留一个实例，按 isAdded 决定叠加层数还是只刷新持续时间
         if (buff.isUnique)
         {
-            Buff existingBuff = GetBuff(buff.data.name);
+            Buff existingBuff = GetBuff(buff.data.id);
             if (existingBuff != null)
             {
-                // 已存在同类Buff，刷新持续时间
-                existingBuff.RefreshDuration();
+                if (buff.isAdded)
+                {
+                    // 叠层：在已有Buff上增加层数（上限由BuffData.level决定，达到上限时不再增加）
+                    existingBuff.AddStack(finalStack.Value);
+                }
+                else
+                {
+                    existingBuff.RefreshDuration();
+                }
                 return existingBuff;
             }
         }
 
         // 设置owner并添加
         buff.owner = this;
-        buff.SetStack(baseLayer);
-        _buffs.Add(buff);
+        buff.SetStack(finalStack.Value);
+        buffs.Add(buff);
         
         // 触发挂载事件
         buff.OnAttach();
@@ -365,9 +406,10 @@ public abstract partial class Entity : RigidBody2D
     /// 通过BuffData挂载Buff
     /// </summary>
     /// <param name="data">Buff数据</param>
-    /// <param name="baseLayer">基础层数</param>
-    /// <returns>挂载的Buff</returns>
-    public Buff AttachBuff(BuffData data, int baseLayer = 1)
+    /// <param name="stack">层数。传null（默认）表示使用 BuffData.baseStack</param>
+    /// <returns>挂载的Buff；层数非法时返回null且不挂载</returns>
+    /// <remarks>同类Buff已存在时的处理方式由 BuffData.isAdded 决定（仅对 isUnique 的Buff生效）</remarks>
+    public Buff AttachBuff(BuffData data, int? stack = null)
     {
         if (data == null)
         {
@@ -375,8 +417,36 @@ public abstract partial class Entity : RigidBody2D
             return null;
         }
 
-        Buff buff = new Buff(data, baseLayer);
-        return AttachBuff(buff, baseLayer);
+        int? finalStack = ValidateStack(stack ?? data.baseStack, data);
+        if (!finalStack.HasValue)
+        {
+            return null;
+        }
+
+        Buff buff = new Buff(data, finalStack.Value);
+        return AttachBuff(buff, finalStack.Value);
+    }
+
+    /// <summary>
+    /// 校验挂载层数：层数必须大于0，否则视为非法并打印告警。
+    /// 层数归零在Buff系统里表示"该移除"（Buff.ShouldRemove），因此不能作为挂载层数使用；
+    /// 显式传入非法层数时不做静默回退，避免把调用方的意图悄悄改写成"用默认层数"
+    /// </summary>
+    /// <param name="stack">待校验的层数</param>
+    /// <param name="data">用于告警信息的Buff数据</param>
+    /// <returns>合法层数；非法时返回null（表示本次不挂载）</returns>
+    private static int? ValidateStack(int stack, BuffData data)
+    {
+        if (stack > 0)
+        {
+            return stack;
+        }
+
+        string buffName = data == null
+            ? "null"
+            : (string.IsNullOrEmpty(data.id) ? data.name : data.id);
+        GD.PushWarning($"[Buff] 挂载层数 {stack} 非法（Buff: {buffName}），本次不挂载");
+        return null;
     }
 
     /// <summary>
@@ -388,7 +458,7 @@ public abstract partial class Entity : RigidBody2D
     {
         if (buff == null) return false;
 
-        if (_buffs.Remove(buff))
+        if (buffs.Remove(buff))
         {
             // 触发移除事件
             buff.OnRemove();
@@ -401,16 +471,16 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 通过名称移除Buff
     /// </summary>
-    /// <param name="buffName">Buff名称</param>
+    /// <param name="buffId">BuffID（唯一标识）</param>
     /// <returns>移除的Buff数量</returns>
-    public int RemoveBuff(string buffName)
+    public int RemoveBuff(string buffId)
     {
         int count = 0;
-        List<Buff> toRemove = new();
+        System.Collections.Generic.List<Buff> toRemove = new();
 
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
-            if (buff?.data != null && buff.data.name == buffName)
+            if (buff?.data != null && buff.data.id == buffId)
             {
                 toRemove.Add(buff);
             }
@@ -435,9 +505,9 @@ public abstract partial class Entity : RigidBody2D
     public int RemoveBuffByTag(BuffTag tag)
     {
         int count = 0;
-        List<Buff> toRemove = new();
+        System.Collections.Generic.List<Buff> toRemove = new();
 
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
             if (buff.HasTag(tag))
             {
@@ -461,7 +531,7 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     public void ClearAllBuffs()
     {
-        List<Buff> toRemove = new(_buffs);
+        System.Collections.Generic.List<Buff> toRemove = new(buffs);
         foreach (var buff in toRemove)
         {
             RemoveBuff(buff);
@@ -471,13 +541,13 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 获取指定名称的Buff
     /// </summary>
-    /// <param name="buffName">Buff名称</param>
+    /// <param name="buffId">BuffID（唯一标识）</param>
     /// <returns>找到的Buff，不存在返回null</returns>
-    public Buff GetBuff(string buffName)
+    public Buff GetBuff(string buffId)
     {
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
-            if (buff?.data != null && buff.data.name == buffName)
+            if (buff?.data != null && buff.data.id == buffId)
             {
                 return buff;
             }
@@ -488,11 +558,11 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 检查是否有指定名称的Buff
     /// </summary>
-    /// <param name="buffName">Buff名称</param>
+    /// <param name="buffId">BuffID（唯一标识）</param>
     /// <returns>是否存在</returns>
-    public bool HasBuff(string buffName)
+    public bool HasBuff(string buffId)
     {
-        return GetBuff(buffName) != null;
+        return GetBuff(buffId) != null;
     }
 
     /// <summary>
@@ -502,7 +572,7 @@ public abstract partial class Entity : RigidBody2D
     /// <returns>是否存在</returns>
     public bool HasBuffWithTag(BuffTag tag)
     {
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
             if (buff.HasTag(tag))
             {
@@ -517,10 +587,10 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     /// <param name="tag">Buff标签</param>
     /// <returns>Buff列表</returns>
-    public List<Buff> GetBuffsWithTag(BuffTag tag)
+    public System.Collections.Generic.List<Buff> GetBuffsWithTag(BuffTag tag)
     {
-        List<Buff> result = new();
-        foreach (var buff in _buffs)
+        System.Collections.Generic.List<Buff> result = new();
+        foreach (var buff in buffs)
         {
             if (buff.HasTag(tag))
             {
@@ -558,9 +628,9 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="delta">帧间隔时间</param>
     protected void UpdateBuffs(double delta)
     {
-        List<Buff> toRemove = new();
+        System.Collections.Generic.List<Buff> toRemove = new();
 
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
             if (buff == null)
             {
@@ -586,11 +656,6 @@ public abstract partial class Entity : RigidBody2D
             RemoveBuff(buff);
         }
 
-        // 清理引用已失效的条目
-        if (toRemove.Count > 0 || _buffs.Contains(null))
-        {
-            _buffs.RemoveAll(buff => buff == null);
-        }
     }
 
     #endregion
@@ -607,7 +672,7 @@ public abstract partial class Entity : RigidBody2D
         if (damage == null || !IsAlive) return 0f;
 
         // 触发Buff的受伤事件
-        foreach (var buff in _buffs)
+        foreach (var buff in buffs)
         {
             buff.OnEntityHurt(damage);
         }
@@ -627,6 +692,14 @@ public abstract partial class Entity : RigidBody2D
         float oldHealth = currentHealth;
         float newHealth = Mathf.Max(0f, oldHealth - finalDamage);
         currentHealth = newHealth;
+
+        //显示伤害文本
+        Color color = Colors.White;
+        if (damage.CheckTag(DamageTag.Fire))
+        {
+            color = Colors.Orange;
+        }
+        SmallText.CreateSmallText(SmallTextType.QuickShow, GlobalPosition, "" + finalDamage.ToString("0"), color);
 
         // 触发受伤抽象方法
         OnHurt(damage, finalDamage);
@@ -822,12 +895,27 @@ public abstract partial class Entity : RigidBody2D
             area.BodyExited += OnBodyExited;
         }
 
+        //设置音频组件
+        if(audioPlayer == null)
+        {
+            AudioStreamPlayer2D player = new();
+            AddChild(player);
+            audioPlayer = player;
+        }
+
         OnStart();
     }
 
     public override void _Process(double delta)
     {
         base._Process(delta);
+
+        if (isDead)
+        {   
+            //死亡时停止帧更新
+            MoveStop();
+            return;
+        }
         
         // 更新Buff
         UpdateBuffs(delta);
@@ -867,6 +955,12 @@ public abstract partial class Entity : RigidBody2D
     public override void _IntegrateForces(PhysicsDirectBodyState2D state)
     {
         base._IntegrateForces(state);
+
+        if (isDead)
+        {
+            //死亡则不进行特殊transform处理
+            return;
+        }
 
         //传送
         if(hasPendingTrans)
@@ -931,14 +1025,31 @@ public abstract partial class Entity : RigidBody2D
 
     private void Dead(Damage damage, Entity other)
     {
+        isDead = true;
         OnDeath(damage, other);
-        QueueFree();
+        EmitSignal(SignalName.OnDeathSignal, damage);
+        if(queueFreeOnDeath)
+        {
+            QueueFree();
+        }
+        else
+        {
+            area.SetDeferred("monitorable", false);
+            area.SetDeferred("monitoring", false);
+        }
     }
 
     #endregion
     
     #region 计时器功能
 
+    /// <summary>
+    /// 添加计时器，无法添加同名计时器。
+    /// </summary>
+    /// <param name="label"></param>
+    /// <param name="duration"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public bool AddTempTimer(string label, float duration, Action action)
     {
         if(tempTimerList.ContainsKey(label))
@@ -959,6 +1070,63 @@ public abstract partial class Entity : RigidBody2D
 
     #endregion
 
+    #region 弹幕融合
+
+    /// <summary>
+    /// 修改当前弹幕数据，如果已有则对当前弹幕数据进行融合或覆盖
+    /// </summary>
+    /// <param name="newBulletData"></param>
+    public void ChangeBullet(BulletData newBulletData)
+    {
+        if(newBulletData == null)return;
+        bulletData ??= newBulletData.Duplicate(false) as BulletData;
+    }
+
+    /// <summary>
+    /// 射击当前弹幕，在Attack里调用
+    /// </summary>
+    /// <param name="toward"></param>
+    /// <param name="pos"></param>
+    public void Shot(Vector2 toward, Vector2 pos = default)
+    {
+        if(bulletData == null)
+            return;
+        if(pos == default)
+        {
+            pos = GlobalPosition;
+        }
+        Bullet but = Bullet.Create(
+            this,
+            pos,
+            toward,
+            bulletData
+        );
+        EmitSignal(SignalName.OnShot, but);
+        latestBullet = but;
+    }
+
+
+    #endregion
+
+    #region 音频
+
+    public void PlaySound(AudioStream sound, string bus = "Sound")
+    {
+        if(sound == null)return;
+        audioPlayer.Stream = sound;
+        audioPlayer.Bus = bus;
+        audioPlayer.Play();
+    }
+
+    public void PlaySoundGlobal(AudioStream sound)
+    {
+        if(sound == null)return;
+        Game game = GameManager.Instance.game;
+        game.PlaySound(sound);
+    }
+
+    #endregion
+
     #region 辅助方法
 
     public void Attack()
@@ -967,6 +1135,20 @@ public abstract partial class Entity : RigidBody2D
         {
             OnAttack();
             EmitSignal(nameof(OnAttackSignal));
+            attackTimer = 0;
+        }
+    }
+
+    /// <summary>
+    /// 无视攻击速度强制攻击
+    /// </summary>
+    /// <param name="resetAttackTime"></param>
+    public void ForceAttack(bool resetAttackTime = false)
+    {
+        OnAttack();
+        EmitSignal(nameof(OnAttackSignal));
+        if (resetAttackTime)
+        {
             attackTimer = 0;
         }
     }
@@ -1003,7 +1185,7 @@ public abstract partial class Entity : RigidBody2D
 
     public override string ToString()
     {
-        return $"{GetType().Name}[{Name}] HP:{currentHealth:F0}/{maxHealth.Get():F0} Buffs:{_buffs.Count}";
+        return $"{GetType().Name}[{Name}] HP:{currentHealth:F0}/{maxHealth.Get():F0} Buffs:{buffs.Count}";
     }
 
     #endregion

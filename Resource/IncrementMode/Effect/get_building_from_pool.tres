@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Effect" format=3 uid="uid://bkiuosmsd0sbl"]
+
+[ext_resource type="Script" uid="uid://be4xvnqp06v4n" path="res://Resource/IncrementMode/BuildingBehavior.cs" id="1_pr0vw"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_3qjl2"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_wvs3n"]
+
+[sub_resource type="Resource" id="Resource_pr0vw"]
+script = ExtResource("1_pr0vw")
+behaviorName = "GetBuildingFromPool"
+metadata/_custom_type_script = "uid://be4xvnqp06v4n"
+
+[resource]
+script = ExtResource("3_wvs3n")
+effectName = "获取建筑从建筑池里抽取"
+condition = ExtResource("2_3qjl2")
+behavior = SubResource("Resource_pr0vw")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"

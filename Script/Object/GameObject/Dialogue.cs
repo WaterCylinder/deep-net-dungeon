@@ -43,7 +43,10 @@ public partial class Dialogue : Node2D
     }
 
     [Export] RichTextLabel label;
+    [Export] AudioStreamPlayer2D audioPlayer;
+
     [Export] Array<string> contents;
+
     [Export] float contentWaitTime = 1f;
     [Export] float charTime = 0.07f;
 
@@ -161,6 +164,7 @@ public partial class Dialogue : Node2D
                     }
                     charNow = contentNow[charIndex];
                     sentence += charNow;
+                    audioPlayer.Play();
                     //应用抖动效果文字
                     if (jitterStrength > 0f)
                         label.Text = $"[jitter]{sentence}[/jitter]";

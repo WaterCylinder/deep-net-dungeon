@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://bvavk0yr25kee"]
+
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="1_b1gur"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_lvu75"]
+[ext_resource type="Script" uid="uid://dm2m4nmotp5mm" path="res://Resource/IncrementMode/BuildingBehaviorMachine.cs" id="2_4kj45"]
+[ext_resource type="Texture2D" uid="uid://ddk6yjjhaqywy" path="res://Resource/IncrementMode/Building/Sprite/machine/machine2.png" id="2_375uf"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_b1gur"]
+[ext_resource type="Resource" uid="uid://byjh33oen78l3" path="res://Resource/IncrementMode/Effect/get_resource.tres" id="2_p3v4k"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_uq150"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_4kj45"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_375uf"]
+
+[sub_resource type="Resource" id="Resource_p3v4k"]
+script = ExtResource("2_4kj45")
+behaviorName = "MachineCenterEffect"
+metadata/_custom_type_script = "uid://dm2m4nmotp5mm"
+
+[sub_resource type="Resource" id="Resource_6avx2"]
+script = ExtResource("3_4kj45")
+condition = ExtResource("2_b1gur")
+behavior = SubResource("Resource_p3v4k")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_m2ecc"]
+script = ExtResource("3_375uf")
+baseValue = 10.0
+metadata/_custom_type_script = "uid://dm4xprmsfj8fi"
+
+[resource]
+script = ExtResource("1_lvu75")
+id = "central_control_machine"
+buildingName = "中央控制机械"
+rarity = 3
+intro = "回合结束时获得 {{value}} 资源。场上所有除中央控制机械之外的【机械】建筑的资源量增加本建筑的资源量"
+tags = Array[int]([2])
+defaultArgs = Dictionary[String, Variant]({})
+value = SubResource("Resource_m2ecc")
+sprite = ExtResource("2_375uf")
+buyPrice = 1000
+onUpdate = SubResource("Resource_6avx2")
+onTurnEnd = ExtResource("2_p3v4k")
+onLevelUp = ExtResource("1_b1gur")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

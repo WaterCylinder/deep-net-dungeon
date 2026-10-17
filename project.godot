@@ -15,9 +15,19 @@ run/main_scene="uid://ht5q7xcutoh3"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="uid://cp140xmmhstwt"
 
+[audio]
+
+buses/default_bus_layout="uid://mnraiwjfbxsp"
+
 [autoload]
 
 GameManager="*uid://c7l32nctkkj7m"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="viewport"
 
 [dotnet]
 

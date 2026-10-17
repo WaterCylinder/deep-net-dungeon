@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://0q57ceuoydcg"]
+
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_8p0kc"]
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="1_g84hi"]
+[ext_resource type="Script" uid="uid://dokvjku1hcyu7" path="res://Resource/IncrementMode/BuildingBehaviorChemical.cs" id="1_pns70"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_g84hi"]
+[ext_resource type="Texture2D" uid="uid://cqxikignlfquf" path="res://Resource/IncrementMode/Building/Sprite/chemical/chemical2.png" id="2_oif66"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_vkve5"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_oif66"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_sxai7"]
+
+[sub_resource type="Resource" id="Resource_uapi6"]
+script = ExtResource("1_pns70")
+behaviorName = "ChemicalInjector"
+metadata/_custom_type_script = "uid://dokvjku1hcyu7"
+
+[sub_resource type="Resource" id="Resource_3bago"]
+script = ExtResource("3_sxai7")
+condition = ExtResource("2_g84hi")
+behavior = SubResource("Resource_uapi6")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_j5esb"]
+script = ExtResource("2_vkve5")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_8p0kc"]
+script = ExtResource("3_oif66")
+baseValue = 50.0
+_multipliers = Dictionary[String, ExtResource("2_vkve5")]({
+"Base": SubResource("Resource_j5esb")
+})
+
+[resource]
+script = ExtResource("1_8p0kc")
+id = "chemical_injector"
+buildingName = "化工注射器"
+rarity = 2
+intro = "出售时场上所有的【化工储液罐】的资源点增加{{value}}"
+defaultArgs = null
+value = SubResource("Resource_8p0kc")
+sprite = ExtResource("2_oif66")
+buyPrice = 50
+onSell = SubResource("Resource_3bago")
+onLevelUp = ExtResource("1_g84hi")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

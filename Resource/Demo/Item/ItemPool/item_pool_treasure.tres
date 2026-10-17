@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemPool" format=3 uid="uid://ro48x8dbghh4"]
+
+[ext_resource type="Script" uid="uid://bc5j8miuab1g0" path="res://Script/Object/ItemPool.cs" id="1_hi1m4"]
+[ext_resource type="Resource" uid="uid://2yb8kr3sybeg" path="res://Resource/Demo/Item/item_xst.tres" id="1_qieao"]
+[ext_resource type="Resource" uid="uid://bm7l7b0cjoeg5" path="res://Resource/Demo/Item/item_fire_arrrow.tres" id="2_8hhet"]
+
+[resource]
+script = ExtResource("1_hi1m4")
+pool = Dictionary[Object, int]({
+ExtResource("1_qieao"): 1,
+ExtResource("2_8hhet"): 1
+})
+metadata/_custom_type_script = "uid://bc5j8miuab1g0"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BuildingPool" format=3 uid="uid://disn52tsupxhl"]
+
+[ext_resource type="Resource" uid="uid://7eh6mim7xc0e" path="res://Resource/IncrementMode/Building/Core/core_host.tres" id="1_0dkmy"]
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="1_iqy7g"]
+[ext_resource type="Resource" uid="uid://bvavk0yr25kee" path="res://Resource/IncrementMode/Building/Machine/central_control_machine.tres" id="2_u0502"]
+[ext_resource type="Resource" uid="uid://drmxhd8xb6cbo" path="res://Resource/IncrementMode/Building/Chemical/chemical_distillation_unit.tres" id="3_37pnf"]
+
+[resource]
+script = ExtResource("1_iqy7g")
+pool = Dictionary[Object, int]({
+ExtResource("1_0dkmy"): 2,
+ExtResource("2_u0502"): 4,
+ExtResource("3_37pnf"): 3
+})
+metadata/_custom_type_script = "uid://jetqew8yttgm"

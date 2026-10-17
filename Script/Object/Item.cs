@@ -145,6 +145,11 @@ public partial class Item : Area2D
     [Export] public Behavior onDrop;
     [Export] public Behavior onUpdate;
 
+    [Export] AudioStream pickSound;
+
+    public Sprite2D spriteNode;
+    public AnimatedSprite2D animNode;
+
     #endregion
 
     #region 标签管理
@@ -226,7 +231,6 @@ public partial class Item : Area2D
         onRemove = data.onRemove;
         onUpdate = data.onUpdate;
 
-        Sprite2D spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
         if (spriteNode != null)
         {
             if(data.sprite != null)
@@ -235,12 +239,11 @@ public partial class Item : Area2D
             }
         }
 
-        AnimatedSprite2D animeNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
-        if (animeNode != null)
+        if (animNode != null)
         {
             if(data.spriteFrames != null)
             {
-                animeNode.SpriteFrames = data.spriteFrames;
+                animNode.SpriteFrames = data.spriteFrames;
                 if (spriteNode != null)
                 {
                     spriteNode.Texture = null;
@@ -263,6 +266,24 @@ public partial class Item : Area2D
         {
             Initialize(this.data);
         }
+        spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
+        animNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+
+        float FloatHeight = 10f;   // 浮动幅度（像素）
+        float Duration = 1.0f;     // 单程时间（秒）
+
+        Tween tween = CreateTween();
+        tween.SetLoops(); // 无限循环
+
+        // 向上移动 FloatHeight
+        tween.TweenProperty(spriteNode, "position:y", spriteNode.Position.Y - FloatHeight, Duration)
+             .SetTrans(Tween.TransitionType.Sine)
+             .SetEase(Tween.EaseType.InOut);
+
+        // 回到原来的 Y
+        tween.TweenProperty(spriteNode, "position:y", spriteNode.Position.Y, Duration)
+             .SetTrans(Tween.TransitionType.Sine)
+             .SetEase(Tween.EaseType.InOut);
     }
 
     public override void _Process(double delta)
@@ -282,6 +303,7 @@ public partial class Item : Area2D
         }
         onPick?.Run(picker);
         EmitSignal(nameof(OnPickSignal), picker);
+        GameManager.Instance.game.PlaySound(pickSound);
         ///被拾取时移除自身
         QueueFree();
     }
@@ -340,11 +362,11 @@ public partial class Item : Area2D
         }
         foreach (var pair in carryBuffs)
         {
-            if (pair.Key == null || string.IsNullOrEmpty(pair.Key.name))
+            if (pair.Key == null || string.IsNullOrEmpty(pair.Key.id))
             {
                 continue;
             }
-            Buff buff = target.GetBuff(pair.Key.name);
+            Buff buff = target.GetBuff(pair.Key.id);
             if (buff == null)
             {
                 //目标身上没有该Buff，跳过

@@ -1,24 +1,24 @@
 [gd_scene format=3 uid="uid://cmblg6cmcce1v"]
 
+[ext_resource type="PackedScene" uid="uid://c7oqfb5lw1enf" path="res://Asset/UI/in_game_menu.tscn" id="0_ingamemenu"]
 [ext_resource type="Script" uid="uid://c3k0k360vv4vt" path="res://Script/Core/Game.cs" id="1_6igcf"]
+[ext_resource type="Script" uid="uid://bjn6fibxlfkwd" path="res://Script/UI/HUD.cs" id="2_10r1t"]
 [ext_resource type="Texture2D" uid="uid://rhj1el00uwn2" path="res://Resource/Demo/UI/HUD/HealthBar.png" id="2_13sni"]
 [ext_resource type="Texture2D" uid="uid://cbr6o67kl5nkt" path="res://Resource/Demo/UI/HUD/InnerBar.png" id="2_bxrg2"]
 [ext_resource type="Script" uid="uid://b6prhnpxeysfn" path="res://Script/Object/GameObject/Map.cs" id="2_cohtu"]
 [ext_resource type="Script" uid="uid://dj6jcd3mvlvmn" path="res://Script/UI/PUIHealthBar.cs" id="2_ilbig"]
 [ext_resource type="Script" uid="uid://bhxv43m4jvhx3" path="res://Script/Object/Entity/Player.cs" id="2_ou18a"]
 [ext_resource type="Script" uid="uid://ugjrhfqe3hks" path="res://Script/Object/CameraController.cs" id="2_u6khg"]
-[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="3_2j816"]
 [ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="3_3xgnh"]
 [ext_resource type="Texture2D" uid="uid://bq3tjiu206x63" path="res://Asset/Default/default_character_sprite.png" id="4_3xgnh"]
 [ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="4_48ymf"]
-[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="4_g3fkh"]
-[ext_resource type="Resource" uid="uid://dja8dgj1aoss1" path="res://Resource/Demo/DemoRoom/Level1/room_demo_start.tres" id="4_nspe4"]
 [ext_resource type="Texture2D" uid="uid://df0m6a7umosjq" path="res://Resource/Demo/UI/HUD/BagClose.png" id="5_3jynh"]
-[ext_resource type="Resource" uid="uid://bp6og717rqusk" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_test.tres" id="5_aawhf"]
 [ext_resource type="Script" uid="uid://nivobqo3e8aw" path="res://Script/UI/BagUI.cs" id="5_hqtje"]
 [ext_resource type="PackedScene" uid="uid://b51kk7n386rrv" path="res://Asset/UI/buff_layout_item.tscn" id="5_p323j"]
 [ext_resource type="Texture2D" uid="uid://dxmen587xujbn" path="res://Resource/Demo/UI/HUD/BagOpen.png" id="6_0mc8i"]
 [ext_resource type="PackedScene" uid="uid://dhjpw6yp5gchp" path="res://Asset/Object/Component/trigger.tscn" id="6_48ymf"]
+[ext_resource type="Script" uid="uid://gk4obmr7dv15" path="res://Script/UI/UIHealthBar.cs" id="8_0yiub"]
+[ext_resource type="Script" uid="uid://c7b0sk33c3gb3" path="res://Script/UI/MapUI.cs" id="8_1mx4w"]
 [ext_resource type="PackedScene" uid="uid://cnhkoacuwafyq" path="res://Asset/UI/item_layout_item.tscn" id="8_hbowo"]
 [ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="9_jwmyi"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="9_p323j"]
@@ -26,19 +26,11 @@
 [ext_resource type="SpriteFrames" uid="uid://ctusjok3ndrff" path="res://Resource/Demo/Player/player_frames.tres" id="12_aawhf"]
 [ext_resource type="Script" uid="uid://c4uh4w2l8r4hj" path="res://Script/UI/Demo/BGAutoRotateZoom.cs" id="12_ghk2r"]
 [ext_resource type="Shader" uid="uid://bguaybsuni2ee" path="res://Resource/Shader/Flash.gdshader" id="16_kfjtm"]
-[ext_resource type="Resource" uid="uid://cmw8rahcmat20" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal_1.tres" id="16_mw7jm"]
+[ext_resource type="Resource" uid="uid://cmtrb3xognbvq" path="res://Resource/Demo/map_level1_demo.tres" id="17_65ldo"]
 [ext_resource type="PackedScene" uid="uid://cleomu7wca23h" path="res://Asset/Object/Component/bag.tscn" id="19_1e3q2"]
-
-[sub_resource type="Resource" id="Resource_aawhf"]
-script = ExtResource("4_g3fkh")
-roomDatas = Dictionary[int, Array]({
-0: Array[ExtResource("3_2j816")]([ExtResource("4_nspe4")]),
-1: Array[ExtResource("3_2j816")]([ExtResource("16_mw7jm")]),
-2: Array[ExtResource("3_2j816")]([ExtResource("5_aawhf")]),
-3: Array[ExtResource("3_2j816")]([null]),
-4: Array[ExtResource("3_2j816")]([null])
-})
-metadata/_custom_type_script = "uid://cdikju4kdlymr"
+[ext_resource type="AudioStream" uid="uid://ba8xn7a85s2ct" path="res://Resource/Sounds/hit_001.wav" id="23_vmjmr"]
+[ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="24_65ldo"]
+[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="34_yl8rb"]
 
 [sub_resource type="Resource" id="Resource_cohtu"]
 script = ExtResource("3_3xgnh")
@@ -57,7 +49,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_hjrqo"]
 script = ExtResource("4_48ymf")
-baseValue = 25.0
+baseValue = 10.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_p323j")
 })
@@ -139,8 +131,11 @@ radius = 12.0
 radius = 15.0
 height = 46.0
 
-[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("enemyNode", "roomNode", "dropItemNode", "smallObjectNode")]
+[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("hud", "musicPlayer", "soundPlayeyPoolNode", "enemyNode", "roomNode", "dropItemNode", "smallObjectNode")]
 script = ExtResource("1_6igcf")
+hud = NodePath("CanvasLayer/HUD")
+musicPlayer = NodePath("MainCamera/MusicPlayer")
+soundPlayeyPoolNode = NodePath("SoundPlayerPool")
 enemyNode = NodePath("World/EnemyNode")
 roomNode = NodePath("World/RoomNode")
 dropItemNode = NodePath("World/ItemNode")
@@ -148,7 +143,7 @@ smallObjectNode = NodePath("World/SmallObject")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
 
-[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983]
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983 node_paths=PackedStringArray("BossHealthBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -156,6 +151,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+script = ExtResource("2_10r1t")
+BossHealthBar = NodePath("PUI/BossHealthBar")
 
 [node name="PUI" type="Control" parent="CanvasLayer/HUD" unique_id=898275018]
 layout_mode = 1
@@ -166,7 +163,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("healthInnerBar", "healthCover", "healthSlowCover", "smallTextPoint", "buffNode", "buffIntroNode", "buffIntroLabel")]
+[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("smallTextPoint", "buffNode", "buffIntroNode", "buffIntroLabel", "healthInnerBar", "healthCover", "healthSlowCover", "healthText")]
 layout_mode = 1
 anchor_left = 0.03
 anchor_top = 0.03
@@ -174,14 +171,15 @@ anchor_right = 0.5
 anchor_bottom = 0.15
 mouse_filter = 2
 script = ExtResource("2_ilbig")
-healthInnerBar = NodePath("Bar/Inner/TextureRect")
-healthCover = NodePath("Bar/Inner/Cover")
-healthSlowCover = NodePath("Bar/Inner/SlowCover")
 smallTextPoint = NodePath("SmallTextPoint")
 buffLayoutItemPrefab = ExtResource("5_p323j")
 buffNode = NodePath("BuffShowOut/HBoxContainer")
 buffIntroNode = NodePath("BuffShowOut/BuffIntro")
 buffIntroLabel = NodePath("BuffShowOut/BuffIntro/RichTextLabel")
+healthInnerBar = NodePath("Bar/Inner/TextureRect")
+healthCover = NodePath("Bar/Inner/Cover")
+healthSlowCover = NodePath("Bar/Inner/SlowCover")
+healthText = NodePath("Bar/Label")
 
 [node name="Bar" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=190942017]
 layout_mode = 1
@@ -244,12 +242,25 @@ grow_vertical = 2
 texture = ExtResource("2_13sni")
 expand_mode = 1
 
+[node name="Label" type="Label" parent="CanvasLayer/HUD/PUI/HealthBar/Bar" unique_id=1269813068]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="SmallTextPoint" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=2071235060]
-anchors_preset = 0
-offset_left = 558.44
-offset_top = 4.5600014
-offset_right = 598.44
-offset_bottom = 44.56
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
 mouse_filter = 2
 
 [node name="BuffShowOut" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=1325119690]
@@ -307,6 +318,117 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "效果介绍"
+
+[node name="BossHealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1011011511 node_paths=PackedStringArray("healthInnerBar", "healthCover", "healthSlowCover", "healthText")]
+visible = false
+layout_mode = 1
+anchor_left = 0.51
+anchor_top = 0.03
+anchor_right = 0.97
+anchor_bottom = 0.15
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_0yiub")
+healthInnerBar = NodePath("Bar/Inner/TextureRect")
+healthCover = NodePath("Bar/Inner/Cover")
+healthSlowCover = NodePath("Bar/Inner/SlowCover")
+healthText = NodePath("Bar/Label")
+
+[node name="Bar" type="Control" parent="CanvasLayer/HUD/PUI/BossHealthBar" unique_id=1843356269]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.3
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Inner" type="Control" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar" unique_id=833866604]
+clip_contents = true
+layout_mode = 1
+anchor_top = 0.111
+anchor_right = 1.0
+anchor_bottom = 0.854
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar/Inner" unique_id=650556922]
+self_modulate = Color(3.46821, 18.892157, 18.892157, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 1)
+pivot_offset_ratio = Vector2(1, 0)
+texture = ExtResource("2_bxrg2")
+expand_mode = 1
+
+[node name="SlowCover" type="ColorRect" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar/Inner" unique_id=795062419]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.3, 1)
+pivot_offset_ratio = Vector2(1, 0.5)
+color = Color(0.36, 0.36, 0.36, 1)
+
+[node name="Cover" type="ColorRect" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar/Inner" unique_id=1305241949]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.5, 1)
+pivot_offset_ratio = Vector2(1, 0.5)
+color = Color(0.23, 0.23, 0.23, 0.5803922)
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar" unique_id=1239137902]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_13sni")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar" unique_id=2131880942]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SmallTextPoint" type="Control" parent="CanvasLayer/HUD/PUI/BossHealthBar" unique_id=1666819736]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="MapUI" type="Control" parent="CanvasLayer/HUD" unique_id=1208449617]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 150.0
+grow_horizontal = 0
+script = ExtResource("8_1mx4w")
 
 [node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag", "stateUI", "maxHealth", "currentHealth", "attack", "defense", "attackspeed", "critRate", "critDamage", "speed")]
 layout_mode = 1
@@ -885,21 +1007,25 @@ layout_mode = 2
 texture_normal = ExtResource("5_3jynh")
 stretch_mode = 0
 
+[node name="InGameMenu" parent="CanvasLayer" unique_id=1229394865 instance=ExtResource("0_ingamemenu")]
+
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
 
-[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera")]
+[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera", "bg")]
 position = Vector2(500, 0)
 script = ExtResource("12_ghk2r")
 camera = NodePath("../../MainCamera")
+bg = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="World/BG" unique_id=1832661690]
 position = Vector2(-15, 24)
+scale = Vector2(2, 2)
 texture = ExtResource("11_hjrqo")
 
 [node name="Map" type="Node2D" parent="World" unique_id=754966095]
 unique_name_in_owner = true
 script = ExtResource("2_cohtu")
-data = SubResource("Resource_aawhf")
+data = ExtResource("17_65ldo")
 metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="RoomNode" type="Node2D" parent="World" unique_id=393952347]
@@ -919,6 +1045,7 @@ script = ExtResource("2_ou18a")
 enemyTrigger = NodePath("Trigger")
 animeNode = NodePath("AnimatedSprite2D")
 shotPoint = NodePath("ShotPoint")
+hitSound = ExtResource("23_vmjmr")
 maxHealth = SubResource("Resource_tujvx")
 attack = SubResource("Resource_hjrqo")
 defense = SubResource("Resource_nspe4")
@@ -929,6 +1056,9 @@ critDamage = SubResource("Resource_0mc8i")
 speed = SubResource("Resource_48ymf")
 args = SubResource("Resource_kcbv6")
 area = NodePath("Area2D")
+
+[node name="Shadow" parent="World/Player" unique_id=1652518647 instance=ExtResource("24_65ldo")]
+position = Vector2(0, 8)
 
 [node name="Sprite2D" type="Sprite2D" parent="World/Player" unique_id=1962542118]
 visible = false
@@ -971,3 +1101,16 @@ process_callback = 0
 script = ExtResource("2_u6khg")
 moveSpeed = 8.0
 zoomLimit = Vector2(1, 4)
+
+[node name="SoundPlayer" type="AudioStreamPlayer2D" parent="MainCamera" unique_id=1320540769]
+position = Vector2(-500, 0)
+max_polyphony = 10
+bus = &"Sound"
+
+[node name="MusicPlayer" type="AudioStreamPlayer2D" parent="MainCamera" unique_id=878938584]
+position = Vector2(-500, 0)
+stream = ExtResource("34_yl8rb")
+autoplay = true
+bus = &"Music"
+
+[node name="SoundPlayerPool" type="Node" parent="." unique_id=1545368982]

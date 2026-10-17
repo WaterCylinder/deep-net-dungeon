@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://cutvjhjm1uc5n"]
+
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_0gto5"]
+[ext_resource type="Resource" uid="uid://byjh33oen78l3" path="res://Resource/IncrementMode/Effect/get_resource.tres" id="1_rx1hq"]
+[ext_resource type="Texture2D" uid="uid://jtyq74ufvab1" path="res://Resource/IncrementMode/Building/Sprite/sprite_core.png" id="2_svl85"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="6_f7ppj"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="7_ongqo"]
+
+[sub_resource type="Resource" id="Resource_ongqo"]
+script = ExtResource("6_f7ppj")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_h0h2o"]
+script = ExtResource("7_ongqo")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("6_f7ppj")]({
+"Base": SubResource("Resource_ongqo")
+})
+
+[resource]
+script = ExtResource("1_0gto5")
+id = "core"
+buildingName = "核心"
+intro = "回合开始时产出 {{value}} 资源"
+tags = Array[int]([1])
+defaultArgs = null
+value = SubResource("Resource_h0h2o")
+sprite = ExtResource("2_svl85")
+buyPrice = 1
+sellPrice = 0
+onTurnStart = ExtResource("1_rx1hq")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

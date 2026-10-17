@@ -38,6 +38,7 @@ script = ExtResource("3_8ri1n")
 enemyName = "DemoMelee"
 displayName = "DemoMelee"
 description = "Demo近战怪"
+maxHealth = 75.0
 defense = 0.0
 speed = 80.0
 sprite = ExtResource("4_81xrl")

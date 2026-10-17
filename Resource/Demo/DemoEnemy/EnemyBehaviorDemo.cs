@@ -1,5 +1,6 @@
+using System.Threading.Tasks;
 using Godot;
-using System;
+using Godot.Collections;
 
 [GlobalClass]
 public partial class EnemyBehaviorDemo : EnemyBehavior
@@ -47,14 +48,11 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
         Vector2 toward = player.GlobalPosition - enemy.GlobalPosition;
 
         float bulletSpeed = Arg("speed", 3);
-        BulletData bulletData = Arg("bullet_data", default).As<BulletData>();
+        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
 
-        Bullet.Create(
-            enemy,
-            enemy.GlobalPosition,
-            toward.Normalized() * bulletSpeed,
-            bulletData
-        );
+        enemy.ChangeBullet(bulletData);
+
+        enemy.Shot(toward.Normalized() * bulletSpeed);
     }
 
     /// <summary>
@@ -67,29 +65,35 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
 
         float bulletSpeed = Arg("speed", 3);
         float angle = Arg("angle", 20);
-        BulletData bulletData = Arg("bullet_data", default).As<BulletData>();
+        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
 
         Vector2 toward1 = toward.Rotated(Mathf.DegToRad(angle));
         Vector2 toward2 = toward.Rotated(Mathf.DegToRad(-angle));
 
-        Bullet.Create(
-            enemy,
-            enemy.GlobalPosition,
-            toward.Normalized() * bulletSpeed,
-            bulletData
-        );
-        Bullet.Create(
-            enemy,
-            enemy.GlobalPosition,
-            toward1.Normalized() * bulletSpeed,
-            bulletData
-        );
-        Bullet.Create(
-            enemy,
-            enemy.GlobalPosition,
-            toward2.Normalized() * bulletSpeed,
-            bulletData
-        );
+        enemy.ChangeBullet(bulletData);
+        enemy.Shot(toward.Normalized() * bulletSpeed);
+        enemy.Shot(toward1.Normalized() * bulletSpeed);
+        enemy.Shot(toward2.Normalized() * bulletSpeed);
+    }
+
+    public void AttackShotDistribute(Enemy enemy)
+    {
+        Vector2 toward = Vector2.Right;
+
+        float bulletSpeed = Arg("speed", 4);
+        int shotNum = Arg("shot_num", 8);
+        if(shotNum == 0)shotNum = 1;
+
+        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
+        enemy.ChangeBullet(bulletData);
+
+        Array<Vector2> towards = new();
+        float angle = 360 / shotNum;
+        for(int i = 1; i<=shotNum; i++)
+        {
+            toward = toward.Rotated(Mathf.DegToRad(angle));
+            enemy.Shot(toward.Normalized() * bulletSpeed);
+        }
     }
 
     /// <summary>
@@ -97,8 +101,8 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
     /// </summary>
     public void UpdateReboundMove(Enemy enemy)
     {
-        Vector2 toward = enemy.GetVelocity().Normalized();
-        if(enemy.GetToward() == Vector2.Zero)
+        Vector2 toward = enemy.GetToward();
+        if(toward == Vector2.Zero)
         {
             toward = new Vector2(game.randomSystem.Float(-1, 1), game.randomSystem.Float(-1, 1));
             if(toward == Vector2.Zero)
@@ -143,7 +147,7 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
             enemy.MoveTarget(player.GlobalPosition);
             enemy.AddTempTimer(
                 "follow_and_charged_impact_timer1",
-                5,
+                game.randomSystem.Float(2,3),
                 () => enemy.args.Set("follow_and_charged_impact_state", "charge")
             );
         }
@@ -152,7 +156,7 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
             enemy.MoveStop();
             enemy.AddTempTimer(
                 "follow_and_charged_impact_timer2",
-                1,
+                game.randomSystem.Float(0.5f,1f),
                 () => 
                 {
                     enemy.args.Set("follow_and_charged_impact_state", "impact");
@@ -173,6 +177,66 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
                     enemy.speed.RemoveMultiplier("impact_speed_up");
                 }
             );
+        }
+    }
+
+    public async Task UpdateRiftDefener(Enemy enemy)
+    {
+        enemy.args.Add("rift_defener_state", "follow");
+        
+        if(enemy.args.Get<string>("rift_defener_state") == "follow")
+        {
+            enemy.MoveTarget(player.GlobalPosition);
+            enemy.AddTempTimer(
+                "rift_defener_timer1",
+                game.randomSystem.Float(1, 2),
+                () => {
+                    float r = game.randomSystem.Float();
+                    if(r < 0.5)
+                    {
+                        enemy.args.Set("rift_defener_state", "shot1");
+                    }
+                    else
+                    {
+                        enemy.args.Set("rift_defener_state", "shot2");
+                    }
+                }
+            );
+        }
+        else if(enemy.args.Get<string>("rift_defener_state") == "shot1")
+        {
+            enemy.animNode.Play("attack");
+            enemy.args.Set("rift_defener_state", "shot_anim");
+            //等待动画结束
+            await ToSignal(enemy.animNode, AnimatedSprite2D.SignalName.AnimationFinished);
+            if (enemy.args.Get<string>("rift_defener_state") != "shot_anim") return;
+
+            enemy.Attack();
+            enemy.AddTempTimer(
+                "rift_defener_timer2",
+                0.1f,
+                () => enemy.ForceAttack()
+            );
+            enemy.AddTempTimer(
+                "rift_defener_timer3",
+                0.2f,
+                () => enemy.ForceAttack()
+            );
+            enemy.args.Set("rift_defener_state", "follow");
+            enemy.animNode.Play("idle");
+        }
+        else if(enemy.args.Get<string>("rift_defener_state") == "shot2")
+        {
+            enemy.animNode.Play("attack");
+            enemy.args.Set("rift_defener_state", "shot_anim");
+
+            //等待动画结束
+            await ToSignal(enemy.animNode, AnimatedSprite2D.SignalName.AnimationFinished);
+            if (enemy.args.Get<string>("rift_defener_state") != "shot_anim") return;
+
+            AttackShotDistribute(enemy);
+            enemy.args.Set("rift_defener_state", "follow");
+            enemy.animNode.Play("idle");
         }
     }
 }

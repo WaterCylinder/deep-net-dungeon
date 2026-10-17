@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://hpoc51jlbx45"]
+
+[ext_resource type="Script" uid="uid://cdv0wi7vrua4i" path="res://Resource/Demo/DemoRoom/RoomBehaviorDemo.cs" id="1_d6hb5"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_gfo3s"]
+[ext_resource type="PackedScene" uid="uid://cvl02kfki8vxq" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_boss.tscn" id="2_gfo3s"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_n0ps8"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_qtege"]
+
+[sub_resource type="Resource" id="Resource_81omb"]
+script = ExtResource("1_d6hb5")
+behaviorName = "SetBoss"
+metadata/_custom_type_script = "uid://cdv0wi7vrua4i"
+
+[sub_resource type="Resource" id="Resource_m3upk"]
+script = ExtResource("3_qtege")
+condition = ExtResource("2_n0ps8")
+behavior = SubResource("Resource_81omb")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_gfo3s")
+roomId = "Level1Normal1"
+roomTags = Array[int]([2])
+tileMap = ExtResource("2_gfo3s")
+onGenerateEnemy = SubResource("Resource_m3upk")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

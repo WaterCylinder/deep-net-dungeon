@@ -47,6 +47,7 @@ public partial class InputManager : ManagerBase
         public const string MoveRight = "move_right";
         public const string ActiveSkill = "active_skill";
         public const string OtherSkill = "other_skill";
+        public const string Zoom = "zoom";
         public const string Menu = "menu";
         public const string Confirm = "confirm";
     }
@@ -102,6 +103,13 @@ public partial class InputManager : ManagerBase
     private const string KEY_MAPPER_CONFIG_NAME = "key_mapper";
 
     /// <summary>
+    /// Godot 3 特殊键编码区间。
+    /// Godot 4 重新定义了这批编码，落在该区间的数值必然是旧版遗留，不能直接当Key使用。
+    /// </summary>
+    private const int GODOT3_KEYCODE_BEGIN = 0x01000000;
+    private const int GODOT3_KEYCODE_END = 0x01FFFFFF;
+
+    /// <summary>
     /// 默认键位映射（PC键鼠）—— 用于 Config 未加载时的后备
     /// </summary>
     private static readonly Dictionary<string, List<Key>> FallbackKeyMapping = new()
@@ -112,6 +120,7 @@ public partial class InputManager : ManagerBase
         { Actions.MoveRight, new List<Key> { Key.D, Key.Right } },
         { Actions.ActiveSkill, new List<Key> { (Key)1 } },   // 鼠标左键
         { Actions.OtherSkill, new List<Key> { (Key)2 } },    // 鼠标右键
+        { Actions.Zoom, new List<Key> { (Key)4, (Key)5 } },  // 滚轮上/下
         { Actions.Menu, new List<Key> { Key.Escape } },
         { Actions.Confirm, new List<Key> { Key.Enter, Key.KpEnter } }
     };
@@ -221,6 +230,15 @@ public partial class InputManager : ManagerBase
         {
             // 滚轮等瞬时按键无法保持按下，只记录为「刚刚按下」
             bool holdable = IsHoldableMouseButton(mouseButton.ButtonIndex);
+            // 记录滚轮方向，供GetZoomDirection查询
+            if (mouseButton.ButtonIndex == MouseButton.WheelUp)
+            {
+                _zoomDirection = 1;
+            }
+            else if (mouseButton.ButtonIndex == MouseButton.WheelDown)
+            {
+                _zoomDirection = -1;
+            }
             foreach (string action in FindMouseActions(mouseButton.ButtonIndex))
             {
                 MarkActionPressed(action, holdable);
@@ -528,8 +546,126 @@ public partial class InputManager : ManagerBase
     }
 
     /// <summary>
+    /// 鼠标按键的配置名到MouseButton的映射。
+    /// 鼠标按键不使用数字，否则"1"会被OS.FindKeycodeFromString解析成数字键1
+    /// </summary>
+    private static readonly Dictionary<string, MouseButton> MouseButtonNames = new()
+    {
+        { "MouseLeft", MouseButton.Left },
+        { "MouseRight", MouseButton.Right },
+        { "MouseMiddle", MouseButton.Middle },
+        { "MouseWheelUp", MouseButton.WheelUp },
+        { "MouseWheelDown", MouseButton.WheelDown },
+        { "MouseWheelLeft", MouseButton.WheelLeft },
+        { "MouseWheelRight", MouseButton.WheelRight },
+        { "MouseXButton1", MouseButton.Xbutton1 },
+        { "MouseXButton2", MouseButton.Xbutton2 }
+    };
+
+    /// <summary>
+    /// 尝试把配置项解析为鼠标按键
+    /// </summary>
+    private static bool TryParseMouseButton(string raw, out MouseButton button)
+    {
+        button = MouseButton.None;
+        if (string.IsNullOrEmpty(raw))
+        {
+            return false;
+        }
+
+        if (MouseButtonNames.TryGetValue(raw, out button))
+        {
+            return true;
+        }
+
+        //兼容旧配置：1-9按鼠标按键处理（Godot的MouseButton枚举值1-9即为各鼠标按键）
+        if (int.TryParse(raw, out int code) && code >= 1 && code <= 9)
+        {
+            button = (MouseButton)code;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 解析单个键位配置项。
+    /// 支持键名（如"Escape"、"Up"、"W"）与纯数字键码两种格式。
+    /// 键名通过OS.FindKeycodeFromString解析，因此配置不依赖引擎版本的键码编码；
+    /// 纯数字保留为向后兼容，但仅对ASCII键有效（Godot 3到4的特殊键编码已变化）。
+    /// </summary>
+    /// <param name="raw">配置项原始文本</param>
+    /// <param name="key">解析结果</param>
+    /// <returns>是否解析成功</returns>
+    private static bool TryParseKey(string raw, out Key key)
+    {
+        key = Key.None;
+        if (string.IsNullOrEmpty(raw))
+        {
+            return false;
+        }
+
+        //优先按键名解析
+        Key byName = OS.FindKeycodeFromString(raw);
+        if (byName != Key.None)
+        {
+            key = byName;
+            return true;
+        }
+
+        //回退：按数字键码解析
+        if (int.TryParse(raw, out int keyCode) && keyCode != 0)
+        {
+            //拒绝Godot 3遗留的特殊键编码区间，避免配置中的旧值静默失效
+            if (keyCode >= GODOT3_KEYCODE_BEGIN && keyCode <= GODOT3_KEYCODE_END)
+            {
+                GD.PushWarning($"[InputManager] 键位配置项'{raw}'是Godot 3遗留键码，已忽略并改用默认值，请改为键名（如\"Escape\"）");
+                return false;
+            }
+
+            key = (Key)keyCode;
+            return true;
+        }
+
+        GD.PushWarning($"[InputManager] 无法解析键位配置项：{raw}");
+        return false;
+    }
+
+    /// <summary>
+    /// 把键位转换为配置文件中的文本。
+    /// 鼠标按键写回MouseLeft这类名字，其余按键写回OS提供的键名，
+    /// 从而使配置既不依赖引擎版本的键码编码，也不会与数字键混淆。
+    /// </summary>
+    private static string KeyToConfigString(Key key)
+    {
+        int code = (int)key;
+
+        //鼠标按键区间，写回名字
+        if (code >= 1 && code <= 9)
+        {
+            MouseButton button = (MouseButton)code;
+            foreach (var kvp in MouseButtonNames)
+            {
+                if (kvp.Value == button)
+                {
+                    return kvp.Key;
+                }
+            }
+        }
+
+        //键盘按键，写回键名
+        string keyName = OS.GetKeycodeString(key);
+        if (!string.IsNullOrEmpty(keyName))
+        {
+            return keyName;
+        }
+
+        return code.ToString();
+    }
+
+    /// <summary>
     /// 从 Config 解析键盘映射
-    /// 格式: keyboard.{action} → Variant.Array of keycode strings
+    /// 格式: keyboard.{action} → Variant.Array of 键名或键码字符串
     /// </summary>
     private void ParseKeyMappingFromConfig()
     {
@@ -545,9 +681,17 @@ public partial class InputManager : ManagerBase
                 var list = new List<Key>();
                 foreach (var k in varKeys.AsGodotArray())
                 {
-                    if (int.TryParse(k.AsString(), out int keyCode))
+                    string raw = k.AsString();
+                    //鼠标按键优先判定：其配置名为MouseLeft等，
+                    //若交给OS.FindKeycodeFromString会把旧格式的"1"误解析为数字键1
+                    if (TryParseMouseButton(raw, out MouseButton button))
                     {
-                        list.Add((Key)keyCode);
+                        list.Add((Key)(int)button);
+                        continue;
+                    }
+                    if (TryParseKey(raw, out Key key))
+                    {
+                        list.Add(key);
                     }
                 }
                 if (list.Count > 0)
@@ -616,7 +760,7 @@ public partial class InputManager : ManagerBase
             var arr = new Godot.Collections.Array();
             foreach (var key in kvp.Value)
             {
-                arr.Add(((int)key).ToString());
+                arr.Add(KeyToConfigString(key));
             }
             _config.SetConfig(KEY_MAPPER_CONFIG_NAME, $"keyboard.{kvp.Key}", arr);
         }
@@ -680,6 +824,8 @@ public partial class InputManager : ManagerBase
 
                         var inputEvent = new InputEventMouseButton();
                         inputEvent.ButtonIndex = (MouseButton)keyCode;
+                        // 事件必须标记为按下状态，否则Godot的动作匹配不会命中实际输入
+                        inputEvent.Pressed = true;
                         InputMap.ActionAddEvent(actionName, inputEvent);
                     }
                     else
@@ -689,6 +835,8 @@ public partial class InputManager : ManagerBase
 
                         var inputEvent = new InputEventKey();
                         inputEvent.Keycode = key;
+                        // 事件必须标记为按下状态，否则Godot的动作匹配不会命中实际输入
+                        inputEvent.Pressed = true;
                         InputMap.ActionAddEvent(actionName, inputEvent);
                     }
                 }
@@ -704,6 +852,8 @@ public partial class InputManager : ManagerBase
 
                     var inputEvent = new InputEventJoypadButton();
                     inputEvent.ButtonIndex = btn;
+                    // 事件必须标记为按下状态，否则Godot的动作匹配不会命中实际输入
+                    inputEvent.Pressed = true;
                     InputMap.ActionAddEvent(actionName, inputEvent);
                 }
             }
@@ -761,6 +911,98 @@ public partial class InputManager : ManagerBase
         // 输入源已全部松开却没收到松开事件（例如松开时鼠标位于 UI 上），在此清除标记
         _unhandledPressedActions.Remove(action);
         return false;
+    }
+
+    /// <summary>
+    /// 检查指定动作当前是否按住，与IsActionPressed的区别是不判断是否在UI上。
+    /// <para>
+    /// IsActionPressed要求按下事件曾经通过UI层（未被mouse_filter=Stop的Control截停），
+    /// 因此"从UI上按下"或"鼠标位于UI上"时恒为false；
+    /// 本方法只查原始按键/鼠标状态，无论按下发生在UI还是游戏区域都会返回true。
+    /// </para>
+    /// <para>
+    /// 适用场景：从UI发起的拖拽（例如从面板拖出建筑后放置）。
+    /// 注意：点击UI按钮时本方法也会返回true，因此不可用于"点击UI不触发游戏动作"的判定，
+    /// 那种情况请用IsActionPressed。
+    /// </para>
+    /// </summary>
+    /// <param name="action">动作名称</param>
+    /// <returns>原始输入源是否处于按下状态</returns>
+    public bool IsActionPressedRaw(string action)
+    {
+        if (!_actionSources.TryGetValue(action, out ActionSources sources) || sources.IsEmpty)
+        {
+            return false;
+        }
+
+        return IsAnySourceRawPressed(sources);
+    }
+
+    /// <summary>
+    /// 上一帧各动作的原始按下状态，用于JustPressedRaw/JustReleasedRaw的边沿判定
+    /// </summary>
+    private readonly Dictionary<string, bool> _rawPressedLast = new();
+
+    /// <summary>
+    /// 当前帧各动作的原始按下状态
+    /// </summary>
+    private readonly Dictionary<string, bool> _rawPressedNow = new();
+
+    /// <summary>
+    /// 上次更新原始按下状态的主循环帧号，保证同一帧内多次查询结果一致
+    /// </summary>
+    private long _rawStateFrame = -1;
+
+    /// <summary>
+    /// 每帧刷新一次原始按下状态快照，供JustPressedRaw/JustReleasedRaw判定边沿
+    /// </summary>
+    private void UpdateRawPressedState()
+    {
+        long frame = (long)Engine.GetProcessFrames();
+        if (frame == _rawStateFrame)
+        {
+            return;
+        }
+
+        _rawStateFrame = frame;
+        _rawPressedLast.Clear();
+        foreach (var kvp in _rawPressedNow)
+        {
+            _rawPressedLast[kvp.Key] = kvp.Value;
+        }
+
+        foreach (var action in _actionSources.Keys)
+        {
+            _rawPressedNow[action] = IsActionPressedRaw(action);
+        }
+    }
+
+    /// <summary>
+    /// 检查指定动作是否刚刚从未按下变为按下（忽略UI截停）。
+    /// 以主循环帧号为基准，同一帧内多次查询结果一致。
+    /// </summary>
+    /// <param name="action">动作名称</param>
+    /// <returns>是否刚刚按下</returns>
+    public bool IsActionJustPressedRaw(string action)
+    {
+        UpdateRawPressedState();
+        _rawPressedNow.TryGetValue(action, out bool now);
+        _rawPressedLast.TryGetValue(action, out bool last);
+        return now && !last;
+    }
+
+    /// <summary>
+    /// 检查指定动作是否刚刚从按下变为未按下（忽略UI截停）。
+    /// 以主循环帧号为基准，同一帧内多次查询结果一致。
+    /// </summary>
+    /// <param name="action">动作名称</param>
+    /// <returns>是否刚刚松开</returns>
+    public bool IsActionJustReleasedRaw(string action)
+    {
+        UpdateRawPressedState();
+        _rawPressedNow.TryGetValue(action, out bool now);
+        _rawPressedLast.TryGetValue(action, out bool last);
+        return !now && last;
     }
 
     /// <summary>
@@ -838,6 +1080,71 @@ public partial class InputManager : ManagerBase
         }
 
         return GetViewport().GetMousePosition();
+    }
+
+    /// <summary>
+    /// 由视口鼠标位置推导的上一帧鼠标屏幕坐标
+    /// </summary>
+    private Vector2 _lastMousePos = Vector2.Zero;
+
+    /// <summary>
+    /// 本帧的鼠标屏幕位移
+    /// </summary>
+    private Vector2 _mouseDelta = Vector2.Zero;
+
+    /// <summary>
+    /// 上次更新鼠标位移时的主循环帧号，保证同一帧内多次查询得到相同结果
+    /// </summary>
+    private long _mouseDeltaFrame = -1;
+
+    /// <summary>
+    /// 最近一次滚轮方向：1为向上，-1为向下，0为未滚动
+    /// </summary>
+    private int _zoomDirection = 0;
+
+    /// <summary>
+    /// 获取滚轮方向，读取后重置为0，因此每次滚动只会被取走一次
+    /// </summary>
+    /// <returns>1为滚轮向上，-1为滚轮向下，0为本次无滚动</returns>
+    public int GetZoomDirection()
+    {
+        int direction = _zoomDirection;
+        _zoomDirection = 0;
+        return direction;
+    }
+
+    /// <summary>
+    /// 本帧的鼠标屏幕位移（仅键鼠模式有效）
+    /// 由视口鼠标位置逐帧差分得到，同一帧内重复调用返回同一结果
+    /// </summary>
+    /// <returns>鼠标屏幕位移，非键鼠模式返回Vector2.Zero</returns>
+    public Vector2 GetMouseDelta()
+    {
+        if (CurrentMode != InputMode.KeyboardMouse)
+        {
+            return Vector2.Zero;
+        }
+
+        long frame = (long)Engine.GetProcessFrames();
+        if (frame == _mouseDeltaFrame)
+        {
+            return _mouseDelta;
+        }
+
+        Vector2 pos = GetViewport().GetMousePosition();
+        if (_mouseDeltaFrame < 0)
+        {
+            //首次调用只记录位置
+            _lastMousePos = pos;
+            _mouseDelta = Vector2.Zero;
+            _mouseDeltaFrame = frame;
+            return _mouseDelta;
+        }
+
+        _mouseDelta = pos - _lastMousePos;
+        _lastMousePos = pos;
+        _mouseDeltaFrame = frame;
+        return _mouseDelta;
     }
 
     /// <summary>

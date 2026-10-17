@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="BuildingPool" format=3 uid="uid://b7w8mr1ucxyoi"]
+
+[ext_resource type="Resource" uid="uid://dadqydmcp58f1" path="res://Resource/IncrementMode/Building/Core/core_server.tres" id="1_lcimg"]
+[ext_resource type="Script" uid="uid://jetqew8yttgm" path="res://Script/IncrementMode/Object/BuildingPool.cs" id="1_mdc0t"]
+[ext_resource type="Resource" uid="uid://dd7ur6orvu8dr" path="res://Resource/IncrementMode/Building/Core/core_switch.tres" id="2_2oxtg"]
+[ext_resource type="Resource" uid="uid://c84kr1oiessmj" path="res://Resource/IncrementMode/Building/Machine/standard_machinery.tres" id="3_yyn15"]
+[ext_resource type="Resource" uid="uid://02u1liskea8v" path="res://Resource/IncrementMode/Building/Machine/machine_clock.tres" id="4_v6lvv"]
+[ext_resource type="Resource" uid="uid://cqawbrxlnvqha" path="res://Resource/IncrementMode/Building/Normal/fuel_supply_bunker.tres" id="5_2oxtg"]
+[ext_resource type="Resource" uid="uid://s7glfe0intyt" path="res://Resource/IncrementMode/Building/Chemical/chemical_liquid_storage_tank.tres" id="6_yyn15"]
+[ext_resource type="Resource" uid="uid://dtnvcb0rsbx5l" path="res://Resource/IncrementMode/Building/Chemical/chemical_mysterious_liquid.tres" id="7_v6lvv"]
+
+[resource]
+script = ExtResource("1_mdc0t")
+pool = Dictionary[Object, int]({
+ExtResource("1_lcimg"): 28,
+ExtResource("2_2oxtg"): 28,
+ExtResource("3_yyn15"): 28,
+ExtResource("4_v6lvv"): 28,
+ExtResource("5_2oxtg"): 8,
+ExtResource("6_yyn15"): 28,
+ExtResource("7_v6lvv"): 20
+})
+metadata/_custom_type_script = "uid://jetqew8yttgm"

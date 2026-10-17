@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_fh0jy"]
 [ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="1_itemdata"]
-[ext_resource type="Resource" uid="uid://blghlwdii7wui" path="res://Resource/Demo/Item/buff_auto_attack.tres" id="2_fh0jy"]
-[ext_resource type="Texture2D" uid="uid://cdcwsyvjdiit2" path="res://Resource/Demo/Item/arrow.png" id="4_fh0jy"]
+[ext_resource type="Resource" uid="uid://blghlwdii7wui" path="res://Resource/Demo/Item/Buff/buff_auto_attack.tres" id="2_fh0jy"]
+[ext_resource type="Texture2D" uid="uid://cdcwsyvjdiit2" path="res://Resource/Demo/Item/Sprite/arrow.png" id="4_fh0jy"]
 
 [resource]
 script = ExtResource("1_itemdata")

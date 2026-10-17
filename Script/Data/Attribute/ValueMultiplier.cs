@@ -2,7 +2,10 @@ using Godot;
 
 /// <summary>
 /// 数值乘区信息
+/// 需要[GlobalClass]：否则在检查器里为_multipliers这类"带类型的字典/数组"新建元素时，
+/// Godot无法实例化本类型，会退化成没有挂脚本的空Resource，读取时类型转换必然失败
 /// </summary>
+[GlobalClass]
 public partial class ValueMultiplier : Resource
 {
     /// <summary>

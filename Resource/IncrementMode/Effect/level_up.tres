@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Effect" format=3 uid="uid://bhk8ll1kr02ap"]
+
+[ext_resource type="Script" uid="uid://be4xvnqp06v4n" path="res://Resource/IncrementMode/BuildingBehavior.cs" id="1_oc0pq"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="1_xtaqt"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_xfsrm"]
+
+[sub_resource type="Resource" id="Resource_oc0pq"]
+script = ExtResource("1_oc0pq")
+behaviorName = "LevelUp"
+metadata/_custom_type_script = "uid://be4xvnqp06v4n"
+
+[resource]
+script = ExtResource("1_xtaqt")
+effectName = "等级提升"
+condition = ExtResource("2_xfsrm")
+behavior = SubResource("Resource_oc0pq")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"

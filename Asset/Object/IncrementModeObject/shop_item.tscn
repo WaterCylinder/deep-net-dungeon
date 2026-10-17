@@ -1,0 +1,137 @@
+[gd_scene format=3 uid="uid://bhkwvwtltyc8n"]
+
+[ext_resource type="Script" uid="uid://my7cyctt5dkf" path="res://Script/IncrementMode/UI/BuildingShopItem.cs" id="1_opvhr"]
+[ext_resource type="Texture2D" uid="uid://xrbw8r6j4xyj" path="res://Resource/IncrementMode/Building/Sprite/sprite_build_001.png" id="2_xa28u"]
+[ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="3_yat11"]
+[ext_resource type="Texture2D" uid="uid://mta5gyw12yih" path="res://Asset/Sprite/White.png" id="4_o0scg"]
+[ext_resource type="Script" uid="uid://b0t1ghxmke0f1" path="res://Plugin/AutoSizedText/addons/AutoSizeText/ui/AutoSizeRichTextLabel.gd" id="4_xa28u"]
+
+[node name="Commodity" type="Control" unique_id=663570485 node_paths=PackedStringArray("button", "name", "textureRect", "rarity", "tag", "priceLabel", "introLabel")]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_opvhr")
+button = NodePath("TextureButton")
+name = NodePath("VBoxContainer/Name")
+textureRect = NodePath("VBoxContainer/TextureRect")
+rarity = NodePath("VBoxContainer/TextureRect/Tag/AspectRatioContainer/HBoxContainer/TextureRect")
+tag = NodePath("VBoxContainer/TextureRect/Tag/AspectRatioContainer/HBoxContainer/Label")
+priceLabel = NodePath("VBoxContainer/Label")
+introLabel = NodePath("VBoxContainer/Control/RichTextLabel")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=652192933]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1730178198]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+
+[node name="Name" type="Label" parent="VBoxContainer" unique_id=282311842]
+layout_mode = 2
+text = "建筑名称"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer" unique_id=1066958870]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+texture = ExtResource("2_xa28u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tag" type="Control" parent="VBoxContainer/TextureRect" unique_id=2118175452]
+layout_mode = 1
+anchor_top = 0.9
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_right = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="VBoxContainer/TextureRect/Tag" unique_id=1594668893]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment_horizontal = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TextureRect/Tag/AspectRatioContainer" unique_id=1416712032]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/TextureRect/Tag/AspectRatioContainer/HBoxContainer" unique_id=1208270333]
+layout_mode = 2
+texture = ExtResource("4_o0scg")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="VBoxContainer/TextureRect/Tag/AspectRatioContainer/HBoxContainer" unique_id=1406815917]
+layout_mode = 2
+text = "机械"
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1751048660]
+layout_mode = 2
+text = "100"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Label" unique_id=819603160]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_yat11")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=1254756109]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/Control" unique_id=185410148]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_right = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+theme_override_font_sizes/bold_italics_font_size = 8
+theme_override_font_sizes/italics_font_size = 8
+theme_override_font_sizes/mono_font_size = 8
+bbcode_enabled = true
+text = "建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍建筑介绍"
+scroll_following = true
+script = ExtResource("4_xa28u")
+metadata/_custom_type_script = "uid://b0t1ghxmke0f1"
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=1604484394]
+self_modulate = Color(0.23, 0.23, 0.23, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("4_o0scg")
+ignore_texture_size = true
+stretch_mode = 0

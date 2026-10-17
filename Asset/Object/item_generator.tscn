@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cmnv5ygvfjkqt"]
 
-[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Temp.png" id="1_0q88d"]
+[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Sprite/Temp.png" id="1_0q88d"]
 [ext_resource type="Script" uid="uid://3huyo1kxx30v" path="res://Script/Object/ItemGenerator.cs" id="2_x5ckf"]
 
 [node name="ItemGenerator" type="Sprite2D" unique_id=1631980262]

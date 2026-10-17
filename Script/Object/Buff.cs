@@ -19,63 +19,74 @@ public partial class Buff : RefCounted
     /// </summary>
     public Entity owner;
 
-    public string id;
-    
-    public string name;
+    /// <summary>
+    /// BuffID（来自BuffData，唯一标识）
+    /// </summary>
+    [Export] public string id;
 
-    public Texture2D sprite;
+    /// <summary>
+    /// Buff显示名称
+    /// </summary>
+    [Export] public string name;
 
-    public string intro;
+    [Export] public Texture2D sprite;
+
+    [Export] public string intro;
 
     /// <summary>
     /// 当前层数
     /// </summary>
-    public int currentStack;
+    [Export] public int currentStack;
 
     /// <summary>
     /// 基础层数（挂载时的初始层数）
     /// </summary>
-    public int baseStack;
+    [Export] public int baseStack;
 
     /// <summary>
     /// 最大层数
     /// </summary>
-    public int maxStack = 1;
+    [Export] public int maxStack = 1;
 
     /// <summary>
     /// 剩余持续时间（秒）
     /// </summary>
-    public float remainingDuration;
+    [Export] public float remainingDuration;
 
     /// <summary>
     /// 总持续时间（秒）
     /// </summary>
-    public float totalDuration;
+    [Export] public float totalDuration;
 
     /// <summary>
     /// 定时触发间隔（秒）
     /// </summary>
-    public float processTime;
+    [Export] public float processTime;
 
     /// <summary>
     /// 定时触发计时器
     /// </summary>
-    public float timer;
+    [Export] public float timer;
 
     /// <summary>
     /// Buff是否显示（UI上）
     /// </summary>
-    public bool isVisible = true;
+    [Export] public bool isVisible = true;
 
     /// <summary>
     /// 是否是唯一Buff（同类Buff只能存在一个）
     /// </summary>
-    public bool isUnique = false;
+    [Export] public bool isUnique = false;
+
+    /// <summary>
+    /// 重复挂载同类Buff时是否叠加层数（仅在 isUnique 时生效）
+    /// </summary>
+    [Export] public bool isAdded = false;
 
     /// <summary>
     /// Buff标签
     /// </summary>
-    public Array<BuffTag> tags = new();
+    [Export] public Array<BuffTag> tags = new();
 
     #endregion
 
@@ -104,7 +115,7 @@ public partial class Buff : RefCounted
         this.data = data;
         this.baseStack = baseStack;
         currentStack = baseStack;
-        maxStack = data.level > 0 ? data.level : 1;
+        maxStack = data.maxStack > 0 ? data.maxStack : 1;
 
         id = data.id;
         name = data.name;
@@ -122,6 +133,7 @@ public partial class Buff : RefCounted
         // 加载显示和唯一性属性
         isVisible = data.isVisible;
         isUnique = data.isUnique;
+        isAdded = data.isAdded;
         
         // 浅克隆标签列表
         tags = new Array<BuffTag>(data.tags);
@@ -371,8 +383,8 @@ public partial class Buff : RefCounted
 
     public override string ToString()
     {
-        string name = data?.id ?? "Unknown";
-        return $"Buff[{name}] Stack:{currentStack}/{maxStack} Duration:{remainingDuration:F1}/{totalDuration:F1}";
+        string buffId = data?.id ?? "Unknown";
+        return $"Buff[{buffId}] Stack:{currentStack}/{maxStack} Duration:{remainingDuration:F1}/{totalDuration:F1}";
     }
 
     #endregion

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://s7glfe0intyt"]
+
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="1_35k55"]
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="1_h5h8u"]
+[ext_resource type="Resource" uid="uid://bhk8ll1kr02ap" path="res://Resource/IncrementMode/Effect/level_up.tres" id="1_y4c44"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_m3g7t"]
+[ext_resource type="Texture2D" uid="uid://c6qqnfoyykmbs" path="res://Resource/IncrementMode/Building/Sprite/chemical/chemical1.png" id="2_qagvi"]
+[ext_resource type="Resource" uid="uid://rslyf3332jsl" path="res://Resource/IncrementMode/Effect/get_resource_raw.tres" id="2_y4c44"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_qagvi"]
+
+[sub_resource type="Resource" id="Resource_hjrdn"]
+script = ExtResource("2_m3g7t")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_h5h8u"]
+script = ExtResource("3_qagvi")
+baseValue = 2.0
+_multipliers = Dictionary[String, ExtResource("2_m3g7t")]({
+"Base": SubResource("Resource_hjrdn")
+})
+
+[resource]
+script = ExtResource("1_35k55")
+id = "chemical_liquid_storage_tank"
+buildingName = "化工储液罐"
+rarity = 1
+intro = "出售时额外获得{{value}}资源，回合结束时升级。"
+tags = Array[int]([3])
+defaultArgs = Dictionary[String, Variant]({})
+value = SubResource("Resource_h5h8u")
+sprite = ExtResource("2_qagvi")
+buyPrice = 10
+onTurnEnd = ExtResource("1_y4c44")
+onSell = ExtResource("2_y4c44")
+onLevelUp = ExtResource("1_h5h8u")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"

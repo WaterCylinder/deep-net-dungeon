@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="BuildingData" format=3 uid="uid://dh2msxdb5muss"]
+
+[ext_resource type="Resource" uid="uid://dd0fg67vtnna3" path="res://Resource/IncrementMode/Effect/value_up.tres" id="1_cxbwm"]
+[ext_resource type="Resource" uid="uid://byjh33oen78l3" path="res://Resource/IncrementMode/Effect/get_resource.tres" id="2_f30jp"]
+[ext_resource type="Script" uid="uid://bqs0bejx0ndin" path="res://Script/IncrementMode/Data/BuildingData.cs" id="3_8bq5n"]
+[ext_resource type="Texture2D" uid="uid://cmu5uesgg5gs1" path="res://Resource/IncrementMode/Building/Sprite/machine/machine5.png" id="4_htmkw"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="5_4s1bs"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="6_qcmot"]
+
+[sub_resource type="Resource" id="Resource_cxbwm"]
+script = ExtResource("6_qcmot")
+baseValue = 20.0
+metadata/_custom_type_script = "uid://dm4xprmsfj8fi"
+
+[resource]
+script = ExtResource("3_8bq5n")
+id = "machine_forging_anvil"
+buildingName = "机械锻造砧"
+rarity = 2
+intro = "回合开始时、回合结束时获得 {{value}} 资源"
+tags = Array[int]([2])
+defaultArgs = Dictionary[String, Variant]({})
+value = SubResource("Resource_cxbwm")
+sprite = ExtResource("4_htmkw")
+buyPrice = 150
+onTurnStart = ExtResource("2_f30jp")
+onTurnEnd = ExtResource("2_f30jp")
+onLevelUp = ExtResource("1_cxbwm")
+metadata/_custom_type_script = "uid://bqs0bejx0ndin"
