@@ -11,6 +11,11 @@ public partial class ValueMultiplier : Resource
     [Export] public string id = "";
 
     /// <summary>
+    /// 排序标识码，决定乘区在计算时的先后顺序，越小的Code会在计算的左边
+    /// </summary>
+    [Export] public int sortCode = 0;
+
+    /// <summary>
     /// 来源数值
     /// </summary>
     [Export] public Value source;
@@ -32,16 +37,17 @@ public partial class ValueMultiplier : Resource
     {
     }
 
-    public ValueMultiplier(string id = "", float additive = 0f, float multiplier = 1f, Value source = null)
+    public ValueMultiplier(string id = "", float additive = 0f, float multiplier = 1f, Value source = null, int sortCode = 0)
     {
         this.id = id;
         this.additive = additive;
         this.multiplier = multiplier;
         this.source = source;
+        this.sortCode = sortCode;
     }
 
     public override string ToString()
     {
-        return $"Multiplier[{id}] source:{source} add:{additive} mul:{multiplier}";
+        return $"Multiplier[{id}] sort:{sortCode} source:{source} add:{additive} mul:{multiplier}";
     }
 }

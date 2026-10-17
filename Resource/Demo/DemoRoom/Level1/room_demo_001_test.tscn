@@ -5,7 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://ram0gxhmoss1" path="res://Asset/Object/enemy_generator.tscn" id="3_ewtqi"]
 [ext_resource type="Resource" uid="uid://b4w0fuohljph5" path="res://Resource/Demo/DemoEnemy/EnemyData/the_vision_melee.tres" id="4_0gwnc"]
 [ext_resource type="Resource" uid="uid://cekjslagvsnya" path="res://Resource/Demo/DemoEnemy/EnemyData/the_vision_bullet.tres" id="5_7di6o"]
+[ext_resource type="Resource" uid="uid://wb8iubc27yil" path="res://Resource/Demo/DemoEnemy/EnemyData/the_block.tres" id="5_jpr2m"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="5_wwgae"]
+[ext_resource type="Resource" uid="uid://bsjwbxaql6g71" path="res://Resource/Demo/DemoEnemy/EnemyData/the_chars.tres" id="6_k2b4g"]
 
 [node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "doorsNode")]
 script = ExtResource("1_kgcb0")
@@ -24,14 +26,16 @@ tile_set = ExtResource("2_r2mbp")
 [node name="EnemyGenerator" parent="EnemyGenerator/1" unique_id=463566022 instance=ExtResource("3_ewtqi")]
 position = Vector2(-352, -160)
 enemyData = ExtResource("4_0gwnc")
+GenerateList = true
+dataList = Array[Object]([ExtResource("4_0gwnc"), ExtResource("4_0gwnc"), ExtResource("4_0gwnc")])
 
 [node name="EnemyGenerator2" parent="EnemyGenerator/1" unique_id=2024477778 instance=ExtResource("3_ewtqi")]
 position = Vector2(-352, -96)
-enemyData = ExtResource("4_0gwnc")
+enemyData = ExtResource("5_jpr2m")
 
 [node name="EnemyGenerator3" parent="EnemyGenerator/1" unique_id=152287212 instance=ExtResource("3_ewtqi")]
 position = Vector2(-352, -32)
-enemyData = ExtResource("4_0gwnc")
+enemyData = ExtResource("6_k2b4g")
 
 [node name="2" type="Node2D" parent="EnemyGenerator" unique_id=2093633788]
 
@@ -45,7 +49,8 @@ enemyData = ExtResource("5_7di6o")
 
 [node name="EnemyGenerator3" parent="EnemyGenerator/2" unique_id=1777056522 instance=ExtResource("3_ewtqi")]
 position = Vector2(352, -32)
-enemyData = ExtResource("5_7di6o")
+enemyData = ExtResource("5_jpr2m")
+dataList = Array[Object]([])
 
 [node name="Doors" type="Node2D" parent="." unique_id=1913729891]
 

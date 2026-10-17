@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,8 +8,9 @@ using Godot;
 public partial class Behavior : Resource // Behavior类继承自Resource，是资源类的一部分
 {
     public static bool logEnabled = false; // 是否启用日志记录
-    // 使用静态字典存储方法信息，键为方法名，值为方法信息
-    public static System.Collections.Generic.Dictionary<string, MethodInfo> MethodList = new();
+    // 方法缓存按Behavior子类分区，避免不同子类的同名方法互相串味
+    // 结构：Behavior类型 -> （方法名 -> 方法信息）
+    public static Dictionary<Type, Dictionary<string, MethodInfo>> MethodList = new();
     // 行为名称
     [Export]public string behaviorName = "";
     // 参数
@@ -19,6 +21,27 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
         if(logEnabled)
             GD.Print($"[{GetType().Name}.{behaviorName}] {message}");
     }
+
+    /// <summary>
+    /// 获取当前类型的方法信息，首次访问时缓存
+    /// </summary>
+    /// <param name="methodName">方法名</param>
+    /// <returns>方法信息，未找到返回null</returns>
+    private MethodInfo GetCachedMethod(string methodName)
+    {
+        Type type = GetType();
+        if(!MethodList.TryGetValue(type, out var methods))
+        {
+            methods = new Dictionary<string, MethodInfo>();
+            MethodList[type] = methods;
+        }
+        if(!methods.TryGetValue(methodName, out MethodInfo method))
+        {
+            method = type.GetMethod(methodName);
+            methods[methodName] = method;
+        }
+        return method;
+    }
     
     /// <summary>
     /// 执行指定名称的行为方法，并返回结果
@@ -27,20 +50,8 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
     /// <returns>方法执行后的结果，如果执行失败则返回默认值</returns>
     public virtual T Run<T>(string methodName, params object[] args)
     {   
-        // 用于存储要执行的方法信息
-        MethodInfo method;
-        // 首先检查方法是否已缓存
-        if (MethodList.ContainsKey(methodName))
-        {
-            // 从缓存中获取方法
-            method = MethodList[methodName];
-        }
-        else
-        {
-            // 如果未缓存，则从当前类型中获取方法并添加到缓存
-            method = GetType().GetMethod(methodName);
-            MethodList.Add(methodName, method);
-        }
+        //获取方法信息（按当前对象类型分区缓存）
+        MethodInfo method = GetCachedMethod(methodName);
         // 如果找到方法
         if (method != null)
         {
@@ -175,7 +186,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
     {
         if (args.ContainsKey(key))
         {
-            if(args[key] is T value)
+            if(args[key].As<GodotObject>() is T value)
             {
                 return value;
             }

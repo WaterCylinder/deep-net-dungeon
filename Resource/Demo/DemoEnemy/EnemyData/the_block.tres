@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://wb8iubc27yil"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_2awj6"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_rc3mw"]
+[ext_resource type="Script" uid="uid://i1nqlccnmape" path="res://Resource/Demo/DemoEnemy/EnemyBehaviorDemo.cs" id="2_s31ro"]
+[ext_resource type="Texture2D" uid="uid://c55ox5g7j7uyi" path="res://Resource/Demo/DemoEnemy/Sprite/block.png" id="3_rc3mw"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="3_y6fl3"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_w11wo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bu7ba"]
+size = Vector2(32, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3dujv"]
+size = Vector2(32, 32)
+
+[sub_resource type="Resource" id="Resource_0tldd"]
+script = ExtResource("2_s31ro")
+behaviorName = "UpdateFollowAndChargedImpact"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_ycjn6"]
+script = ExtResource("4_w11wo")
+condition = ExtResource("3_y6fl3")
+behavior = SubResource("Resource_0tldd")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s31ro"]
+size = Vector2(30, 30)
+
+[resource]
+script = ExtResource("2_rc3mw")
+enemyName = "方块"
+displayName = "方块"
+description = "神秘方块"
+maxHealth = 180.0
+sprite = ExtResource("3_rc3mw")
+layoutOffset = Vector2(0, 0)
+physicShape = SubResource("RectangleShape2D_s31ro")
+areaShape = SubResource("RectangleShape2D_bu7ba")
+attackShape = SubResource("RectangleShape2D_3dujv")
+meleeOffest = Vector2(0, 0)
+onUpdate = SubResource("Resource_ycjn6")
+metadata/_custom_type_script = "uid://mqed4halsexx"

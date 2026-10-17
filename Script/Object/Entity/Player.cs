@@ -9,9 +9,11 @@ public partial class Player : Entity
 
     [Export] AnimatedSprite2D animeNode;
 
-    [Export] Node2D arrowNode;
+    [Export] Node2D shotPoint;
 
-    # region 玩家即时属性
+    #region 玩家即时属性
+
+    public float bulletSpeed = 10f;
 
     public BulletData bulletData = null;
 
@@ -19,7 +21,7 @@ public partial class Player : Entity
 
     public Vector2 targetShotToward = Vector2.Zero;
 
-    # endregion 
+    #endregion 
 
     protected override void OnEnterTree()
     {
@@ -67,9 +69,6 @@ public partial class Player : Entity
         {
             animeNode.Play("idle");
         }
-
-        //更新箭头朝向
-        arrowNode.Rotation = targetShotToward.Angle();
     }
 
     /// <summary>
@@ -125,7 +124,6 @@ public partial class Player : Entity
     {
         if (targetEnemy == null)
         {
-            arrowNode.Visible = false;
             return;
         }
         targetShotToward = targetEnemy.GlobalPosition - GlobalPosition;
@@ -141,26 +139,19 @@ public partial class Player : Entity
     {
         if (targetShotToward == Vector2.Zero)
         {
-            arrowNode.Visible = false;
             return;
         }
-        arrowNode.Visible = true;
-        arrowNode.Rotation = targetShotToward.Angle();
         Attack();
     }
 
     protected override void OnAttack()
     {
-        Node2D shootPoint = arrowNode.GetNodeOrNull<Node2D>("ShootPoint");
-        Vector2 shootPosition = arrowNode.GlobalPosition;
-        if (shootPoint != null)
-        {
-            shootPosition = shootPoint.GlobalPosition;
-        }
+        if(bulletData == null)
+            return;
         Bullet but = Bullet.Create(
             this,
-            shootPosition,
-            targetShotToward * 5f,
+            shotPoint.GlobalPosition,
+            targetShotToward * bulletSpeed,
             bulletData
         );
     }
@@ -192,6 +183,7 @@ public partial class Player : Entity
     /// <param name="newBulletData"></param>
     public void ChangeBullet(BulletData newBulletData)
     {
+        GD.Print($"切换弹幕为{newBulletData}");
         bulletData = newBulletData;
     }
 

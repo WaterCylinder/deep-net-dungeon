@@ -73,6 +73,24 @@ public partial class Dialogue : Node2D
     // 持有抖动效果实例
     private TextJitterEffect _jitterEffect;
 
+    /// <summary>
+    /// 信号：对话开始
+    /// </summary>
+    [Signal]
+    public delegate void OnInitEventHandler();
+    /// <summary>
+    /// 信号：对话句子切换
+    /// </summary>
+    /// <param name="contentNow"></param>
+    /// <param name="contentNext"></param>
+    [Signal]
+    public delegate void OnContentChangeEventHandler(string last, string next);
+    /// <summary>
+    /// 信号：对话结束
+    /// </summary>
+    [Signal]
+    public delegate void OnEndEventHandler();
+
     public override void _Ready()
     {
         SetupJitterEffect();
@@ -126,6 +144,7 @@ public partial class Dialogue : Node2D
                 contentNow = contents[contentIndex];
                 charIndexMax = contentNow.Length - 1;
                 sentence = "";
+                EmitSignal(nameof(OnInit));
                 state = "show";
             break;
 
@@ -164,7 +183,9 @@ public partial class Dialogue : Node2D
                     {
                         charIndex = -1;
                         charIndexMax = contents[contentIndex].Length - 1;
+                        string lastContent = contentNow;
                         contentNow = contents[contentIndex];
+                        EmitSignal(nameof(OnContentChange), lastContent, contentNow);
                         state = "show";
                         break;
                     }
@@ -173,6 +194,7 @@ public partial class Dialogue : Node2D
 
             case "end":
 
+                EmitSignal(nameof(OnEnd));
                 QueueFree();
 
             break;

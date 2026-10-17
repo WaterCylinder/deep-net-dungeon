@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using System;
 using System.Collections.Generic;
 
 public enum EntityTag
@@ -108,23 +109,56 @@ public abstract partial class Entity : RigidBody2D
     float attackTimer = 0f;
 
     /// <summary>
-    /// 传送位置，非零时在IntegrateForces中重置位置
+    /// 传送位置，hasPendingTrans为true时在IntegrateForces中重置位置
+    /// 注意：不能用Vector2.Zero当哨兵，否则传送到世界原点(0,0)会被静默丢弃
     /// </summary>
     Vector2 transPos = Vector2.Zero;
+
+    /// <summary>
+    /// 是否有待处理的传送
+    /// </summary>
+    bool hasPendingTrans = false;
 
     /// <summary>
     /// 旋转目标角度，Mathf.Inf表示未设置
     /// </summary>
     float rotateTarget = Mathf.Inf;
 
+    /// <summary>
+    /// 临时计时器，用于处理buff等
+    /// </summary>
+    [Export] Godot.Collections.Dictionary<string, Timer> tempTimerList = new();
+
 
     #endregion
 
     #region 信号
 
+    /// <summary>
+    /// 传送信号
+    /// </summary>
+    /// <param name="pos"></param>
     [Signal] public delegate void OnTransEventHandler(Vector2 pos);
+    /// <summary>
+    /// 攻击信号
+    /// </summary>
     [Signal] public delegate void OnAttackSignalEventHandler();
+    /// <summary>
+    /// 受伤信号
+    /// </summary>
+    /// <param name="damageValue"></param>
     [Signal] public delegate void OnHurtSignalEventHandler(float damageValue);
+    /// <summary>
+    /// 添加buff信号
+    /// </summary>
+    /// <param name="buff"></param>
+    [Signal] public delegate void OnAttachBuffSignalEventHandler(Buff buff);
+    /// <summary>
+    /// 碰撞点信号
+    /// </summary>
+    /// <param name="posList"></param>
+    /// <param name="normalList"></param>
+    [Signal] public delegate void OnContactEventHandler(Array<Vector2> posList, Array<Vector2> normalList);
 
     #endregion
     
@@ -199,7 +233,7 @@ public abstract partial class Entity : RigidBody2D
     }
 
     /// <summary>
-    /// 向指定方向移动，平滑移动请帧调用
+    /// 向指定方向移动，平滑移动请帧调用。可用于设置方向，那之后帧级调用Move朝向指定方向移动。
     /// </summary>
     /// <param name="toward"></param>
     public void MoveToward(Vector2 toward)
@@ -241,6 +275,7 @@ public abstract partial class Entity : RigidBody2D
     public void TransTo(Vector2 pos)
     {
         transPos = pos;
+        hasPendingTrans = true;
         EmitSignal(nameof(OnTrans), pos);
     }
 
@@ -256,6 +291,11 @@ public abstract partial class Entity : RigidBody2D
     public Vector2 GetVelocity()
     {
         return velocity;
+    }
+
+    public Vector2 GetToward()
+    {
+        return GetVelocity().Normalized();
     }
 
     #endregion
@@ -289,16 +329,16 @@ public abstract partial class Entity : RigidBody2D
     /// <returns>挂载后的Buff（可能已存在并叠加）</returns>
     public Buff AttachBuff(Buff buff, int baseLayer = 1)
     {
-        if (buff == null || buff.Data == null)
+        if (buff == null || buff.data == null)
         {
             GD.PrintErr($"尝试挂载空Buff到 {Name}");
             return null;
         }
 
         // 检查是否是唯一Buff
-        if (buff.IsUnique)
+        if (buff.isUnique)
         {
-            Buff existingBuff = GetBuff(buff.Data.name);
+            Buff existingBuff = GetBuff(buff.data.name);
             if (existingBuff != null)
             {
                 // 已存在同类Buff，刷新持续时间
@@ -307,14 +347,16 @@ public abstract partial class Entity : RigidBody2D
             }
         }
 
-        // 设置Owner并添加
-        buff.Owner = this;
+        // 设置owner并添加
+        buff.owner = this;
         buff.SetStack(baseLayer);
         _buffs.Add(buff);
         
         // 触发挂载事件
         buff.OnAttach();
+
         OnBuffAttached(buff);
+        EmitSignal(nameof(OnAttachBuffSignal), buff);
         
         return buff;
     }
@@ -368,7 +410,7 @@ public abstract partial class Entity : RigidBody2D
 
         foreach (var buff in _buffs)
         {
-            if (buff.Data?.name == buffName)
+            if (buff?.data != null && buff.data.name == buffName)
             {
                 toRemove.Add(buff);
             }
@@ -435,7 +477,7 @@ public abstract partial class Entity : RigidBody2D
     {
         foreach (var buff in _buffs)
         {
-            if (buff.Data?.name == buffName)
+            if (buff?.data != null && buff.data.name == buffName)
             {
                 return buff;
             }
@@ -498,7 +540,7 @@ public abstract partial class Entity : RigidBody2D
     {
         if (buff == null) return 0;
 
-        int oldStack = buff.CurrentStack;
+        int oldStack = buff.currentStack;
         if (delta > 0)
         {
             return buff.AddStack(delta);
@@ -520,20 +562,34 @@ public abstract partial class Entity : RigidBody2D
 
         foreach (var buff in _buffs)
         {
-            // 更新Buff时间
-            if (buff.UpdateTime(delta))
+            if (buff == null)
             {
-                toRemove.Add(buff);
+                continue;
             }
+
+            // 更新Buff时间
+            buff.UpdateTime(delta);
             
             // 调用Buff的Update
             buff.OnUpdate(delta);
+
+            // 层数归零或时间到期则移除
+            if (buff.ShouldRemove())
+            {
+                toRemove.Add(buff);
+            }
         }
 
-        // 移除过期的Buff
+        // 移除失效的Buff
         foreach (var buff in toRemove)
         {
             RemoveBuff(buff);
+        }
+
+        // 清理引用已失效的条目
+        if (toRemove.Count > 0 || _buffs.Contains(null))
+        {
+            _buffs.RemoveAll(buff => buff == null);
         }
     }
 
@@ -749,10 +805,7 @@ public abstract partial class Entity : RigidBody2D
             //给Area子节点绑定碰撞事件
             if (child is Area2D a)
             {
-                if(area != null)
-                {
-                    area = a;
-                }
+                area ??= a;
                 continue;
             }
             //初始化所有实体组件
@@ -815,20 +868,38 @@ public abstract partial class Entity : RigidBody2D
     {
         base._IntegrateForces(state);
 
-        if(transPos != Vector2.Zero)
+        //传送
+        if(hasPendingTrans)
         {
             Transform2D t = state.Transform;
             t.Origin = transPos;
             state.Transform = t;
-            transPos = Vector2.Zero;
+            hasPendingTrans = false;
         }
 
+        //旋转
         if(!Mathf.IsInf(rotateTarget))
         {
             Transform2D t = state.Transform;
             t = t.RotatedLocal(rotateTarget - t.Rotation);
             state.Transform = t;
             rotateTarget = Mathf.Inf;
+        }
+
+        //碰撞点
+        int contactCount = state.GetContactCount();
+        if(state.GetContactCount() > 0)
+        {
+            Array<Vector2> contactPosition = new();
+            Array<Vector2> contactNormal = new();
+
+            for(int i = 0; i < contactCount; i++)
+            {
+                contactPosition.Add(state.GetContactLocalPosition(i));
+                contactNormal.Add(state.GetContactLocalNormal(i));
+            }
+
+            EmitSignal(nameof(OnContact), contactPosition, contactNormal);
         }
     }
 
@@ -862,6 +933,28 @@ public abstract partial class Entity : RigidBody2D
     {
         OnDeath(damage, other);
         QueueFree();
+    }
+
+    #endregion
+    
+    #region 计时器功能
+
+    public bool AddTempTimer(string label, float duration, Action action)
+    {
+        if(tempTimerList.ContainsKey(label))
+        {
+            return false;
+        }
+        Timer timer = new Timer();
+        timer.Timeout += () => {
+            action?.Invoke();
+            tempTimerList.Remove(label);
+            timer.QueueFree();
+        };
+        AddChild(timer);
+        timer.Start(duration);
+        tempTimerList.Add(label, timer);
+        return true;
     }
 
     #endregion

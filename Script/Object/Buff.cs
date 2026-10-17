@@ -12,66 +12,74 @@ public partial class Buff : RefCounted
     /// <summary>
     /// Buff数据源
     /// </summary>
-    public BuffData Data { get; private set; }
+    public BuffData data;
 
     /// <summary>
     /// Buff拥有者（挂载的实体）
     /// </summary>
-    public Entity Owner { get; set; }
+    public Entity owner;
+
+    public string id;
+    
+    public string name;
+
+    public Texture2D sprite;
+
+    public string intro;
 
     /// <summary>
     /// 当前层数
     /// </summary>
-    public int CurrentStack { get; private set; }
+    public int currentStack;
 
     /// <summary>
     /// 基础层数（挂载时的初始层数）
     /// </summary>
-    public int BaseStack { get; private set; }
+    public int baseStack;
 
     /// <summary>
     /// 最大层数
     /// </summary>
-    public int MaxStack { get; set; } = 1;
+    public int maxStack = 1;
 
     /// <summary>
     /// 剩余持续时间（秒）
     /// </summary>
-    public float RemainingDuration { get; private set; }
+    public float remainingDuration;
 
     /// <summary>
     /// 总持续时间（秒）
     /// </summary>
-    public float TotalDuration { get; private set; }
+    public float totalDuration;
 
     /// <summary>
     /// 定时触发间隔（秒）
     /// </summary>
-    public float ProcessTime { get; private set; }
+    public float processTime;
 
     /// <summary>
     /// 定时触发计时器
     /// </summary>
-    public float Timer { get; private set; }
+    public float timer;
 
     /// <summary>
     /// Buff是否显示（UI上）
     /// </summary>
-    public bool IsVisible { get; set; } = true;
+    public bool isVisible = true;
 
     /// <summary>
     /// 是否是唯一Buff（同类Buff只能存在一个）
     /// </summary>
-    public bool IsUnique { get; set; } = false;
+    public bool isUnique = false;
 
     /// <summary>
     /// Buff标签
     /// </summary>
-    public Array<BuffTag> Tags { get; private set; } = new();
+    public Array<BuffTag> tags = new();
 
     #endregion
 
-    #region Effect引用（从Data加载）
+    #region Effect
 
     private Effect _onStartEffect;
     private Effect _onUpdateEffect;
@@ -93,25 +101,30 @@ public partial class Buff : RefCounted
     /// <param name="baseStack">基础层数</param>
     public Buff(BuffData data, int baseStack = 1)
     {
-        Data = data;
-        BaseStack = baseStack;
-        CurrentStack = baseStack;
-        MaxStack = data.level > 0 ? data.level : 1;
+        this.data = data;
+        this.baseStack = baseStack;
+        currentStack = baseStack;
+        maxStack = data.level > 0 ? data.level : 1;
+
+        id = data.id;
+        name = data.name;
+        sprite = data.sprite;
+        intro = data.intro;
         
         // 加载持续时间
-        TotalDuration = data.duration;
-        RemainingDuration = data.duration;
+        totalDuration = data.duration;
+        remainingDuration = data.duration;
         
         // 加载定时触发间隔
-        ProcessTime = data.processTime;
-        Timer = 0f;
+        processTime = data.processTime;
+        timer = 0f;
         
         // 加载显示和唯一性属性
-        IsVisible = data.isVisible;
-        IsUnique = data.isUnique;
+        isVisible = data.isVisible;
+        isUnique = data.isUnique;
         
         // 浅克隆标签列表
-        Tags = new Array<BuffTag>(data.tags);
+        tags = new Array<BuffTag>(data.tags);
         
         // 加载Effect引用
         _onStartEffect = data.onStart;
@@ -133,7 +146,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnAttach()
     {
-        _onStartEffect?.Run(Owner, this);
+        _onStartEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -141,7 +154,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnRemove()
     {
-        _onEndEffect?.Run(Owner, this);
+        _onEndEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -149,7 +162,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnTimer()
     {
-        _onTimerEffect?.Run(Owner, this);
+        _onTimerEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -158,7 +171,7 @@ public partial class Buff : RefCounted
     /// <param name="delta">帧间隔时间</param>
     public void OnUpdate(double delta)
     {
-        _onUpdateEffect?.Run(Owner, this);
+        _onUpdateEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -167,7 +180,7 @@ public partial class Buff : RefCounted
     /// <param name="damage">伤害数据</param>
     public void OnEntityHurt(Damage damage)
     {
-        _onEntityHurtEffect?.Run(Owner, this, damage);
+        _onEntityHurtEffect?.Run(owner, this, damage);
     }
 
     /// <summary>
@@ -175,7 +188,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnEntityDeath()
     {
-        _onEntityDeathEffect?.Run(Owner, this);
+        _onEntityDeathEffect?.Run(owner, this);
     }
 
     #endregion
@@ -191,12 +204,12 @@ public partial class Buff : RefCounted
     {
         if (amount <= 0) return 0;
         
-        int oldStack = CurrentStack;
-        int newStack = Mathf.Min(CurrentStack + amount, MaxStack);
+        int oldStack = currentStack;
+        int newStack = Mathf.Min(currentStack + amount, maxStack);
         
         if (newStack > oldStack)
         {
-            CurrentStack = newStack;
+            currentStack = newStack;
             OnStackChanged(oldStack, newStack);
             return newStack - oldStack;
         }
@@ -213,12 +226,12 @@ public partial class Buff : RefCounted
     {
         if (amount <= 0) return 0;
         
-        int oldStack = CurrentStack;
-        int newStack = Mathf.Max(CurrentStack - amount, 0);
+        int oldStack = currentStack;
+        int newStack = Mathf.Max(currentStack - amount, 0);
         
         if (newStack < oldStack)
         {
-            CurrentStack = newStack;
+            currentStack = newStack;
             OnStackChanged(oldStack, newStack);
             return oldStack - newStack;
         }
@@ -232,12 +245,12 @@ public partial class Buff : RefCounted
     /// <param name="stack">新层数</param>
     public void SetStack(int stack)
     {
-        int oldStack = CurrentStack;
-        CurrentStack = Mathf.Clamp(stack, 0, MaxStack);
+        int oldStack = currentStack;
+        currentStack = Mathf.Clamp(stack, 0, maxStack);
         
-        if (CurrentStack != oldStack)
+        if (currentStack != oldStack)
         {
-            OnStackChanged(oldStack, CurrentStack);
+            OnStackChanged(oldStack, currentStack);
         }
     }
 
@@ -263,7 +276,7 @@ public partial class Buff : RefCounted
     /// </summary>
     private void OnStackIncrease(int oldStack, int newStack)
     {
-        _onStackIncreaseEffect?.Run(Owner, this);
+        _onStackIncreaseEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -271,7 +284,7 @@ public partial class Buff : RefCounted
     /// </summary>
     private void OnStackDecrease(int oldStack, int newStack)
     {
-        _onStackDecreaseEffect?.Run(Owner, this);
+        _onStackDecreaseEffect?.Run(owner, this);
     }
 
     #endregion
@@ -286,21 +299,21 @@ public partial class Buff : RefCounted
     public bool UpdateTime(double delta)
     {
         // 更新定时触发器
-        if (ProcessTime > 0)
+        if (processTime > 0)
         {
-            Timer += (float)delta;
-            while (Timer >= ProcessTime)
+            timer += (float)delta;
+            while (timer >= processTime)
             {
-                Timer -= ProcessTime;
+                timer -= processTime;
                 OnTimer();
             }
         }
         
         // 更新持续时间
-        if (TotalDuration > 0)
+        if (totalDuration > 0)
         {
-            RemainingDuration -= (float)delta;
-            if (RemainingDuration <= 0)
+            remainingDuration -= (float)delta;
+            if (remainingDuration <= 0)
             {
                 return true; // 已过期
             }
@@ -314,7 +327,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void RefreshDuration()
     {
-        RemainingDuration = TotalDuration;
+        remainingDuration = totalDuration;
     }
 
     /// <summary>
@@ -323,8 +336,8 @@ public partial class Buff : RefCounted
     /// <param name="amount">增加的秒数</param>
     public void AddDuration(float amount)
     {
-        RemainingDuration += amount;
-        TotalDuration += amount;
+        remainingDuration += amount;
+        totalDuration += amount;
     }
 
     #endregion
@@ -336,7 +349,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public bool ShouldRemove()
     {
-        return CurrentStack <= 0 || (TotalDuration > 0 && RemainingDuration <= 0);
+        return currentStack <= 0 || (totalDuration > 0 && remainingDuration <= 0);
     }
 
     /// <summary>
@@ -344,7 +357,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public bool HasTag(BuffTag tag)
     {
-        return Tags.Contains(tag);
+        return tags.Contains(tag);
     }
 
     /// <summary>
@@ -352,14 +365,14 @@ public partial class Buff : RefCounted
     /// </summary>
     public float GetProgress()
     {
-        if (TotalDuration <= 0) return 1f;
-        return RemainingDuration / TotalDuration;
+        if (totalDuration <= 0) return 1f;
+        return remainingDuration / totalDuration;
     }
 
     public override string ToString()
     {
-        string name = Data?.name ?? "Unknown";
-        return $"Buff[{name}] Stack:{CurrentStack}/{MaxStack} Duration:{RemainingDuration:F1}/{TotalDuration:F1}";
+        string name = data?.id ?? "Unknown";
+        return $"Buff[{name}] Stack:{currentStack}/{maxStack} Duration:{remainingDuration:F1}/{totalDuration:F1}";
     }
 
     #endregion

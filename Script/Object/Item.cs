@@ -79,7 +79,7 @@ public partial class Item : Area2D
     /// <param name="pos"></param>
     /// <param name="parent"></param>
     /// <returns></returns>
-    public static Item CreateItem(ItemData data, Vector2 pos, Node2D parent = null)
+    public static Item CreateItem(ItemData data, Vector2 pos, Node parent = null)
     {
         Item item = ItemPrefab.Instantiate() as Item;
 
@@ -122,6 +122,21 @@ public partial class Item : Area2D
     [Export] public string intro;
     [Export] public Array<ItemTag> tags = new();
     [Export] public int itemLevel;
+
+    /// <summary>
+    /// 携带的Buff，value为挂载层数
+    /// </summary>
+    [Export] public Dictionary<BuffData, int> carryBuffs = new();
+
+    /// <summary>
+    /// 拾取时是否给拾取者挂载carryBuffs
+    /// </summary>
+    [Export] public bool addBuffOnPick = false;
+
+    /// <summary>
+    /// 丢弃时是否移除拾取者身上的carryBuffs
+    /// </summary>
+    [Export] public bool removeBuffOnDrop = false;
 
     [Export] public Behavior onInit;
     [Export] public Behavior onPick;
@@ -201,6 +216,10 @@ public partial class Item : Area2D
         }
         itemLevel = data.itemLevel;
 
+        carryBuffs = data.carryBuffs;
+        addBuffOnPick = data.addBuffOnPick;
+        removeBuffOnDrop = data.removeBuffOnDrop;
+
         onPick = data.onPick;
         onUse = data.onUse;
         onDrop = data.onDrop;
@@ -257,6 +276,10 @@ public partial class Item : Area2D
 
     public void Pick(Entity picker)
     {
+        if (addBuffOnPick && Game.IsAble(picker))
+        {
+            AddCarryBuffs(picker);
+        }
         onPick?.Run(picker);
         EmitSignal(nameof(OnPickSignal), picker);
         ///被拾取时移除自身
@@ -277,8 +300,58 @@ public partial class Item : Area2D
 
     public void Drop(Entity droper)
     {
+        if (removeBuffOnDrop && Game.IsAble(droper))
+        {
+            RemoveCarryBuffs(droper);
+        }
         onDrop?.Run(droper);
         EmitSignal(nameof(OnDropSignal), droper);
+    }
+
+    /// <summary>
+    /// 给实体挂载carryBuffs中的全部Buff
+    /// </summary>
+    /// <param name="target">目标实体</param>
+    public void AddCarryBuffs(Entity target)
+    {
+        if (carryBuffs == null)
+        {
+            return;
+        }
+        foreach (var pair in carryBuffs)
+        {
+            if (pair.Key == null)
+            {
+                continue;
+            }
+            target.AttachBuff(pair.Key, Mathf.Max(pair.Value, 1));
+        }
+    }
+
+    /// <summary>
+    /// 从实体身上按层数移除carryBuffs中的Buff，层数归零时由Entity自动移除该Buff
+    /// </summary>
+    /// <param name="target">目标实体</param>
+    public void RemoveCarryBuffs(Entity target)
+    {
+        if (carryBuffs == null)
+        {
+            return;
+        }
+        foreach (var pair in carryBuffs)
+        {
+            if (pair.Key == null || string.IsNullOrEmpty(pair.Key.name))
+            {
+                continue;
+            }
+            Buff buff = target.GetBuff(pair.Key.name);
+            if (buff == null)
+            {
+                //目标身上没有该Buff，跳过
+                continue;
+            }
+            target.ChangeBuffStack(buff, -Mathf.Max(pair.Value, 1));
+        }
     }
 
     #endregion

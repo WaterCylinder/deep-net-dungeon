@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SingalCondition" format=3 uid="uid://xhdvjxe346t"]
+
+[ext_resource type="Script" uid="uid://dap5hs4p56xf3" path="res://Script/Data/Effect/Conditions/SingalCondition.cs" id="1_cond"]
+[ext_resource type="Script" uid="uid://duvyegae8busc" path="res://Script/Data/GlobalBehavior.cs" id="1_fk6jl"]
+
+[sub_resource type="Resource" id="Resource_fk6jl"]
+script = ExtResource("1_fk6jl")
+behaviorName = "IsPlayerAble"
+metadata/_custom_type_script = "uid://cglobalbhv1demo"
+
+[resource]
+script = ExtResource("1_cond")
+behavior = SubResource("Resource_fk6jl")
+metadata/_custom_type_script = "uid://dap5hs4p56xf3"

@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://blghlwdii7wui"]
+
+[ext_resource type="Resource" uid="uid://bwnjt2i2sbk2" path="res://Resource/Demo/Bullet/bullet_normal.tres" id="1_4d6ft"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="2_4d6ft"]
+[ext_resource type="Script" uid="uid://cq0demo1buffx" path="res://Resource/Demo/DemoBuff/BuffBehaviorDemo.cs" id="2_a2sd8"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="3_6psd1"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_x0fv6"]
+[ext_resource type="Texture2D" uid="uid://cdcwsyvjdiit2" path="res://Resource/Demo/Item/arrow.png" id="6_4d6ft"]
+
+[sub_resource type="Resource" id="Resource_behavior_bullet"]
+script = ExtResource("2_a2sd8")
+behaviorName = "SetBullet"
+args = Dictionary[String, Variant]({
+"bulletData": ExtResource("1_4d6ft")
+})
+metadata/_custom_type_script = "uid://cqzdemo1buffx"
+
+[sub_resource type="Resource" id="Resource_dx28n"]
+script = ExtResource("4_x0fv6")
+effectName = "SetBullet"
+condition = ExtResource("3_6psd1")
+behavior = SubResource("Resource_behavior_bullet")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_4d6ft")
+sprite = ExtResource("6_4d6ft")
+name = "buff_attack"
+intro = "玩家基础攻击模块"
+level = 1
+tags = null
+isVisible = false
+isUnique = true
+onStart = SubResource("Resource_dx28n")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

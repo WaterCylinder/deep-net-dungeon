@@ -15,14 +15,19 @@ public partial class BuffData : Resource
     [Export] public Texture2D sprite;
 
     /// <summary>
-    /// Buff名称（唯一标识）
+    /// BuffID（唯一标识）
+    /// </summary>
+    [Export] public string id;
+
+    /// <summary>
+    /// Buff显示名称
     /// </summary>
     [Export] public string name;
 
     /// <summary>
     /// Buff描述
     /// </summary>
-    [Export] public string description;
+    [Export] public string intro;
 
     /// <summary>
     /// 持续时间（秒），0表示永久

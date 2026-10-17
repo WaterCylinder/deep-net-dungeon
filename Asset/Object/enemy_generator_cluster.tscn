@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://8akdyvnylgxo"]
+
+[ext_resource type="Texture2D" uid="uid://l8iumut38u3g" path="res://Asset/Sprite/generator.png" id="1_33wwf"]
+[ext_resource type="Script" uid="uid://cr27x5qlrmduy" path="res://Script/Object/EnemyGeneratorCluster.cs" id="2_ibmtl"]
+[ext_resource type="Resource" uid="uid://b4w0fuohljph5" path="res://Resource/Demo/DemoEnemy/EnemyData/the_vision_melee.tres" id="3_17hxy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_33wwf"]
+size = Vector2(640, 640)
+
+[node name="EnemyGeneratorCluster" type="Sprite2D" unique_id=61005515 node_paths=PackedStringArray("spawnArea")]
+texture = ExtResource("1_33wwf")
+script = ExtResource("2_ibmtl")
+spawnArea = NodePath("Area2D")
+onceSpawnRange = Vector2i(3, 3)
+spawnTime = 1.0
+spawnNum = 1
+clusterData = Dictionary[Object, int]({
+ExtResource("3_17hxy"): 1
+})
+areaShape = SubResource("RectangleShape2D_33wwf")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1404237965]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1704074101]
+position = Vector2(0, -32)
+debug_color = Color(0, 0.5950001, 0.7, 0)

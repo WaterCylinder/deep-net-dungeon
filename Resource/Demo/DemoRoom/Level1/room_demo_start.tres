@@ -1,10 +1,26 @@
 [gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://dja8dgj1aoss1"]
 
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="1_bm335"]
+[ext_resource type="Script" uid="uid://cdv0wi7vrua4i" path="res://Resource/Demo/DemoRoom/RoomBehaviorDemo.cs" id="1_u013q"]
 [ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_v7msx"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="2_u013q"]
 [ext_resource type="PackedScene" uid="uid://ceokld3kewdhk" path="res://Resource/Demo/DemoRoom/Level1/room_demo_start.tscn" id="2_v7msx"]
+
+[sub_resource type="Resource" id="Resource_u013q"]
+script = ExtResource("1_u013q")
+behaviorName = "StartRoomInit"
+metadata/_custom_type_script = "uid://cdv0wi7vrua4i"
+
+[sub_resource type="Resource" id="Resource_vhulu"]
+script = ExtResource("2_u013q")
+condition = ExtResource("1_bm335")
+behavior = SubResource("Resource_u013q")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [resource]
 script = ExtResource("1_v7msx")
 roomId = "Level1Normal"
 tileMap = ExtResource("2_v7msx")
+useDefaultRoomProcess = false
+onFirstEnter = SubResource("Resource_vhulu")
 metadata/_custom_type_script = "uid://bodfjcgco84dp"

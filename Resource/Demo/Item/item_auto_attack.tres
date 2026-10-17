@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://blghlxkhifwui"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_fh0jy"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="1_itemdata"]
+[ext_resource type="Resource" uid="uid://blghlwdii7wui" path="res://Resource/Demo/Item/buff_auto_attack.tres" id="2_fh0jy"]
+[ext_resource type="Texture2D" uid="uid://cdcwsyvjdiit2" path="res://Resource/Demo/Item/arrow.png" id="4_fh0jy"]
+
+[resource]
+script = ExtResource("1_itemdata")
+ItemName = "item_auto_attack"
+showName = "攻击模块"
+intro = "解锁自动攻击：自动锁定范围内最近的敌人并发射弹幕"
+tags = Array[int]([2])
+itemLevel = 1
+sprite = ExtResource("4_fh0jy")
+carryBuffs = Dictionary[ExtResource("1_fh0jy"), int]({
+ExtResource("2_fh0jy"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

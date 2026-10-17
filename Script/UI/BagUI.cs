@@ -20,6 +20,16 @@ public partial class BagUI : Control
     [Export] public Label introName;
     [Export] public Label introTag;
 
+    [Export] public Control stateUI;
+    [Export] public Label maxHealth;
+    [Export] public Label currentHealth;
+    [Export] public Label attack;
+    [Export] public Label defense;
+    [Export] public Label attackspeed;
+    [Export] public Label critRate;
+    [Export] public Label critDamage;
+    [Export] public Label speed;
+
     public override void _Ready()
     {
         button.Pressed += SwitchBagUI;
@@ -29,6 +39,7 @@ public partial class BagUI : Control
     public void SwitchBagUI()
     {
         bagUI.Visible = !bagUI.Visible;
+        stateUI.Visible = !stateUI.Visible;
         if (bagUI.Visible)
         {
             button.TextureNormal = buttonOpen;
@@ -90,5 +101,26 @@ public partial class BagUI : Control
         introLabel.Text = data.intro;
         introLevel.Text = $"Lv.{data.itemLevel}";
         introTag.Text = "None";
+    }
+
+    public override void _Process(double delta)
+    {
+        UpdatePlayerState();
+    }
+
+
+    void UpdatePlayerState()
+    {
+        if(! Game.IsAble(player))
+            return;
+        
+        maxHealth.Text = player.maxHealth.Get().ToString();
+        currentHealth.Text = player.currentHealth.ToString();
+        attack.Text = player.attack.Get().ToString();
+        defense.Text = player.defense.Get().ToString();
+        attackspeed.Text = player.attackSpeed.Get().ToString();
+        critRate.Text = player.critRate.Get().ToString();
+        critDamage.Text = player.critDamage.Get().ToString();
+        speed.Text = player.speed.Get().ToString();
     }
 }

@@ -15,6 +15,11 @@ public partial class Value : Resource
     private const string BASE_ID = "Base";
 
     /// <summary>
+    /// 基础乘区的排序标识码，取最小整数保证基础值最先结算
+    /// </summary>
+    public const int BASE_SORT_CODE = int.MinValue;
+
+    /// <summary>
     /// 基础数值
     /// </summary>
     [Export] public float baseValue = 0f;
@@ -23,6 +28,32 @@ public partial class Value : Resource
     /// 所有乘区字典（key为乘区ID）
     /// </summary>
     [Export] private Dictionary<string, ValueMultiplier> _multipliers = new();
+
+    /// <summary>
+    /// 乘区计算顺序（按sortCode升序排列的乘区ID）
+    /// Godot.Collections.Dictionary没有有序插入接口，因此单独维护顺序
+    /// </summary>
+    private System.Collections.Generic.List<string> _multiplierOrder = new();
+
+    /// <summary>
+    /// 缓存的计算结果
+    /// </summary>
+    private float _cachedValue = 0f;
+
+    /// <summary>
+    /// 缓存对应的修改版本号，与_cachedRevision不一致时需要重算
+    /// </summary>
+    private int _cachedRevision = -1;
+
+    /// <summary>
+    /// 缓存时使用的baseValue，用于检测绕过修改入口的直接改动
+    /// </summary>
+    private float _cachedBaseValue = 0f;
+
+    /// <summary>
+    /// 修改版本号，任何影响结果的改动都自增
+    /// </summary>
+    private int _revision = 0;
 
     /// <summary>
     /// 添加乘区事件 (id, source, oldValue, newValue)
@@ -45,8 +76,8 @@ public partial class Value : Resource
     public Value()
     {
         // 初始化基础乘区，将BASE_ID作为标识符，创建名为"Base"的ValueMultiplier实例
-        // 初始最小值为0f，初始值为1f
-        GetMultiplier(BASE_ID, null);
+        // 排序标识码取最小值，保证基础乘区最先结算
+        GetMultiplier(BASE_ID, null, BASE_SORT_CODE);
     }
     
     /// <summary>
@@ -59,34 +90,117 @@ public partial class Value : Resource
     }
 
     /// <summary>
-    /// 获取乘区，没有则创建新的
+    /// 获取乘区，没有则创建新的并按sortCode插入到计算顺序中
     /// </summary>
-    private ValueMultiplier GetMultiplier(string id, Value source = null)
+    private ValueMultiplier GetMultiplier(string id, Value source = null, int sortCode = 0)
     {
         if (_multipliers.TryGetValue(id, out var multiplier))
         {
             return multiplier;
         }
 
-        var newMultiplier = new ValueMultiplier(id, 0f, 1f, source);
+        var newMultiplier = new ValueMultiplier(id, 0f, 1f, source, sortCode);
         _multipliers.Add(id, newMultiplier);
+        InsertOrder(id, sortCode);
+        MarkDirty();
         onMultiplierAdded?.Invoke(this);
         return newMultiplier;
     }
 
     /// <summary>
+    /// 按sortCode升序把乘区ID插入计算顺序，sortCode相同时保持插入先后
+    /// </summary>
+    private void InsertOrder(string id, int sortCode)
+    {
+        int index = _multiplierOrder.Count;
+        for (int i = 0; i < _multiplierOrder.Count; i++)
+        {
+            if(_multipliers.TryGetValue(_multiplierOrder[i], out var exist) && exist.sortCode > sortCode)
+            {
+                index = i;
+                break;
+            }
+        }
+        _multiplierOrder.Insert(index, id);
+    }
+
+    /// <summary>
+    /// 标记结果需要重算
+    /// </summary>
+    private void MarkDirty()
+    {
+        _revision++;
+    }
+
+    /// <summary>
+    /// 计算顺序是否与乘区集合一致，不一致则按sortCode重建
+    /// （用于兼容Inspector中对乘区的直接增删）
+    /// </summary>
+    private void EnsureOrder()
+    {
+        bool consistent = _multiplierOrder.Count == _multipliers.Count;
+        if (consistent)
+        {
+            foreach (var id in _multiplierOrder)
+            {
+                if (!_multipliers.ContainsKey(id))
+                {
+                    consistent = false;
+                    break;
+                }
+            }
+        }
+        if (consistent)
+        {
+            return;
+        }
+
+        _multiplierOrder.Clear();
+        foreach (var pair in _multipliers)
+        {
+            _multiplierOrder.Add(pair.Key);
+        }
+        _multiplierOrder.Sort((a, b) => _multipliers[a].sortCode.CompareTo(_multipliers[b].sortCode));
+        MarkDirty();
+    }
+
+    /// <summary>
     /// 修改乘区
     /// </summary>
-    public void ModifyMultiplier(string id, float? additive = null, float? multiplier = null, Value source = null)
+    /// <param name="id">乘区ID</param>
+    /// <param name="sortCode">排序标识码，决定乘区在计算时的先后顺序</param>
+    /// <param name="additive">加成值，null表示不修改</param>
+    /// <param name="multiplier">乘数，null表示不修改</param>
+    /// <param name="source">来源数值</param>
+    public void ModifyMultiplier(string id, int sortCode, float? additive = null, float? multiplier = null, Value source = null)
     {
+        ValueMultiplier m = GetMultiplier(id, source, sortCode);
 
-        ValueMultiplier m = GetMultiplier(id, source);
-
-        if (additive.HasValue)
+        bool changed = false;
+        if (additive.HasValue && !Mathf.IsEqualApprox(m.additive, additive.Value))
+        {
             m.additive = additive.Value;
-        if (multiplier.HasValue)
+            changed = true;
+        }
+        if (multiplier.HasValue && !Mathf.IsEqualApprox(m.multiplier, multiplier.Value))
+        {
             m.multiplier = multiplier.Value;
+            changed = true;
+        }
+        if (m.sortCode != sortCode)
+        {
+            m.sortCode = sortCode;
+            changed = true;
+        }
 
+        if (!changed)
+        {
+            return;
+        }
+
+        _multiplierOrder.Remove(id);
+        InsertOrder(id, m.sortCode);
+        MarkDirty();
         onMultiplierChanged?.Invoke(this);
     }
 
@@ -103,6 +217,8 @@ public partial class Value : Resource
 
         if (_multipliers.Remove(id))
         {
+            _multiplierOrder.Remove(id);
+            MarkDirty();
             return true;
         }
 
@@ -123,7 +239,12 @@ public partial class Value : Resource
     /// </summary>
     public void SetBase(float value)
     {
+        if (Mathf.IsEqualApprox(baseValue, value))
+        {
+            return;
+        }
         baseValue = value;
+        MarkDirty();
     }
 
     /// <summary>
@@ -131,58 +252,92 @@ public partial class Value : Resource
     /// </summary>
     public void AddBase(float value)
     {
+        if (Mathf.IsZeroApprox(value))
+        {
+            return;
+        }
         baseValue += value;
+        MarkDirty();
     }
 
     /// <summary>
     /// 快捷方法：增加基础乘区的加成值
     /// </summary>
-    public void Add(float value)
+    public void Add(float value, int sortCode)
     {
-        Add(value, BASE_ID);
+        ModifyMultiplier(BASE_ID, sortCode, additive: value);
     }
 
     /// <summary>
     /// 快捷方法：添加或修改指定ID乘区的加成值
+    /// 会自动创建乘区
     /// </summary>
-    public void Add(float value, string id)
+    /// <param name="value">加成值</param>
+    /// <param name="id">乘区ID</param>
+    /// <param name="sortCode">排序标识码，乘区已存在时用于调整其计算顺序</param>
+    public void Add(float value, string id, int sortCode)
     {
-        ModifyMultiplier(id, additive:value);
+        ModifyMultiplier(id, sortCode, additive: value);
     }
 
     /// <summary>
     /// 快捷方法：增加基础乘区的乘数
     /// </summary>
-    public void Multi(float multiplier)
+    public void Multi(float multiplier, int sortCode)
     {
-        Multi(multiplier, BASE_ID);
+        ModifyMultiplier(BASE_ID, sortCode, multiplier: multiplier);
     }
 
     /// <summary>
     /// 快捷方法：添加或修改指定ID乘区的乘数
+    /// 会自动创建乘区
     /// </summary>
-    public void Multi(float value, string id)
+    /// <param name="value">乘数</param>
+    /// <param name="id">乘区ID</param>
+    /// <param name="sortCode">排序标识码，乘区已存在时用于调整其计算顺序</param>
+    public void Multi(float value, string id, int sortCode)
     {
-        ModifyMultiplier(id, multiplier:value);
+        ModifyMultiplier(id, sortCode, multiplier: value);
     }
 
     /// <summary>
-    /// 获取最终计算值
+    /// 获取最终计算值。
+    /// 结果按_revision标脏缓存，未发生改动时直接返回缓存。
+    /// 按sortCode升序依次结算：result = (result + additive) * multiplier
     /// </summary>
     public float Get()
     {
+        EnsureOrder();
+
+        //baseValue被直接改动（如Inspector）时_revision不会变化，需额外比对
+        if (_cachedRevision != _revision || !Mathf.IsEqualApprox(_cachedBaseValue, baseValue))
+        {
+            _cachedValue = Recalculate();
+            _cachedBaseValue = baseValue;
+            _cachedRevision = _revision;
+        }
+
+        onValueGet?.Invoke(_cachedValue);
+        return _cachedValue;
+    }
+
+    /// <summary>
+    /// 按乘区顺序实际结算
+    /// </summary>
+    private float Recalculate()
+    {
         float result = baseValue;
 
-        // 按照乘区顺序计算
-        foreach (var multiplier in _multipliers.Values)
+        foreach (var id in _multiplierOrder)
         {
-            // 应用加成值
+            if(!_multipliers.TryGetValue(id, out var multiplier))
+            {
+                continue;
+            }
             result += multiplier.additive;
-            // 应用乘数
             result *= multiplier.multiplier;
         }
 
-        onValueGet?.Invoke(result);
         return result;
     }
 
@@ -209,7 +364,9 @@ public partial class Value : Resource
         }
 
         // 重置基础乘区
-        _multipliers[BASE_ID] = new ValueMultiplier(BASE_ID, 0f, 1f);
+        _multipliers[BASE_ID] = new ValueMultiplier(BASE_ID, 0f, 1f, null, BASE_SORT_CODE);
+        _multiplierOrder.RemoveAll(id => id != BASE_ID);
+        MarkDirty();
     }
 
 
@@ -239,6 +396,12 @@ public partial class Value : Resource
         {
             _multipliers.Remove(id);
         }
+
+        if (idsToRemove.Count > 0)
+        {
+            _multiplierOrder.RemoveAll(id => id != BASE_ID);
+            MarkDirty();
+        }
     }
 
     #region 运算符重载
@@ -248,7 +411,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator +(Value value, float num)
     {
-        value?.Add(num);
+        value?.Add(num, BASE_SORT_CODE);
         return value;
     }
 
@@ -257,7 +420,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator +(float num, Value value)
     {
-        value?.Add(num);
+        value?.Add(num, BASE_SORT_CODE);
         return value;
     }
 
@@ -266,7 +429,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator -(Value value, float num)
     {
-        value?.Add(-num);
+        value?.Add(-num, BASE_SORT_CODE);
         return value;
     }
 
@@ -275,7 +438,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator *(Value value, float num)
     {
-        value?.Multi(num);
+        value?.Multi(num, BASE_SORT_CODE);
         return value;
     }
 
@@ -284,7 +447,7 @@ public partial class Value : Resource
     /// </summary>
     public static Value operator *(float num, Value value)
     {
-        value?.Multi(num);
+        value?.Multi(num, BASE_SORT_CODE);
         return value;
     }
 
@@ -295,7 +458,7 @@ public partial class Value : Resource
     {
         if (num != 0)
         {
-            value?.Multi(1f / num);
+            value?.Multi(1f / num, BASE_SORT_CODE);
         }
         return value;
     }

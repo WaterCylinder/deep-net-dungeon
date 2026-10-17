@@ -107,7 +107,7 @@ public partial class Map : Node2D
         data.specialRoomDatas = [.. data.specialRoomDatas];
 
         // 创建随机数生成器
-        randomGeneratorName = randomSystem.SetRandomGenerator(generatorName: "MapGenerator");
+        randomGeneratorName = randomSystem?.SetRandomGenerator(generatorName: "MapGenerator");
 
         // 生成地图
         GenerateMap();
@@ -412,20 +412,6 @@ public partial class Map : Node2D
     {
         // 尝试从RandomSystem获取，若不可用则使用默认随机
         return new Random();
-    }
-
-    /// <summary>
-    /// Fisher-Yates洗牌算法
-    /// </summary>
-    private void Shuffle<[MustBeVariant] T>(Array<T> array, Random random)
-    {
-        int n = array.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = random.Next(n + 1);
-            (array[k], array[n]) = (array[n], array[k]);
-        }
     }
 
     #endregion

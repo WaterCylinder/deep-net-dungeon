@@ -34,6 +34,19 @@ public partial class Door : Area2D
         EntityTag.Enemy
     };
 
+    /// <summary>
+    /// 待重新武装的门 -> 到期物理帧号
+    /// </summary>
+    private static readonly System.Collections.Generic.Dictionary<Door, ulong> _pendingRearm = new();
+
+    private const ulong REARM_DELAY_FRAMES = 2;
+    private const ulong TRANS_GUARD_FRAMES = 5;
+
+    /// <summary>
+    /// 本门收到传送实体的物理帧号，用于抑制落点门的反向传送
+    /// </summary>
+    private ulong _transFrame = 0;
+
     public void Initialize()
     {
         Close();
@@ -41,7 +54,7 @@ public partial class Door : Area2D
         {
             if(body is Entity entity && CheckEntityTag(entity))
             {
-                if(isOpen && isTrans)
+                if(CanTriggerTrans())
                 {
                     Trans(entity);
                 }
@@ -51,9 +64,72 @@ public partial class Door : Area2D
         {
             if(body is Entity entity && CheckEntityTag(entity))
             {
-                isTrans = true;
+                RearmAfterExitOrTeleport();
             }
         };
+    }
+
+    /// <summary>
+    /// 请求重新武装本门
+    /// </summary>
+    private void RearmAfterExitOrTeleport()
+    {
+        _pendingRearm[this] = Engine.GetPhysicsFrames() + REARM_DELAY_FRAMES;
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        base._PhysicsProcess(delta);
+
+        if(!_pendingRearm.TryGetValue(this, out ulong dueFrame))
+        {
+            return;
+        }
+        if(Engine.GetPhysicsFrames() < dueFrame)
+        {
+            return;
+        }
+        _pendingRearm.Remove(this);
+
+        isTrans = true;
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        _pendingRearm.Remove(this);
+    }
+
+    /// <summary>
+    /// 标记有实体被传送进入本门（由传送方调用）
+    /// </summary>
+    public void MarkTrans()
+    {
+        _transFrame = Engine.GetPhysicsFrames();
+        isTrans = false;
+    }
+
+    /// <summary>
+    /// 是否允许本门触发传送。
+    /// 刚被传送进入的实体不触发，避免落点门立刻反向传送造成来回弹
+    /// </summary>
+    private bool CanTriggerTrans()
+    {
+        if(!isOpen || !isTrans)
+        {
+            return false;
+        }
+        if(_transFrame != 0)
+        {
+            ulong now = Engine.GetPhysicsFrames();
+            //用比较而非相减，避免帧号回退时无符号下溢
+            if(now >= _transFrame && now - _transFrame < TRANS_GUARD_FRAMES)
+            {
+                GD.Print($"[门] {room?.Name}.{Name} 抑制反向触发（距落入{now - _transFrame}帧）");
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
@@ -73,37 +149,60 @@ public partial class Door : Area2D
         return true;
     }
 
+    /// <summary>
+    /// 传送：落点只由targetDoor与targetRoom决定
+    /// 1.targetDoor有对应房间：普通房间且尚未清理则落房间坐标，否则落targetDoor
+    /// 2.targetDoor没有对应房间：落targetDoor
+    /// 3.没有targetDoor：落targetRoom坐标
+    /// </summary>
     protected void Trans(Entity entity)
     {
+        if(!Game.IsAble(entity))
+        {
+            return;
+        }
+
         isTrans = false;
 
         if(targetDoor != null)
         {
-            GD.Print($"传送实体{entity}到目标门{targetDoor}【房间{targetDoor.room}】");
-            targetDoor.isTrans = false;
-            entity.TransTo(targetDoor.GlobalPosition);
-            if(entity.room != null)
-            {
-                entity.room.Exit(entity);
-            }
+            GD.Print($"传送实体{entity}到目标门{targetDoor}");
             if(targetDoor.room != null)
             {
-                targetDoor.room.Enter(entity);
+                Room targetRoom  = targetDoor.room;
+                if (targetRoom.CheckTag(RoomTag.Normal) && !targetRoom.isCleared)
+                {
+                    GD.Print($"目标门处于普通房间且房间未清理，传送实体{entity}到目标房间坐标{targetRoom.Name}");
+                    entity.TransTo(targetRoom.GlobalPosition);
+                }
+                else
+                {
+                    entity.TransTo(targetDoor.GlobalPosition);
+                    targetDoor.MarkTrans();
+                }
+                targetRoom.Enter(entity);
             }
-            return;
-        }
-        if(targetRoom != null)
-        {
-            GD.Print($"传送实体{entity}到目标房间{targetDoor.room}");
-            entity.TransTo(targetRoom.Position);
-            if(entity.room != null)
+            else
             {
-                entity.room.Exit(entity);
+                entity.TransTo(targetDoor.GlobalPosition);
+                targetDoor.MarkTrans();
             }
+        }
+        else if(targetRoom != null)
+        {
+            GD.Print($"传送实体{entity}到目标房间坐标{targetRoom}");
+            entity.TransTo(targetRoom.GlobalPosition);
             targetRoom.Enter(entity);
+        }
+        else
+        {
+            GD.PushWarning($"传送门 {room?.Name}.{Name} 未绑定任何目标，本次传送被忽略");
             return;
         }
-        GD.PushWarning($"传送门未绑定任何目标!");
+
+        //实体可能落在目标门碰撞范围外，那样收不到BodyExited，需主动武装两端
+        RearmAfterExitOrTeleport();
+        targetDoor?.RearmAfterExitOrTeleport();
     }
 
     public void Open()
@@ -117,5 +216,4 @@ public partial class Door : Area2D
         Visible = false;
         isOpen = false;
     }
-
 }

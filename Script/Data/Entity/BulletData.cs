@@ -24,11 +24,6 @@ public partial class BulletData : Resource
     [Export] public float lifetime = 5f;
 
     /// <summary>
-    /// 弹幕基础伤害
-    /// </summary>
-    [Export] public Value damage = new(10f);
-
-    /// <summary>
     /// 弹幕伤害倍率
     /// </summary>
     [Export] public float damageMultiplier = 1f;

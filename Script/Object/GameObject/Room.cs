@@ -1,4 +1,3 @@
-using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -144,30 +143,65 @@ public partial class Room : Node2D
     /// </summary>
     [Export] public int level = 1;
 
-    [Export] RoomTileMap tileMap = null;
+    [Export] public RoomTileMap tileMap = null;
 
     public Effect onCreate;
+    public Effect onFirstEnter;
     public Effect onEnter;
     public Effect onExit;
     public Effect onUpdate;
 
     /// <summary>
+    /// 玩家是否已经进入过该房间
+    /// </summary>
+    public bool alreadyEntered = false;
+
+    /// <summary>
     /// 房间是否已被清理过
     /// </summary>
     public bool isCleared = false;
+    public bool useDefaultRoomProcess = true;
 
     public Array<Door> nextDoors = new();
+    /// <summary>
+    /// 返回门
+    /// </summary>
     public Door returnDoor;
     public Array<Door> otherDoors = new();
     /// <summary>
-    /// 上一个房间，可通过返回门返回
+    /// 玩家进入该房间前的上一个房间
     /// </summary>
     public Room preRoom = null;
 
-    int A = -1;
+    public int A = -1;
 
 
     #endregion
+
+    #region tag
+
+    public bool CheckTag(RoomTag tag)
+    {
+        return tags.Contains(tag);
+    }
+
+    public void AddTag(RoomTag tag)
+    {
+        if (!tags.Contains(tag))
+        {
+            tags.Add(tag);
+        }
+    }
+
+    public void RemoveTag(RoomTag tag)
+    {
+        if (tags.Contains(tag))
+        {
+            tags.Remove(tag);
+        }
+    }
+
+    #endregion 
 
     #region 初始化
 
@@ -187,8 +221,11 @@ public partial class Room : Node2D
 
         this.data = data;
         Name = string.IsNullOrEmpty(data.roomId) ? "Room" : data.roomId;
+
+        useDefaultRoomProcess = data.useDefaultRoomProcess;
         
         onCreate = data.onCreate?.Duplicate() as Effect;
+        onFirstEnter = data.onFirstEnter?.Duplicate() as Effect;
         onEnter = data.onEnter?.Duplicate() as Effect;
         onExit = data.onExit?.Duplicate() as Effect;
         onUpdate = data.onUpdate?.Duplicate() as Effect;
@@ -224,23 +261,26 @@ public partial class Room : Node2D
     /// <summary>
     /// 给下一个NextDoor设置房间，在地图生成时调用以链接房间
     /// </summary>
-    /// <param name="room"></param>
-    /// <param name="targetReturn">是否传送到返回门处</param>
+    /// <param name="room">目标房间</param>
     /// <returns>设置成功返回true，没有更多NextDoor了返回false</returns>
-    public bool SetNextRoom(Room room, bool targetReturn = true)
+    public bool SetNextRoom(Room room)
     {
         foreach(Door door in nextDoors)
         {
             if(door.targetRoom == null)
             {
                 door.targetRoom = room;
-                if(targetReturn && room.returnDoor != null)
+                //反向链接：让目标房间的返回门指向本门。
+                if(room != null && room.returnDoor != null)
                 {
+                    room.returnDoor.targetDoor = door;
                     door.targetDoor = room.returnDoor;
                 }
+                GD.Print($"[链接] {Name}.{door.Name} -> {room?.Name}【targetDoor={(door.targetDoor != null ? door.targetDoor.Name : "null")}】");
                 return true;
             }
         }
+        GD.PushWarning($"[链接] {Name} 没有空闲的Next门可分配给 {room?.Name}");
         return false;
     }
 
@@ -248,44 +288,62 @@ public partial class Room : Node2D
 
     # region 房间流程
 
+    public override void _Ready()
+    {
+        onCreate?.Run(this);
+    }
+
     public override void _Process(double delta)
     {
         base._Process(delta);
         onUpdate?.Run(this);
-        switch(A){
-            case 0:
-                //流程初始化
-                if(isCleared)
-                {
-                    A = 3;
-                }
-                else
-                {
-                    A = 1;
-                }
-                break;
-            case 1:
-                //房间状态修改
-                CloseAllDoor();
-                A = 2;
-                break;
-            case 2:
-                //生成所有波次的敌怪
-                if(tileMap.CheckEnemiesAllDead())
-                {
-                    if (! tileMap.SpawnEnemyNext())
+        //默认房间流程
+        if (useDefaultRoomProcess)
+        {
+            switch(A){
+                case 0:
+                    //流程初始化
+                    if(isCleared)
                     {
                         A = 3;
                     }
-                }
-                break;
-            case 3:
-                //房间清理完毕，开门
-                OpenAllDoor();
-                isCleared = true;
-                A = -1;
-                break;
+                    else
+                    {
+                        A = 1;
+                    }
+                    break;
+                case 1:
+                    //房间状态修改
+                    CloseAllDoor();
+                    //房间初次进入时生成物品
+                    tileMap.SpawnItem();
+                    A = 2;
+                    break;
+                case 2:
+                    //生成所有波次的敌怪
+                    //没有地形（未配置RoomData.tileMap）时不可能有敌人生成器，直接视为已清理
+                    if(tileMap == null)
+                    {
+                        A = 3;
+                        break;
+                    }
+                    if(tileMap.CheckGeneratorNowFinished() && tileMap.CheckEnemiesAllDead())
+                    {
+                        if (! tileMap.SpawnEnemyNext())
+                        {
+                            A = 3;
+                        }
+                    }
+                    break;
+                case 3:
+                    //房间清理完毕，开门
+                    OpenAllDoor();
+                    isCleared = true;
+                    A = -1;
+                    break;
+            }
         }
+        
     }
 
     # endregion
@@ -297,32 +355,74 @@ public partial class Room : Node2D
         entity.room = null;
     }
 
+    /// <summary>
+    /// 是否为普通房间
+    /// </summary>
+    public bool IsNormalRoom => CheckTag(RoomTag.Normal);
+
     public void Enter(Entity entity)
     {
-        //设置返回门目标为实体的上一个房间
-        preRoom = entity.room;
-        if(returnDoor != null && preRoom != null)
+        Enter(entity, entity?.room);
+    }
+
+    /// <summary>
+    /// 实体进入房间
+    /// </summary>
+    /// <param name="entity">进入的实体</param>
+    /// <param name="fromRoom">实体进入前所在的房间</param>
+    public void Enter(Entity entity, Room fromRoom)
+    {
+        if(!Game.IsAble(entity))
         {
-            returnDoor.targetRoom = preRoom;
+            return;
         }
+
+        //返回门的目标只由地图生成时的SetNextRoom决定，指向本房间在地图上的上一个房间，
+        //与玩家实际来路无关，因此这里不能改写返回门的targetRoom与targetDoor
+        preRoom = fromRoom;
         //实体将进入当前房间
         entity.room = this;
+        //诊断：输出本房间所有门的绑定状态
+        GD.Print($"[进入] {Name} 返回门={(returnDoor != null ? $"{returnDoor.Name}->{returnDoor.targetDoor?.room?.Name ?? returnDoor.targetRoom?.Name ?? "null"}" : "无")} 普通门{nextDoors.Count}个 普通房间={IsNormalRoom} 已清理={isCleared}");
+        foreach(Door door in nextDoors)
+        {
+            if(door == null)
+            {
+                GD.Print("    <null>");
+                continue;
+            }
+            GD.Print($"    {door.Name}: targetRoom={door.targetRoom?.Name ?? "null"} targetDoor={(door.targetDoor != null ? door.targetDoor.Name : "null")}");
+        }
         OnEnter();
     }
 
     public void OpenAllDoor()
     {
-        foreach (Door door in doorNode.GetChildren().Cast<Door>())
+        if(doorNode == null)
         {
-            door.Open();
+            return;
+        }
+        foreach(Node child in doorNode.GetChildren())
+        {
+            if(child is Door door)
+            {
+                door.Open();
+            }
         }
     }
 
     public void CloseAllDoor()
     {
-        foreach (Door door in doorNode.GetChildren().Cast<Door>())
+        if(doorNode == null)
         {
-            door.Close();
+            return;
+        }
+        foreach(Node child in doorNode.GetChildren())
+        {
+            if(child is Door door)
+            {
+                door.Close();
+            }
         }
     }
 
@@ -338,8 +438,27 @@ public partial class Room : Node2D
         //玩家进入后开始房间流程
         onEnter?.Run(this);
         A = 0;
-        //仅作测试，开启所有门
-        OpenAllDoor();
+        if (!alreadyEntered)
+        {
+            onFirstEnter?.Run(this);
+        }
+        alreadyEntered = true;
+
+        //更新游戏系统当前房间
+        Game game = GameManager.Instance.game;
+        if(game != null)
+        {
+            game.room = this;
+        }
+    }
+
+    #endregion
+
+    #region 工具方法
+
+    public void Log(string text)
+    {
+        GD.Print($"[{Name}] {text}");
     }
 
     #endregion

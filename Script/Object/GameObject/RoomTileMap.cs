@@ -6,11 +6,14 @@ public partial class RoomTileMap : Node2D
 {
     [Export] public TileMapLayer trrainLayer;
     [Export] public Node2D enemyGeneratorNode;
+    [Export] public Node2D itemGeneratorNode;
     [Export] public Node2D doorsNode;
 
     public Room room;
 
     Array<Array<EnemyGenerator>> enemyGenerators = [];
+    Array<ItemGenerator> itemGenerators = [];
+    Array<EnemyGenerator> generatorNow = [];
     int enemyGeneratorIndex = 0;
     Array<Enemy> enemiesNow = [];
 
@@ -26,12 +29,12 @@ public partial class RoomTileMap : Node2D
     /// </summary>
     void GetAllEnemyGenerators()
     {
-        GD.Print($"房间{room.Name}的敌人生成器节点{enemyGeneratorNode.Name}下有{enemyGeneratorNode.GetChildCount()}个子节点");
         if(enemyGeneratorNode == null)
         {
             GD.Print("房间未设置敌人生成器节点");
             return;
         }
+        GD.Print($"房间{room.Name}的敌人生成器节点{enemyGeneratorNode.Name}下有{enemyGeneratorNode.GetChildCount()}个子节点");
         if(enemyGenerators.Count > 0)
         {
             return;
@@ -45,6 +48,24 @@ public partial class RoomTileMap : Node2D
     }
 
     /// <summary>
+    /// 获取所有的物品生成器
+    /// </summary>
+    void GetAllItemGenerators()
+    {
+        if(itemGeneratorNode == null)
+        {
+            GD.Print("房间未设置物品生成器节点");
+            return;
+        }
+        foreach(Node child in itemGeneratorNode.GetChildren())
+        {
+            if(child is ItemGenerator generator)
+                itemGenerators.Add(generator);
+        }
+        
+    }
+
+    /// <summary>
     /// 生成第n个生成器节点下的所有敌人
     /// </summary>
     /// <param name="index"></param>
@@ -53,18 +74,40 @@ public partial class RoomTileMap : Node2D
         GetAllEnemyGenerators();
         if(index < 0 || index >= enemyGenerators.Count)
         {
-            GD.Print("敌人生成器索引越界");
             return false;
         }
         int count = 0;
         enemiesNow.Clear();
+        generatorNow.Clear();
         foreach(EnemyGenerator generator in enemyGenerators[index])
         {
-            Enemy enemy = generator.GenerateEnemy(room.enemyNode);
-            enemiesNow.Add(enemy);
+            generatorNow.Add(generator);
+            generator.AfterGenerate += enemiesNow.Add;
+            generator.GenerateEnemy(room.enemyNode);
             count++;
         }
-        GD.Print($"房间{room.Name}生成了{count}个敌人");
+        GD.Print($"房间{room.Name}部署了{count}个敌怪生成器");
+        return true;
+    }
+
+    /// <summary>
+    /// 生成所有的物品
+    /// </summary>
+    /// <returns></returns>
+    public bool SpawnItem()
+    {
+        GetAllItemGenerators();
+        if(itemGenerators.Count <= 0)
+        {
+            return false;
+        }
+        int count = 0;
+        foreach(ItemGenerator generator in itemGenerators)
+        {
+            generator.GenerateItem();
+            count++;
+        }
+        GD.Print($"房间{room.Name}部署了{count}个物品生成器");
         return true;
     }
 
@@ -86,28 +129,20 @@ public partial class RoomTileMap : Node2D
     }
 
     /// <summary>
-    /// 递归触发生成器根节点下的所有生成器
+    /// 检查当前生成器是否结束其生成
     /// </summary>
-    public void SpawnAllEnemy()
+    /// <returns></returns>
+    public bool CheckGeneratorNowFinished()
     {
-        if(enemyGeneratorNode == null)
+        foreach(EnemyGenerator g in generatorNow)
         {
-            GD.Print("房间未设置敌人生成器节点");
-            return;
+            if(Game.IsAble(g) && !g.finished)
+            {
+                return false;
+            }
         }
-
-        Array<EnemyGenerator> generators = Tools.GetAllChildren<EnemyGenerator>(enemyGeneratorNode);    
-        int count = 0;
-        //使房间里的怪物生成器进行怪物的生成。
-        foreach(EnemyGenerator generator in generators)
-        {
-            Enemy enemy = generator.GenerateEnemy(room.enemyNode);
-            enemiesNow.Add(enemy);
-            count ++;
-        }
-        GD.Print($"房间{room.Name}生成了{count}个敌人");
+        return true;
     }
-
     /// <summary>
     /// 检查当前房间生成的敌人是否全部死亡
     /// </summary>
@@ -116,20 +151,23 @@ public partial class RoomTileMap : Node2D
     {
         //检查当前房间的敌人是否全部死亡
         bool allDead = true;
+
         foreach(Enemy enemy in enemiesNow)
         {
-            if(enemy != null && !enemy.IsQueuedForDeletion() && !enemy.IsDead)
+            if(Game.IsAble(enemy) && !enemy.IsDead)
             {
                 allDead = false;
                 break;
             }
         }
+
         if(allDead)
         {
             GD.Print($"房间{room.Name}的所有敌人已死亡");
             enemiesNow.Clear();
             return true;
         }
+
         return false;
     }
     

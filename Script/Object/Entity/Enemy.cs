@@ -91,6 +91,7 @@ public partial class Enemy : Entity
         // 如果数据为空，使用默认数据
         if (data == null)
         {
+            GD.PrintErr("创建敌人：使用默认数据");
             data = DefaultData;
         }
 
@@ -107,19 +108,19 @@ public partial class Enemy : Entity
             return null;
         }
 
-        // 设置位置
-        enemy.Position = pos;
-        enemy.Name = data.enemyName;
-
-        // 初始化数据
-        enemy.Initialize(data);
-
         // 添加到场景
         if (parent == null)
         {
             parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
         }
-        parent.CallDeferred("add_child", enemy); // 使用CallDeferred确保在树中添加节点时不会引发错误
+        parent.AddChild(enemy);
+
+        // 设置位置
+        enemy.GlobalPosition = pos;
+        enemy.Name = data.enemyName;
+
+        // 初始化数据
+        enemy.Initialize(data);
 
         return enemy;
     }
@@ -139,22 +140,22 @@ public partial class Enemy : Entity
     /// <summary>
     /// 敌人数据源
     /// </summary>
-    public EnemyData data;
+    [Export] public EnemyData data;
 
     /// <summary>
     /// 目标实体（用于AI追踪）
     /// </summary>
-    public Entity target;
+    [Export] public Entity target;
 
     /// <summary>
     /// 近战弹幕
     /// </summary>
-    public Bullet meleeBullet;
+    [Export] public Bullet meleeBullet;
 
-    public Behavior onGenerate;
-    public Behavior onUpdate;
-    public Behavior onAttack;
-    public Behavior onDeath;
+    [Export] public Effect onGenerate;
+    [Export] public Effect onUpdate;
+    [Export] public Effect onAttack;
+    [Export] public Effect onDeath;
 
     #endregion
     

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://2yb8kr3sybeg"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_n77n3"]
+[ext_resource type="Resource" uid="uid://3qbg4mijotrs" path="res://Resource/Demo/Item/buff_xst_attack_up.tres" id="2_6m3lq"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="3_dnyma"]
+[ext_resource type="Texture2D" uid="uid://bxvh60jna553l" path="res://Resource/Demo/Item/XST.png" id="4_yyn6k"]
+
+[resource]
+script = ExtResource("3_dnyma")
+ItemName = "xst"
+showName = "小石头"
+intro = "没什么用的石头，拿来砸人似乎不错"
+sprite = ExtResource("4_yyn6k")
+carryBuffs = Dictionary[ExtResource("1_n77n3"), int]({
+ExtResource("2_6m3lq"): 1
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

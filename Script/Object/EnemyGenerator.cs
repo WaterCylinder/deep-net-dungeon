@@ -1,7 +1,12 @@
-using Godot;
 using System;
-using System.Threading;
+using System.ComponentModel;
+using Godot;
+using Godot.Collections;
+using Utils;
 
+/// <summary>
+/// 敌怪生成器，用于生成敌怪，需要注意的是列表生成功能没有对玩家位置的判断，可能会导致敌怪生成在玩家位置。
+/// </summary>
 public partial class EnemyGenerator : Node2D
 {
     /// <summary>
@@ -29,6 +34,35 @@ public partial class EnemyGenerator : Node2D
     [Export] public bool GenerateImmediately = false;
 
     [Export] public bool GenerateAnimation = false;
+    [Export] public bool GenerateList = false;
+    [Export] public bool GenerateListRandom = false;
+    [Export] public Array<EnemyData> dataList;
+    [Export] public Enemy enemyNow;
+
+    [Export] public bool finished = false;
+
+    public Array<EnemyData> listCache = null;
+    protected Node2D generateParent;
+    protected bool deleteAfterGenerate = true;
+
+    [Signal]
+    public delegate void BeforeGenerateEventHandler(EnemyData data);
+
+    [Signal]
+    public delegate void AfterGenerateEventHandler(Enemy enemy);
+
+    public Random _random = null;
+    public Random random
+    {
+        get
+        {
+            if(_random == null)
+            {
+                _random = GameManager.Instance.game.randomSystem.GetGenerator(null);
+            }
+            return _random;
+        }
+    }
 
     public override void _Ready()
     {
@@ -40,13 +74,78 @@ public partial class EnemyGenerator : Node2D
         }
     }
 
-    public Enemy GenerateEnemy(Node2D parent = null, bool del = true)
+    /// <summary>
+    /// 生成敌怪
+    /// </summary>
+    /// <param name="parent">生成的敌怪的父对象</param>
+    /// <param name="del">是否生成完毕后移除生成器</param>
+    /// <returns></returns>
+    public virtual Enemy GenerateEnemy(Node2D parent = null, bool del = true)
     {
-        //TODO: 生成器动画以及是否采用动画的判断条件实现
-
-        //在当前位置生成敌人
-        Enemy enemy = GameManager.Instance.game.SpawnEnemy(enemyData, Position, parent);
-        if(del) QueueFree(); //生成后销毁生成器
-        return enemy;
+        finished = false;
+        if (GenerateList)
+        {
+            //敌怪列表生成
+            if(listCache == null)
+            {
+                listCache = dataList.Duplicate(false);
+                if (GenerateListRandom)
+                {
+                    Tools.Shuffle(listCache, random);
+                }
+            }
+            generateParent = parent;
+            deleteAfterGenerate = del;
+            return null;
+        }
+        else
+        {
+            //单个敌怪生成
+            Enemy enemy = GenerateEnemy(enemyData, parent);
+            deleteAfterGenerate = del;
+            FinishGenerate();
+            return enemy;
+        }
     }
+
+    public Enemy GenerateEnemy(EnemyData data, Node2D parent, Vector2 pos = default)
+    {
+        EmitSignal(nameof(BeforeGenerate), data);
+        if(pos == default)
+        {
+            pos = GlobalPosition;
+        }
+        enemyNow = GameManager.Instance.game.SpawnEnemy(data, pos, parent);
+        EmitSignal(nameof(AfterGenerate), enemyNow);
+        return enemyNow;
+    }
+
+    public override void _Process(double delta)
+    {
+        if(listCache != null)
+        {
+            
+            if(listCache.Count != 0)
+            {
+                if (!Game.IsAble(enemyNow))
+                {
+                    enemyData = listCache[^1];
+                    listCache.RemoveAt(listCache.Count - 1);
+                    GenerateEnemy(enemyData, generateParent);
+                }
+            }
+            else
+            {
+                FinishGenerate();
+            }
+        }
+    }
+
+    protected void FinishGenerate()
+    {
+        listCache = null;
+        finished = true;
+        if(deleteAfterGenerate)QueueFree();
+    }
+
 }

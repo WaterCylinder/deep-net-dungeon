@@ -2,18 +2,44 @@
 
 [ext_resource type="Script" uid="uid://c6t7t4sn5ln52" path="res://Script/Object/GameObject/RoomTileMap.cs" id="1_bdi1m"]
 [ext_resource type="TileSet" uid="uid://dn4dj6wdo7uqr" path="res://Asset/default_tile_set.tres" id="2_7o4c3"]
-[ext_resource type="PackedScene" uid="uid://ram0gxhmoss1" path="res://Asset/Object/enemy_generator.tscn" id="4_bdi1m"]
-[ext_resource type="Texture2D" uid="uid://clv1r4a12iwos" path="res://Resource/Demo/BaseMap/Tip.png" id="4_m56kh"]
-[ext_resource type="Resource" uid="uid://wr1ywwr3q12k" path="res://Resource/Demo/DemoEnemy/EnemyData/spire.tres" id="5_7o4c3"]
+[ext_resource type="PackedScene" uid="uid://cmnv5ygvfjkqt" path="res://Asset/Object/item_generator.tscn" id="3_04x0o"]
+[ext_resource type="Resource" uid="uid://2yb8kr3sybeg" path="res://Resource/Demo/Item/item_xst.tres" id="4_kkbn6"]
+[ext_resource type="Texture2D" uid="uid://c582dn6i2m4xp" path="res://Resource/Demo/DemoRoom/Bg/Tip2.png" id="4_xnvj2"]
+[ext_resource type="Texture2D" uid="uid://bsu2bmtj65rpv" path="res://Resource/Demo/DemoRoom/Bg/Tip.png" id="5_5wd8l"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="6_5wd8l"]
-[ext_resource type="PackedScene" uid="uid://igsv0xlspfy2" path="res://Asset/Object/item.tscn" id="7_7o4c3"]
 [ext_resource type="Texture2D" uid="uid://b0yps27e5u2yj" path="res://Resource/Demo/Sprites/ScreenW.png" id="8_q4hx4"]
 [ext_resource type="PackedScene" uid="uid://dheeqe0sjpbhh" path="res://Asset/Object/Screen/dialogue_trigger.tscn" id="9_60n3v"]
+[ext_resource type="Script" uid="uid://d347lwwwsvn3n" path="res://Resource/Demo/SceneBehavior.cs" id="11_kkbn6"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="12_4ergs"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="13_qlvip"]
 
-[node name="Start" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "doorsNode")]
+[sub_resource type="Resource" id="Resource_4ergs"]
+script = ExtResource("11_kkbn6")
+behaviorName = "Test"
+metadata/_custom_type_script = "uid://d347lwwwsvn3n"
+
+[sub_resource type="Resource" id="Resource_qlvip"]
+script = ExtResource("13_qlvip")
+condition = ExtResource("12_4ergs")
+behavior = SubResource("Resource_4ergs")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_kkbn6"]
+script = ExtResource("11_kkbn6")
+behaviorName = "GenerateStartItem"
+metadata/_custom_type_script = "uid://d347lwwwsvn3n"
+
+[sub_resource type="Resource" id="Resource_nagpx"]
+script = ExtResource("13_qlvip")
+condition = ExtResource("12_4ergs")
+behavior = SubResource("Resource_kkbn6")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[node name="Start" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]
 script = ExtResource("1_bdi1m")
 trrainLayer = NodePath("Terrain")
 enemyGeneratorNode = NodePath("EnemyGenerator")
+itemGeneratorNode = NodePath("ItemGenerator")
 doorsNode = NodePath("Doors")
 
 [node name="Terrain" type="TileMapLayer" parent="." unique_id=1317414934]
@@ -22,31 +48,49 @@ tile_set = ExtResource("2_7o4c3")
 
 [node name="EnemyGenerator" type="Node2D" parent="." unique_id=1983415525]
 
+[node name="ItemGenerator" type="Node2D" parent="." unique_id=1995667350]
+
+[node name="ItemGenerator" parent="ItemGenerator" unique_id=1631980262 instance=ExtResource("3_04x0o")]
+position = Vector2(-352, -96)
+itemData = ExtResource("4_kkbn6")
+
 [node name="Doors" type="Node2D" parent="." unique_id=1913729891]
 
 [node name="Door" parent="Doors" unique_id=1902877401 instance=ExtResource("6_5wd8l")]
 position = Vector2(352, 224)
 
 [node name="BG" type="Node2D" parent="." unique_id=842467083]
+modulate = Color(1, 1, 1, 0.39215687)
 
-[node name="EnemyGenerator" parent="BG" unique_id=463566022 instance=ExtResource("4_bdi1m")]
-position = Vector2(-288, -96)
-enemyData = ExtResource("5_7o4c3")
-GenerateImmediately = true
+[node name="Tip2" type="Sprite2D" parent="BG" unique_id=1567949049]
+self_modulate = Color(1, 1, 1, 0.49019608)
+position = Vector2(152, 0)
+texture = ExtResource("4_xnvj2")
 
 [node name="Tip" type="Sprite2D" parent="BG" unique_id=2082211758]
 self_modulate = Color(1, 1, 1, 0.49019608)
-position = Vector2(0, -8)
-texture = ExtResource("4_m56kh")
-
-[node name="Item" parent="BG" unique_id=73759007 instance=ExtResource("7_7o4c3")]
-position = Vector2(-64, -192)
-initImmediately = true
+position = Vector2(-144, 0)
+texture = ExtResource("5_5wd8l")
 
 [node name="ScreenW1" type="Node2D" parent="." unique_id=1203471388]
-position = Vector2(-32, -296)
+position = Vector2(0, -296)
 
 [node name="Sprite2D" type="Sprite2D" parent="ScreenW1" unique_id=1517220335]
 texture = ExtResource("8_q4hx4")
 
 [node name="DialogueTrigger" parent="ScreenW1" unique_id=1800465108 instance=ExtResource("9_60n3v")]
+onDialogueEnd = SubResource("Resource_qlvip")
+
+[node name="ScreenW2" type="Node2D" parent="." unique_id=1274589145]
+position = Vector2(352, 32)
+
+[node name="Sprite2D" type="Sprite2D" parent="ScreenW2" unique_id=1338998246]
+texture = ExtResource("8_q4hx4")
+
+[node name="DialogueTrigger" parent="ScreenW2" unique_id=116506649 node_paths=PackedStringArray("dialoguePoint") instance=ExtResource("9_60n3v")]
+contents = Array[String](["***留：", "这里有一个攻击模块可以帮助你击败一些怪物，", "拿上之后会自动攻击。"])
+dialoguePoint = NodePath("Node2D")
+onDialogueEnd = SubResource("Resource_nagpx")
+
+[node name="Node2D" type="Node2D" parent="ScreenW2/DialogueTrigger" unique_id=1637699484]
+position = Vector2(0, -48)

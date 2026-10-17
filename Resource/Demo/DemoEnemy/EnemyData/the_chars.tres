@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bsjwbxaql6g71"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_3dwu3"]
+[ext_resource type="Script" uid="uid://i1nqlccnmape" path="res://Resource/Demo/DemoEnemy/EnemyBehaviorDemo.cs" id="2_mho08"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_xol1m"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_1vx6b"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="3_bod2f"]
+[ext_resource type="Texture2D" uid="uid://d0ifof12y4wud" path="res://Resource/Demo/DemoEnemy/Sprite/Chars.png" id="3_xol1m"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_1vx6b"]
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="5_1vx6b"]
+
+[sub_resource type="Resource" id="Resource_bod2f"]
+script = ExtResource("2_mho08")
+behaviorName = "AttackShotPlayerThree"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_1vx6b"]
+script = ExtResource("4_1vx6b")
+condition = ExtResource("3_bod2f")
+behavior = SubResource("Resource_bod2f")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_vcfg8"]
+script = ExtResource("2_mho08")
+behaviorName = "UpdateReboundMove"
+metadata/_custom_type_script = "uid://i1nqlccnmape"
+
+[sub_resource type="Resource" id="Resource_1o0me"]
+script = ExtResource("5_1vx6b")
+behaviorName = "Attack"
+metadata/_custom_type_script = "uid://dblyxvivec0w8"
+
+[sub_resource type="Resource" id="Resource_wmq1f"]
+script = ExtResource("3_1vx6b")
+behaviorArray = Array[Object]([SubResource("Resource_vcfg8"), SubResource("Resource_1o0me")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_x878i"]
+script = ExtResource("4_1vx6b")
+condition = ExtResource("3_bod2f")
+behavior = SubResource("Resource_wmq1f")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_xol1m")
+enemyName = "字符团"
+displayName = "字符团"
+description = "一团混乱的字符集"
+defense = 0.0
+attackSpeed = 0.1
+speed = 150.0
+sprite = ExtResource("3_xol1m")
+onUpdate = SubResource("Resource_x878i")
+onAttack = SubResource("Resource_1vx6b")
+metadata/_custom_type_script = "uid://mqed4halsexx"

@@ -24,6 +24,8 @@ public partial class Game : Node
 
     #endregion
 
+    #region 游戏属性
+
     [Export] public string gameMode = "Test"; // 可在编辑器中设置默认游戏模式
     /// <summary>
     /// 当前游戏模式实例
@@ -51,6 +53,11 @@ public partial class Game : Node
     public Map map = null;
 
     /// <summary>
+    /// 当前房间
+    /// </summary>
+    public Room room = null;
+
+    /// <summary>
     /// 敌人生成信号
     /// 当敌人生成器被创建时发出，可用于播放生成特效等
     /// </summary>
@@ -60,7 +67,18 @@ public partial class Game : Node
     [Signal]
     public delegate void RoomSpawnedEventHandler(Room room);
 
-    # region 父类节点
+    [Signal]
+    public delegate void ItemSpawnedEventHandler(Item item);
+
+    #endregion
+
+    #region 游戏系统
+
+    public RandomSystem randomSystem = new();
+
+    #endregion
+
+    #region 父类节点
 
     [Export] public Node enemyNode;
 
@@ -72,7 +90,7 @@ public partial class Game : Node
 
     # endregion
 
-    # region 游戏流程变量控制
+    #region 游戏流程变量控制
 
     public void Next(int step = 100)
     {
@@ -91,8 +109,9 @@ public partial class Game : Node
         A = _cache;
     }
 
-    # endregion
+    #endregion
 
+    #region 生命周期
     public override void _EnterTree()
     {
         base._EnterTree();
@@ -140,6 +159,8 @@ public partial class Game : Node
      currentMode?.OnCleanup();
      currentMode = null;
     }
+
+    #endregion
 
     // ========== 以下为游戏事件中调用模式方法的便捷接口 ==========
 
@@ -255,7 +276,7 @@ public partial class Game : Node
      currentMode?.OnEnd(isVictory);
     }
 
-    # region 通用方法
+    #region 通用方法
 
     /// <summary>
     /// 在指定位置生成敌人
@@ -274,7 +295,7 @@ public partial class Game : Node
         Enemy enemy = Enemy.Create(position, data, parent);
 
         // 发出敌人生成信号
-        EmitSignal(SignalName.EnemySpawned, position, data);
+        EmitSignal(SignalName.EnemySpawned, enemy);
 
         return enemy;
     }
@@ -290,10 +311,30 @@ public partial class Game : Node
 
         Room room = Room.Create(position, data, roomNode);
 
-        // 发出敌人生成信号
-        EmitSignal(SignalName.RoomSpawned, position, data);
+        // 发出房间生成信号
+        EmitSignal(SignalName.RoomSpawned, room);
 
         return room;
+    }
+
+    /// <summary>
+    /// 在指定位置生成物品
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="data"></param>
+    /// <param name="parent"></param>
+    /// <returns></returns>
+    public Item SpawnItem(Vector2 position, ItemData data, Node parent= null)
+    {
+        if(parent == null)
+        {
+            parent = dropItemNode;
+        }
+        Item item = Item.CreateItem(data, position, parent);
+
+        EmitSignal(SignalName.ItemSpawned, item);
+
+        return item;
     }
 
     #endregion

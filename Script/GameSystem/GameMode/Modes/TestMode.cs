@@ -22,10 +22,6 @@ public partial class TestMode : GameModeBase
 
     void Init()
     {
-        //设置玩家子弹为Demo版的普通子弹
-        string dataPath = "Resource.Demo.Bullet.bullet_normal";
-        BulletData data = AssetManager.Instance.GetData(dataPath, Bullet.DefaultData);
-        player.ChangeBullet(data);
     }
 
     public override void OnProcess(double delta)
@@ -40,7 +36,7 @@ public partial class TestMode : GameModeBase
             break;
             case 100:
             //生成地图
-            map.Initialize(null, new RandomSystem(Time.GetDateDictFromSystem()));
+            map.Initialize(null, game.randomSystem);
             map.startRoom.Enter(player);
             game.Next();
             break;

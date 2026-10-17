@@ -14,23 +14,26 @@
 [ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="4_g3fkh"]
 [ext_resource type="Resource" uid="uid://dja8dgj1aoss1" path="res://Resource/Demo/DemoRoom/Level1/room_demo_start.tres" id="4_nspe4"]
 [ext_resource type="Texture2D" uid="uid://df0m6a7umosjq" path="res://Resource/Demo/UI/HUD/BagClose.png" id="5_3jynh"]
-[ext_resource type="Resource" uid="uid://bp6og717rqusk" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal.tres" id="5_aawhf"]
+[ext_resource type="Resource" uid="uid://bp6og717rqusk" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_test.tres" id="5_aawhf"]
 [ext_resource type="Script" uid="uid://nivobqo3e8aw" path="res://Script/UI/BagUI.cs" id="5_hqtje"]
+[ext_resource type="PackedScene" uid="uid://b51kk7n386rrv" path="res://Asset/UI/buff_layout_item.tscn" id="5_p323j"]
 [ext_resource type="Texture2D" uid="uid://dxmen587xujbn" path="res://Resource/Demo/UI/HUD/BagOpen.png" id="6_0mc8i"]
 [ext_resource type="PackedScene" uid="uid://dhjpw6yp5gchp" path="res://Asset/Object/Component/trigger.tscn" id="6_48ymf"]
 [ext_resource type="PackedScene" uid="uid://cnhkoacuwafyq" path="res://Asset/UI/item_layout_item.tscn" id="8_hbowo"]
 [ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="9_jwmyi"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="9_p323j"]
+[ext_resource type="Texture2D" uid="uid://cn7iu5s8lfbsw" path="res://Resource/Demo/DemoRoom/Bg/bg_abyss.png" id="11_hjrqo"]
 [ext_resource type="SpriteFrames" uid="uid://ctusjok3ndrff" path="res://Resource/Demo/Player/player_frames.tres" id="12_aawhf"]
-[ext_resource type="Texture2D" uid="uid://bklnxju76q73h" path="res://Resource/Demo/Player/Arrow.png" id="14_kcbv6"]
+[ext_resource type="Script" uid="uid://c4uh4w2l8r4hj" path="res://Script/UI/Demo/BGAutoRotateZoom.cs" id="12_ghk2r"]
 [ext_resource type="Shader" uid="uid://bguaybsuni2ee" path="res://Resource/Shader/Flash.gdshader" id="16_kfjtm"]
+[ext_resource type="Resource" uid="uid://cmw8rahcmat20" path="res://Resource/Demo/DemoRoom/Level1/room_demo_001_normal_1.tres" id="16_mw7jm"]
 [ext_resource type="PackedScene" uid="uid://cleomu7wca23h" path="res://Asset/Object/Component/bag.tscn" id="19_1e3q2"]
 
 [sub_resource type="Resource" id="Resource_aawhf"]
 script = ExtResource("4_g3fkh")
 roomDatas = Dictionary[int, Array]({
 0: Array[ExtResource("3_2j816")]([ExtResource("4_nspe4")]),
-1: Array[ExtResource("3_2j816")]([ExtResource("5_aawhf")]),
+1: Array[ExtResource("3_2j816")]([ExtResource("16_mw7jm")]),
 2: Array[ExtResource("3_2j816")]([ExtResource("5_aawhf")]),
 3: Array[ExtResource("3_2j816")]([null]),
 4: Array[ExtResource("3_2j816")]([null])
@@ -47,13 +50,16 @@ _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_cohtu")
 })
 
-[sub_resource type="Resource" id="Resource_2j816"]
+[sub_resource type="Resource" id="Resource_p323j"]
 script = ExtResource("3_3xgnh")
+id = "Base"
+sortCode = -2147483648
 
-[sub_resource type="Resource" id="Resource_g3fkh"]
+[sub_resource type="Resource" id="Resource_hjrqo"]
 script = ExtResource("4_48ymf")
+baseValue = 25.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
-"Base": SubResource("Resource_2j816")
+"Base": SubResource("Resource_p323j")
 })
 
 [sub_resource type="Resource" id="Resource_jwmyi"]
@@ -66,14 +72,16 @@ _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_jwmyi")
 })
 
-[sub_resource type="Resource" id="Resource_13sni"]
+[sub_resource type="Resource" id="Resource_ghk2r"]
 script = ExtResource("3_3xgnh")
+id = "Base"
+sortCode = -2147483648
 
-[sub_resource type="Resource" id="Resource_bxrg2"]
+[sub_resource type="Resource" id="Resource_mw7jm"]
 script = ExtResource("4_48ymf")
 baseValue = 1.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
-"Base": SubResource("Resource_13sni")
+"Base": SubResource("Resource_ghk2r")
 })
 
 [sub_resource type="Resource" id="Resource_ilbig"]
@@ -158,23 +166,27 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("healthInnerBar", "healthCover", "healthSlowCover", "smallTextPoint")]
+[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("healthInnerBar", "healthCover", "healthSlowCover", "smallTextPoint", "buffNode", "buffIntroNode", "buffIntroLabel")]
 layout_mode = 1
 anchor_left = 0.03
 anchor_top = 0.03
 anchor_right = 0.5
-anchor_bottom = 0.23
+anchor_bottom = 0.15
 mouse_filter = 2
 script = ExtResource("2_ilbig")
 healthInnerBar = NodePath("Bar/Inner/TextureRect")
 healthCover = NodePath("Bar/Inner/Cover")
 healthSlowCover = NodePath("Bar/Inner/SlowCover")
 smallTextPoint = NodePath("SmallTextPoint")
+buffLayoutItemPrefab = ExtResource("5_p323j")
+buffNode = NodePath("BuffShowOut/HBoxContainer")
+buffIntroNode = NodePath("BuffShowOut/BuffIntro")
+buffIntroLabel = NodePath("BuffShowOut/BuffIntro/RichTextLabel")
 
 [node name="Bar" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=190942017]
 layout_mode = 1
 anchor_right = 1.0
-anchor_bottom = 0.2
+anchor_bottom = 0.3
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -234,13 +246,69 @@ expand_mode = 1
 
 [node name="SmallTextPoint" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=2071235060]
 anchors_preset = 0
-offset_left = 255.44
-offset_top = 12.560001
-offset_right = 295.44
-offset_bottom = 52.56
+offset_left = 558.44
+offset_top = 4.5600014
+offset_right = 598.44
+offset_bottom = 44.56
 mouse_filter = 2
 
-[node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag")]
+[node name="BuffShowOut" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=1325119690]
+layout_mode = 1
+anchor_top = 0.3
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut" unique_id=1883095148]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BuffLayoutItem" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1416346317 instance=ExtResource("5_p323j")]
+layout_mode = 2
+
+[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1858317370]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer/AspectRatioContainer2" unique_id=231932329]
+layout_mode = 2
+texture = ExtResource("6_0mc8i")
+
+[node name="AspectRatioContainer3" type="AspectRatioContainer" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1957854290]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer/AspectRatioContainer3" unique_id=1681028932]
+layout_mode = 2
+texture = ExtResource("9_p323j")
+
+[node name="BuffIntro" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut" unique_id=449563920]
+visible = false
+anchors_preset = 0
+offset_left = 177.44
+offset_top = 35.232
+offset_right = 377.44
+offset_bottom = 99.231995
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/BuffIntro" unique_id=895457095]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.48235294)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/BuffIntro" unique_id=592410503]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "效果介绍"
+
+[node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag", "stateUI", "maxHealth", "currentHealth", "attack", "defense", "attackspeed", "critRate", "critDamage", "speed")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -261,30 +329,23 @@ introLabel = NodePath("BagUI/Intro/IntroText")
 introLevel = NodePath("BagUI/Intro/ItemInfo/InfoItem2/Level")
 introName = NodePath("BagUI/Intro/ItemInfo/InfoItem/Name")
 introTag = NodePath("BagUI/Intro/ItemInfo/InfoItem3/Tag")
-
-[node name="BagButton" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag" unique_id=1419786458]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.75
-anchor_top = 0.75
-anchor_right = 0.97
-anchor_bottom = 0.97
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/HUD/Bag/BagButton" unique_id=807879300]
-layout_mode = 2
-texture_normal = ExtResource("5_3jynh")
-stretch_mode = 0
+stateUI = NodePath("PlayerStateUI")
+maxHealth = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/Health/HBoxContainer/Num")
+currentHealth = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/HealthNow/HBoxContainer/Num")
+attack = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/Attack/HBoxContainer/Num")
+defense = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/Defense/HBoxContainer/Num")
+attackspeed = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/AttackSpeed/HBoxContainer/Num")
+critRate = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/CritRate/HBoxContainer/Num")
+critDamage = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/CritDamage/HBoxContainer/Num")
+speed = NodePath("PlayerStateUI/ScrollContainer/VBoxContainer/Speed/HBoxContainer/Num")
 
 [node name="BagUI" type="Control" parent="CanvasLayer/HUD/Bag" unique_id=1961105832]
 visible = false
 layout_mode = 1
-anchor_left = 0.2
-anchor_top = 0.2
-anchor_right = 0.8
-anchor_bottom = 0.8
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.6
+anchor_bottom = 0.9
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -465,7 +526,375 @@ grow_vertical = 2
 layout_mode = 2
 texture = ExtResource("9_p323j")
 
+[node name="PlayerStateUI" type="Control" parent="CanvasLayer/HUD/Bag" unique_id=1584756038]
+visible = false
+layout_mode = 1
+anchor_left = 0.6
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI" unique_id=1331767636]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.20900007, 0, 0.38, 0.3529412)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI" unique_id=1195762738]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 11.0
+offset_top = 11.0
+offset_right = -11.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer" unique_id=132248632]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Health" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=750277571]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Health" unique_id=2032317875]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Health" unique_id=1538937311]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Health/HBoxContainer" unique_id=48905063]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "最大生命值"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Health/HBoxContainer" unique_id=844245012]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="HealthNow" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=331929059]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/HealthNow" unique_id=1880322784]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/HealthNow" unique_id=1531809263]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/HealthNow/HBoxContainer" unique_id=1594522378]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "生命值"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/HealthNow/HBoxContainer" unique_id=837150924]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="Attack" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=726365441]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Attack" unique_id=144704966]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Attack" unique_id=1535795013]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Attack/HBoxContainer" unique_id=1956957184]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "攻击力"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Attack/HBoxContainer" unique_id=169140253]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="Defense" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=2021077032]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Defense" unique_id=255979501]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Defense" unique_id=228417732]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Defense/HBoxContainer" unique_id=156385709]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "护甲值"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Defense/HBoxContainer" unique_id=2073781947]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="AttackSpeed" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=1612067688]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/AttackSpeed" unique_id=1416120679]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/AttackSpeed" unique_id=255481159]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/AttackSpeed/HBoxContainer" unique_id=1811658035]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "攻击速度"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/AttackSpeed/HBoxContainer" unique_id=53415348]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="CritRate" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=564865696]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritRate" unique_id=1136807951]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritRate" unique_id=772519228]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritRate/HBoxContainer" unique_id=1763019456]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "暴击率"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritRate/HBoxContainer" unique_id=919001905]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="CritDamage" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=1142078652]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritDamage" unique_id=192752147]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritDamage" unique_id=1953007134]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritDamage/HBoxContainer" unique_id=100664477]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "暴击倍率"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/CritDamage/HBoxContainer" unique_id=1263307648]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="Speed" type="Control" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer" unique_id=1157769909]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="BG" type="ColorRect" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Speed" unique_id=2078431651]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Speed" unique_id=838953160]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Intro" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Speed/HBoxContainer" unique_id=2089306128]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "移动速度"
+horizontal_alignment = 1
+
+[node name="Num" type="Label" parent="CanvasLayer/HUD/Bag/PlayerStateUI/ScrollContainer/VBoxContainer/Speed/HBoxContainer" unique_id=1701374162]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="BagButton" type="AspectRatioContainer" parent="CanvasLayer/HUD/Bag" unique_id=1419786458]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.75
+anchor_top = 0.75
+anchor_right = 0.97
+anchor_bottom = 0.97
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/HUD/Bag/BagButton" unique_id=807879300]
+layout_mode = 2
+texture_normal = ExtResource("5_3jynh")
+stretch_mode = 0
+
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
+
+[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera")]
+position = Vector2(500, 0)
+script = ExtResource("12_ghk2r")
+camera = NodePath("../../MainCamera")
+
+[node name="Sprite2D" type="Sprite2D" parent="World/BG" unique_id=1832661690]
+position = Vector2(-15, 24)
+texture = ExtResource("11_hjrqo")
 
 [node name="Map" type="Node2D" parent="World" unique_id=754966095]
 unique_name_in_owner = true
@@ -479,7 +908,7 @@ metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="ItemNode" type="Node2D" parent="World" unique_id=2040611529]
 
-[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "animeNode", "arrowNode", "area")]
+[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "animeNode", "shotPoint", "area")]
 unique_name_in_owner = true
 collision_mask = 129
 gravity_scale = 0.0
@@ -489,29 +918,17 @@ max_contacts_reported = 64
 script = ExtResource("2_ou18a")
 enemyTrigger = NodePath("Trigger")
 animeNode = NodePath("AnimatedSprite2D")
-arrowNode = NodePath("Arrow")
+shotPoint = NodePath("ShotPoint")
 maxHealth = SubResource("Resource_tujvx")
-attack = SubResource("Resource_g3fkh")
+attack = SubResource("Resource_hjrqo")
 defense = SubResource("Resource_nspe4")
-attackSpeed = SubResource("Resource_bxrg2")
+attackSpeed = SubResource("Resource_mw7jm")
 attackRange = SubResource("Resource_kfjtm")
 critRate = SubResource("Resource_3jynh")
 critDamage = SubResource("Resource_0mc8i")
 speed = SubResource("Resource_48ymf")
 args = SubResource("Resource_kcbv6")
 area = NodePath("Area2D")
-
-[node name="Arrow" type="Node2D" parent="World/Player" unique_id=907568952]
-position = Vector2(0, -14)
-
-[node name="Sprite2D" type="Sprite2D" parent="World/Player/Arrow" unique_id=673943103]
-position = Vector2(24, 2.9999976)
-rotation = 1.9778539
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("14_kcbv6")
-
-[node name="ShootPoint" type="Node2D" parent="World/Player/Arrow" unique_id=419850343]
-position = Vector2(21, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="World/Player" unique_id=1962542118]
 visible = false
@@ -540,6 +957,9 @@ ignoreTags = Array[int]([2, 0])
 position = Vector2(0, -11.245)
 shape = SubResource("CapsuleShape2D_cohtu")
 
+[node name="ShotPoint" type="Node2D" parent="World/Player" unique_id=1240147596]
+position = Vector2(0, -15)
+
 [node name="Bag" parent="World/Player" unique_id=301600655 instance=ExtResource("19_1e3q2")]
 
 [node name="SmallObject" type="Node2D" parent="World" unique_id=1589920352]
@@ -547,7 +967,6 @@ shape = SubResource("CapsuleShape2D_cohtu")
 [node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
 unique_name_in_owner = true
 position = Vector2(500, 0)
-zoom = Vector2(0.24, 0.24)
 process_callback = 0
 script = ExtResource("2_u6khg")
 moveSpeed = 8.0

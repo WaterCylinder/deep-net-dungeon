@@ -346,6 +346,10 @@ public partial class Bullet : Entity
         // 初始化数据
         bullet.Initialize(data);
 
+        // 转移伤害基础值到弹幕上
+        if(Game.IsAble(owner))
+            bullet.attack = owner.attack.Get();
+
         // 设置位置和速度
         bullet.Position = pos;
         bullet.moveTowards = velocity.Normalized();
@@ -398,7 +402,7 @@ public partial class Bullet : Entity
     /// <summary>
     /// 弹幕发射者
     /// </summary>
-    public Entity owner;
+    [Export] public Entity owner;
 
     /// <summary>
     /// 弹幕标签列表
@@ -570,8 +574,7 @@ public partial class Bullet : Entity
         // 设置生命周期
         lifetime = data.lifetime;
 
-        // 设置伤害
-        attack = new Value(data.damage.baseValue);
+        // 设置伤害倍率
         damageMultiplier = data.damageMultiplier;
 
         // 设置设置项
@@ -726,7 +729,7 @@ public partial class Bullet : Entity
     }
 
     /// <summary>
-    /// 对目标造成伤害
+    /// 对目标造成伤害，伤害计算时将该弹幕的attack属性的值乘上弹幕伤害乘区。
     /// </summary>
     /// <param name="target">目标实体</param>
     protected virtual void DealDamage(Entity target)
@@ -738,6 +741,7 @@ public partial class Bullet : Entity
             // 具体实现需要根据游戏逻辑调整
         }
 
+        // 计算最终伤害
         float finalDamage = attack.Get() * damageMultiplier;
 
         // 护甲穿透处理

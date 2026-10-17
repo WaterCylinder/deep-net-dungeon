@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b51kk7n386rrv"]
+
+[ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="1_354t8"]
+
+[node name="BuffLayoutItem" type="AspectRatioContainer" unique_id=1416346317]
+mouse_filter = 0
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1377431286]
+layout_mode = 2
+texture = ExtResource("1_354t8")

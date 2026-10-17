@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="3_8ri1n"]
 [ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_l75qf"]
 [ext_resource type="Texture2D" uid="uid://bdf8607448kns" path="res://Resource/Demo/DemoEnemy/Sprite/TheVisionMelee.png" id="4_81xrl"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_effect"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="6_cond"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f2l66"]
 radius = 16.0
@@ -24,13 +26,21 @@ script = ExtResource("3_l75qf")
 behaviorArray = Array[Object]([SubResource("Resource_8ri1n"), SubResource("Resource_l75qf")])
 metadata/_custom_type_script = "uid://b6iq415gsv2dy"
 
+[sub_resource type="Resource" id="Resource_effect_onupdate"]
+script = ExtResource("5_effect")
+effectName = "MeleeUpdate"
+condition = ExtResource("6_cond")
+behavior = SubResource("Resource_81xrl")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
 [resource]
 script = ExtResource("3_8ri1n")
 enemyName = "DemoMelee"
 displayName = "DemoMelee"
 description = "Demo近战怪"
+defense = 0.0
 speed = 80.0
 sprite = ExtResource("4_81xrl")
 attackShape = SubResource("CircleShape2D_f2l66")
-onUpdate = SubResource("Resource_81xrl")
+onUpdate = SubResource("Resource_effect_onupdate")
 metadata/_custom_type_script = "uid://mqed4halsexx"

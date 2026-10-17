@@ -120,8 +120,8 @@ public partial class EnemyData : Resource
     [Export] public Dictionary<string, Variant> args = new Dictionary<string, Variant>();
 
     // 敌人行为
-    [Export] public Behavior onGenerate;
-    [Export] public Behavior onUpdate;
-    [Export] public Behavior onAttack;
-    [Export] public Behavior onDeath;
+    [Export] public Effect onGenerate;
+    [Export] public Effect onUpdate;
+    [Export] public Effect onAttack;
+    [Export] public Effect onDeath;
 }
