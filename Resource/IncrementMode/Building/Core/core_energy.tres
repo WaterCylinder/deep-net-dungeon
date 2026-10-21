@@ -20,16 +20,16 @@ condition = ExtResource("2_gx6k7")
 behavior = SubResource("Resource_ocjbc")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
-[sub_resource type="Resource" id="Resource_n803y"]
+[sub_resource type="Resource" id="Resource_pk22o"]
 script = ExtResource("2_w5dkc")
 id = "Base"
 sortCode = -2147483648
 
-[sub_resource type="Resource" id="Resource_p22tk"]
+[sub_resource type="Resource" id="Resource_4v2yi"]
 script = ExtResource("3_niefd")
 baseValue = 1.0
 _multipliers = Dictionary[String, ExtResource("2_w5dkc")]({
-"Base": SubResource("Resource_n803y")
+"Base": SubResource("Resource_pk22o")
 })
 
 [resource]

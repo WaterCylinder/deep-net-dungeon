@@ -51,6 +51,10 @@ folder_colors={
 
 dot=false
 
+[gui]
+
+theme/custom="uid://rdsoxkrqtjy0"
+
 [layer_names]
 
 2d_physics/layer_1="Player"

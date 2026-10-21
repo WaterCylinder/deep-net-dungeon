@@ -53,7 +53,7 @@ public partial class UIHealthBar : Control
 
         // 血条滚动
         float diff = healthInnerBar.PivotOffsetRatio.X;
-        diff -= (float)delta * 0.64f;
+        diff -= (float)delta * 0.16f;
         if (diff < 0f)
         {
             diff = 1f;

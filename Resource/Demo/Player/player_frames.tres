@@ -16,23 +16,35 @@ region = Rect2(0, 0, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ibtyi"]
 atlas = ExtResource("1_ibtyi")
-region = Rect2(0, 64, 64, 64)
+region = Rect2(192, 64, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_40wod"]
 atlas = ExtResource("1_ibtyi")
-region = Rect2(64, 64, 64, 64)
+region = Rect2(128, 64, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ym3g1"]
 atlas = ExtResource("1_ibtyi")
-region = Rect2(128, 64, 64, 64)
+region = Rect2(256, 64, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8nwtf"]
 atlas = ExtResource("1_ibtyi")
-region = Rect2(64, 64, 64, 64)
+region = Rect2(128, 64, 64, 64)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vd5xm"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_53avt"]
 atlas = ExtResource("1_ibtyi")
-region = Rect2(0, 64, 64, 64)
+region = Rect2(0, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ehpjv"]
+atlas = ExtResource("1_ibtyi")
+region = Rect2(64, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_el8hd"]
+atlas = ExtResource("1_ibtyi")
+region = Rect2(128, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_daftl"]
+atlas = ExtResource("1_ibtyi")
+region = Rect2(192, 128, 64, 64)
 
 [resource]
 animations = [{
@@ -51,22 +63,36 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 0.7,
+"duration": 0.5,
 "texture": SubResource("AtlasTexture_ibtyi")
 }, {
-"duration": 0.7,
+"duration": 0.5,
 "texture": SubResource("AtlasTexture_40wod")
 }, {
-"duration": 0.7,
+"duration": 0.5,
 "texture": SubResource("AtlasTexture_ym3g1")
 }, {
-"duration": 0.7,
+"duration": 0.5,
 "texture": SubResource("AtlasTexture_8nwtf")
-}, {
-"duration": 0.7,
-"texture": SubResource("AtlasTexture_vd5xm")
 }],
 "loop": true,
 "name": &"move",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 8.0,
+"texture": SubResource("AtlasTexture_53avt")
+}, {
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_ehpjv")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_el8hd")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_daftl")
+}],
+"loop": false,
+"name": &"prone",
 "speed": 5.0
 }]

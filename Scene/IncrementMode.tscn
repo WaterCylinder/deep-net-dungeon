@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://bgrwjdl2jpkcg" path="res://Asset/Object/IncrementModeObject/building_item.tscn" id="3_4hyi3"]
 [ext_resource type="Resource" uid="uid://cutvjhjm1uc5n" path="res://Resource/IncrementMode/Building/core.tres" id="3_gayc5"]
 [ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="3_j1v2w"]
-[ext_resource type="Texture2D" uid="uid://cn7iu5s8lfbsw" path="res://Resource/Demo/DemoRoom/Bg/bg_abyss.png" id="3_kdd63"]
 [ext_resource type="Texture2D" uid="uid://bf1oun6b16vq2" path="res://Resource/IncrementMode/返回.png" id="3_q8mgd"]
 [ext_resource type="TileSet" uid="uid://dtdusdklw7ca4" path="res://Resource/IncrementMode/increment_tile_set.tres" id="4_kdd63"]
 [ext_resource type="PackedScene" uid="uid://bhkwvwtltyc8n" path="res://Asset/Object/IncrementModeObject/shop_item.tscn" id="4_trvfj"]
@@ -32,6 +31,7 @@
 [ext_resource type="Resource" uid="uid://b7w8mr1ucxyoi" path="res://Resource/IncrementMode/Building/RarityPool/1_pool.tres" id="18_yu6n2"]
 [ext_resource type="Resource" uid="uid://pkv6dp5jhfr8" path="res://Resource/IncrementMode/Building/RarityPool/2_pool.tres" id="19_ai0q7"]
 [ext_resource type="Resource" uid="uid://disn52tsupxhl" path="res://Resource/IncrementMode/Building/RarityPool/3_pool.tres" id="20_eqr41"]
+[ext_resource type="Shader" uid="uid://ciovxesw37t62" path="res://Resource/Shader/Abyss.gdshader" id="26_2dn4r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_34lxj"]
 font_size = 32
@@ -74,6 +74,20 @@ intro = "在64回合前累计获得100000资源"
 targetTurn = 64
 targetResourcePoint = 100000
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jk8qv"]
+shader = ExtResource("26_2dn4r")
+shader_parameter/color_deep = Color(0.10801005, 0.0126, 0.21, 1)
+shader_parameter/color_mid = Color(0.31831986, 0.055200003, 0.46, 1)
+shader_parameter/color_bright = Color(0.8950001, 0.37, 1, 1)
+shader_parameter/blocks_x = 128.000005985
+shader_parameter/blocks_y = 128.000005985
+shader_parameter/spiral_twist = 8.00000038
+shader_parameter/spiral_speed = 1.0
+shader_parameter/abyss_radius = 0.50000002375
+shader_parameter/abyss_darkness = 1.0
+shader_parameter/abyss_color = Color(0.02, 0, 0.05, 1)
+shader_parameter/color_bands = 7.742000272745
 
 [node name="IncrementGame" type="Node" unique_id=1551903590 node_paths=PackedStringArray("musicPlayer", "soundPlayeyPoolNode", "enemyNode", "dropItemNode", "smallObjectNode", "incrementWorld")]
 script = ExtResource("1_3j1c3")
@@ -795,7 +809,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 38
 text = "回合结束"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -884,12 +898,20 @@ rarityPools = Array[Object]([ExtResource("18_yu6n2"), ExtResource("19_ai0q7"), E
 [node name="BG" type="Node2D" parent="World" unique_id=236564426 node_paths=PackedStringArray("camera", "bg")]
 script = ExtResource("2_05cjt")
 camera = NodePath("../../MainCamera")
-bg = NodePath("Sprite2D")
+bg = NodePath("")
 
-[node name="Sprite2D" type="Sprite2D" parent="World/BG" unique_id=715214681]
-position = Vector2(-15, 24)
-scale = Vector2(2, 2)
-texture = ExtResource("3_kdd63")
+[node name="ColorRect" type="ColorRect" parent="World/BG" unique_id=782388161]
+material = SubResource("ShaderMaterial_jk8qv")
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1024.0
+offset_top = -1024.0
+offset_right = 1024.0
+offset_bottom = 1024.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Map" type="TileMapLayer" parent="World" unique_id=86118032]
 unique_name_in_owner = true

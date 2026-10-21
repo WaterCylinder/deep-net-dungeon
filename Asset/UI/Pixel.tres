@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://rdsoxkrqtjy0"]
+
+[ext_resource type="FontFile" uid="uid://daux5ubujab83" path="res://Asset/UI/IPix中文像素字体.ttf" id="1_xyh11"]
+
+[resource]
+default_font = ExtResource("1_xyh11")
+Label/fonts/font = ExtResource("1_xyh11")

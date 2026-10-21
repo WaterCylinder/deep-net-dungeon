@@ -22,15 +22,29 @@
 [ext_resource type="PackedScene" uid="uid://cnhkoacuwafyq" path="res://Asset/UI/item_layout_item.tscn" id="8_hbowo"]
 [ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="9_jwmyi"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="9_p323j"]
-[ext_resource type="Texture2D" uid="uid://cn7iu5s8lfbsw" path="res://Resource/Demo/DemoRoom/Bg/bg_abyss.png" id="11_hjrqo"]
 [ext_resource type="SpriteFrames" uid="uid://ctusjok3ndrff" path="res://Resource/Demo/Player/player_frames.tres" id="12_aawhf"]
 [ext_resource type="Script" uid="uid://c4uh4w2l8r4hj" path="res://Script/UI/Demo/BGAutoRotateZoom.cs" id="12_ghk2r"]
 [ext_resource type="Shader" uid="uid://bguaybsuni2ee" path="res://Resource/Shader/Flash.gdshader" id="16_kfjtm"]
-[ext_resource type="Resource" uid="uid://cmtrb3xognbvq" path="res://Resource/Demo/map_level1_demo.tres" id="17_65ldo"]
+[ext_resource type="Shader" uid="uid://ciovxesw37t62" path="res://Resource/Shader/Abyss.gdshader" id="17_10r1t"]
+[ext_resource type="Resource" uid="uid://b0oqadijwxkwx" path="res://Resource/Level1/level1_map.tres" id="18_0yiub"]
 [ext_resource type="PackedScene" uid="uid://cleomu7wca23h" path="res://Asset/Object/Component/bag.tscn" id="19_1e3q2"]
 [ext_resource type="AudioStream" uid="uid://ba8xn7a85s2ct" path="res://Resource/Sounds/hit_001.wav" id="23_vmjmr"]
 [ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="24_65ldo"]
 [ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="34_yl8rb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_10r1t"]
+shader = ExtResource("17_10r1t")
+shader_parameter/color_deep = Color(0.10801005, 0.0126, 0.21, 1)
+shader_parameter/color_mid = Color(0.31831986, 0.055200003, 0.46, 1)
+shader_parameter/color_bright = Color(0.8950001, 0.37, 1, 1)
+shader_parameter/blocks_x = 128.000005985
+shader_parameter/blocks_y = 128.000005985
+shader_parameter/spiral_twist = 8.00000038
+shader_parameter/spiral_speed = 1.0
+shader_parameter/abyss_radius = 1.0
+shader_parameter/abyss_darkness = 1.0
+shader_parameter/abyss_color = Color(0.020000005, 0, 0.05, 1)
+shader_parameter/color_bands = 7.742000272745
 
 [sub_resource type="Resource" id="Resource_cohtu"]
 script = ExtResource("3_3xgnh")
@@ -429,6 +443,7 @@ offset_right = -16.0
 offset_bottom = 150.0
 grow_horizontal = 0
 script = ExtResource("8_1mx4w")
+ShowAll = false
 
 [node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag", "stateUI", "maxHealth", "currentHealth", "attack", "defense", "attackspeed", "critRate", "critDamage", "speed")]
 layout_mode = 1
@@ -1015,17 +1030,25 @@ stretch_mode = 0
 position = Vector2(500, 0)
 script = ExtResource("12_ghk2r")
 camera = NodePath("../../MainCamera")
-bg = NodePath("Sprite2D")
+bg = NodePath("")
 
-[node name="Sprite2D" type="Sprite2D" parent="World/BG" unique_id=1832661690]
-position = Vector2(-15, 24)
-scale = Vector2(2, 2)
-texture = ExtResource("11_hjrqo")
+[node name="ColorRect" type="ColorRect" parent="World/BG" unique_id=709489278]
+material = SubResource("ShaderMaterial_10r1t")
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1024.0
+offset_top = -1024.0
+offset_right = 1024.0
+offset_bottom = 1024.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Map" type="Node2D" parent="World" unique_id=754966095]
 unique_name_in_owner = true
 script = ExtResource("2_cohtu")
-data = ExtResource("17_65ldo")
+data = ExtResource("18_0yiub")
 metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="RoomNode" type="Node2D" parent="World" unique_id=393952347]
@@ -1071,8 +1094,8 @@ texture = ExtResource("4_3xgnh")
 material = SubResource("ShaderMaterial_1e3q2")
 position = Vector2(0, -23)
 sprite_frames = ExtResource("12_aawhf")
-animation = &"idle"
-frame_progress = 0.9366417
+animation = &"move"
+frame_progress = 0.92028964
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
 shape = SubResource("CircleShape2D_tujvx")

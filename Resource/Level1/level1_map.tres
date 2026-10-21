@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MapData" format=3 uid="uid://b0oqadijwxkwx"]
+
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_ssb78"]
+[ext_resource type="Resource" uid="uid://ddihw6cvcikg3" path="res://Resource/Level1/Room/Start/toom_level1_start.tres" id="2_d2fdj"]
+[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="2_uxn04"]
+[ext_resource type="Resource" uid="uid://c4baccfustke" path="res://Resource/Level1/Room/Normal/toom_level1_normal001.tres" id="3_d2fdj"]
+
+[resource]
+script = ExtResource("2_uxn04")
+mapMode = 1
+roomDatas = Dictionary[int, Array]({
+0: Array[ExtResource("1_ssb78")]([ExtResource("2_d2fdj")]),
+1: Array[ExtResource("1_ssb78")]([ExtResource("3_d2fdj")]),
+2: Array[ExtResource("1_ssb78")]([]),
+3: Array[ExtResource("1_ssb78")]([]),
+4: Array[ExtResource("1_ssb78")]([])
+})
+metadata/_custom_type_script = "uid://cdikju4kdlymr"

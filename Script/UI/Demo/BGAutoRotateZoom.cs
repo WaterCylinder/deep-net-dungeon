@@ -33,7 +33,7 @@ public partial class BGAutoRotateZoom : Node2D
 
     public override void _Process(double delta)
     {
-        Rotate((float)delta * 0.1f);
+        //Rotate((float)delta * 0.1f);
     }
 
 }
