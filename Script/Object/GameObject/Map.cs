@@ -7,10 +7,10 @@ using System;
 /// 1. 数据来自MapData（房间数据、生成模式与各种规模参数）。
 /// 2. 房间之间在画面上没有明显链接，玩家在房间之间移动依赖门之间的传送。
 /// 3. 生成模式由MapData.mapMode决定：
-///    - Fixed（默认，固定地图）：起始房间 → N个普通房间 → Boss房间（主线单向连接）。
-///      最后一个普通房间的第二个普通门通向商店房间；资源房间随机出现在"除最后一个普通房间之外"的
-///      某个普通房间的第二个普通门；资源房间自己的门通向它父房间主线上的下一个房间（平行路径），
-///      商店房间的门通向Boss。
+///    - Line（默认，直线地图）：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间。
+///      普通房间数量在Map.minNormalRoomCount~Map.maxNormalRoomCount之间随机；
+///      资源房间越靠近起始房间越容易抽到，商店房间越靠近Boss房间越容易抽到。
+///      所有房间单向串联成一条直线，没有支路。
 ///    - Tree（树状地图）：主干每层1个房间、单向连接到下一层，末端接唯一Boss；
 ///      主干节点按概率长出支路，支路按概率继续延伸，结束的支路汇回主干的下一个节点。
 /// 4. 不管哪种模式，都会确保每个房间的空闲普通门被连掉，避免出现没有目标的"死门"。
@@ -78,6 +78,36 @@ public partial class Map : Node2D
     /// 本次生成使用的随机数系统（由Initialize传入，用于房间数据挑选与分叉判定）
     /// </summary>
     private RandomSystem randomSystem;
+
+    #endregion
+
+    #region 直线地图生成参数
+
+    /// <summary>
+    /// 直线地图：普通房间数量的最小值（含）。
+    /// 与maxNormalRoomCount一起决定本次直线的普通房间数量（在这个区间里随机）；
+    /// 两个都填0（或负数）时退回MapData.normalRoomCount作为固定数量
+    /// </summary>
+    [ExportCategory("直线地图生成")]
+    [Export] public int minNormalRoomCount = 3;
+
+    /// <summary>
+    /// 直线地图：普通房间数量的最大值（含）。
+    /// 小于minNormalRoomCount时会自动互换，写反了也不会报错
+    /// </summary>
+    [Export] public int maxNormalRoomCount = 7;
+
+    /// <summary>
+    /// 资源房间的位置倾向（0~1）：
+    /// 0 = 在路径上完全随机，数值越大越集中在靠近起始房间的位置（1 = 只出现在离起始房间最近的那个槽位）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,1,0.05")] public float treasureNearStartBias = 0.5f;
+
+    /// <summary>
+    /// 商店房间的位置倾向（0~1）：
+    /// 0 = 在路径上完全随机，数值越大越集中在靠近Boss房间的位置（1 = 只出现在离Boss最近的那个槽位）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
 
     #endregion
 
@@ -150,8 +180,9 @@ public partial class Map : Node2D
                 GenerateTreeMap();
                 break;
 
+            case MapMode.Line:
             default:
-                GenerateFixedMap();
+                GenerateLineMap();
                 break;
         }
 
@@ -202,24 +233,57 @@ public partial class Map : Node2D
     }
 
     /// <summary>
-    /// 固定地图：起始房间 → N个普通房间 → Boss房间（主线单向连接）。
-    /// - 最后一个普通房间的第二个普通门 → 商店房间，商店房间的门 → Boss。
-    /// - 资源房间随机出现在"除最后一个普通房间之外"的某个普通房间的第二个普通门；
-    ///   资源房间自己的门 → 它父房间主线上的下一个房间（作为平行路径/捷径）。
-    /// - 没有被挑中放支路的普通房间，第二个门也指向主线的下一个房间，避免留下没有目标的死门。
-    /// 主线长度由MapData.normalRoomCount决定（默认5）
+    /// 直线地图：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间。
+    /// - 普通房间数量在Map的minNormalRoomCount~maxNormalRoomCount之间随机
+    /// - 资源房间与商店房间各只有一个，随机夹杂在路径中间，且不会落在同一个槽位上
+    /// - 抽取槽位带权重：资源房间越靠近起始房间概率越高，商店房间越靠近Boss房间概率越高
+    ///   （强度由treasureNearStartBias / shopNearBossBias控制）
+    /// - 所有房间单向串联成一条直线，没有任何支路
     /// </summary>
-    private void GenerateFixedMap()
+    private void GenerateLineMap()
     {
-        int normalCount = Mathf.Max(1, data.normalRoomCount);
-
         RoomData startData = PickRoomData(RoomTag.Start);
         RoomData bossData = PickRoomData(RoomTag.Boss);
         RoomData shopData = PickRoomData(RoomTag.Shop);
         RoomData treasureData = PickRoomData(RoomTag.Treasure);
 
-        // 1. 主线房间：起始房间 + N个普通房间 + Boss
-        Room start = CreateRoomInstance(CalculateFixedRoomPosition(0), startData, "Room_L0_0");
+        if (bossData == null)
+        {
+            GD.PushWarning("[Map] 未配置Boss房间数据，直线末端将没有Boss房间");
+        }
+        if (treasureData == null)
+        {
+            GD.PushWarning("[Map] 未配置资源房间数据，本次不生成资源房间");
+        }
+        if (shopData == null)
+        {
+            GD.PushWarning("[Map] 未配置商店房间数据，本次不生成商店房间");
+        }
+
+        // 1. 普通房间数量，以及路径槽位数量（路径指起始房间与Boss房间之间的部分）
+        int normalCount = RollNormalRoomCount();
+        int specialCount = (treasureData != null ? 1 : 0) + (shopData != null ? 1 : 0);
+        int slotCount = normalCount + specialCount;
+
+        // 2. 抽取特殊房间的槽位：先抽资源房间，商店房间在剩下的槽位里抽
+        int treasureSlot = treasureData != null
+            ? PickSlotByDistancePreference(slotCount, true, treasureNearStartBias)
+            : -1;
+        int shopSlot = shopData != null
+            ? PickSlotByDistancePreference(slotCount, false, shopNearBossBias, treasureSlot)
+            : -1;
+
+        if (shopData != null && shopSlot < 0)
+        {
+            GD.PushWarning("[Map] 路径上没有多余的槽位放商店房间，本次不生成商店房间");
+        }
+
+        GD.Print($"[Map] 直线地图：普通房间{normalCount}个、路径槽位{slotCount}个、" +
+                 $"资源房间槽位={(treasureSlot >= 0 ? treasureSlot.ToString() : "无")}、" +
+                 $"商店房间槽位={(shopSlot >= 0 ? shopSlot.ToString() : "无")}");
+
+        // 3. 起始房间
+        Room start = CreateRoomInstance(CalculateLineRoomPosition(0), startData, "Room_Start");
         if (start == null)
         {
             GD.PrintErr("[Map] 起始房间创建失败，地图生成中止");
@@ -229,111 +293,78 @@ public partial class Map : Node2D
         startRoom = start;
         rooms.Add(start);
 
-        Array<Room> mainLine = new();   // 主线上的普通房间，按顺序排列
-
-        for (int i = 1; i <= normalCount; i++)
+        // 4. 按槽位顺序创建路径上的房间
+        Array<Room> path = new();
+        for (int slot = 0; slot < slotCount; slot++)
         {
-            Room room = CreateRoomInstance(CalculateFixedRoomPosition(i), PickRoomData(RoomTag.Normal), $"Room_L1_{i}");
+            RoomData roomData;
+            string roomName;
+
+            if (slot == treasureSlot)
+            {
+                roomData = treasureData;
+                roomName = "Room_Treasure";
+            }
+            else if (slot == shopSlot)
+            {
+                roomData = shopData;
+                roomName = "Room_Shop";
+            }
+            else
+            {
+                roomData = PickRoomData(RoomTag.Normal);
+                roomName = $"Room_Normal_{slot:00}";
+            }
+
+            Room room = CreateRoomInstance(CalculateLineRoomPosition(slot + 1), roomData, roomName);
             if (room == null)
             {
                 continue;
             }
 
+            path.Add(room);
             rooms.Add(room);
-            mainLine.Add(room);
+
+            if (slot == treasureSlot)
+            {
+                treasureRoom = room;
+            }
+            else if (slot == shopSlot)
+            {
+                shopRoom = room;
+            }
         }
 
-        if (mainLine.Count <= 0)
-        {
-            GD.PushWarning("[Map] 没能生成任何普通房间，固定地图退化为起始房间直连Boss");
-        }
-
+        // 5. Boss房间：直线地图里Boss是路径的最后一段
         if (bossData != null)
         {
-            bossRoom = CreateRoomInstance(CalculateFixedRoomPosition(mainLine.Count + 1), bossData, "Room_boss");
+            bossRoom = CreateRoomInstance(CalculateLineRoomPosition(slotCount + 1), bossData, "Room_Boss");
             if (bossRoom != null)
             {
                 rooms.Add(bossRoom);
             }
         }
-        else
-        {
-            GD.PushWarning("[Map] 未配置Boss房间数据，主线末端将没有后续房间");
-        }
 
-        // 2. 先连主线，保证每个房间的第一个普通门用于主线（支路随后占用第二个门）
+        // 6. 依次串联成一条直线
         Room previous = start;
-        for (int i = 0; i < mainLine.Count; i++)
+        foreach (Room room in path)
         {
-            previous.SetNextRoom(mainLine[i]);
-            previous = mainLine[i];
+            LinkLineRoom(previous, room);
+            previous = room;
         }
 
         if (bossRoom != null)
         {
-            previous.SetNextRoom(bossRoom);
+            LinkLineRoom(previous, bossRoom);
         }
-
-        // 3. 商店房间：挂在最后一个普通房间的第二条门
-        Room lastNormal = mainLine.Count > 0 ? mainLine[mainLine.Count - 1] : null;
-
-        if (shopData != null && lastNormal != null && bossRoom != null)
+        else
         {
-            shopRoom = CreateRoomInstance(
-                CalculateFixedBranchPosition(mainLine.Count, false), shopData, "Room_shop");
-
-            if (shopRoom != null)
-            {
-                rooms.Add(shopRoom);
-                lastNormal.SetNextRoom(shopRoom);
-                shopRoom.SetNextRoom(bossRoom);
-            }
+            GD.PushWarning("[Map] 直线末端没有Boss房间，地图到此结束");
         }
 
-        // 4. 资源房间：在前面的普通房间（排除最后一个）中随机挑一个挂支路
-        if (treasureData != null)
-        {
-            if (mainLine.Count >= 2)
-            {
-                int parentIndex = RandomInt(0, mainLine.Count - 2);   // 0 .. N-2，排除最后一个普通房间
-                Room parent = mainLine[parentIndex];
-                Room treasureNext = parentIndex + 1 < mainLine.Count ? mainLine[parentIndex + 1] : bossRoom;
-
-                treasureRoom = CreateRoomInstance(
-                    CalculateFixedBranchPosition(parentIndex + 1, true), treasureData, "Room_treasure");
-
-                if (treasureRoom != null)
-                {
-                    rooms.Add(treasureRoom);
-                    parent.SetNextRoom(treasureRoom);
-
-                    if (treasureNext != null)
-                    {
-                        treasureRoom.SetNextRoom(treasureNext);
-                    }
-                }
-            }
-            else
-            {
-                GD.PushWarning("[Map] 普通房间数量不足2个，没有可挂资源房间的位置，本次不生成资源房间");
-            }
-        }
-
-        // 5. 收尾：没有被挑中放支路的普通房间，第二个门也指向主线下一个房间，避免死门
-        for (int i = 0; i < mainLine.Count; i++)
-        {
-            Room next = i + 1 < mainLine.Count ? mainLine[i + 1] : bossRoom;
-            if (next != null)
-            {
-                LinkAllFreeDoors(mainLine[i], next);
-            }
-        }
-
-        LinkAllFreeDoors(start, mainLine.Count > 0 ? mainLine[0] : bossRoom);
-
-        // 6. layers 记录主线推进顺序（固定模式下支路房间不计入）
+        // 7. layers按行进顺序记录（直线地图每层只有一个房间）
         layers.Add(new Array<Room>() { start });
-        foreach (Room room in mainLine)
+        foreach (Room room in path)
         {
             layers.Add(new Array<Room>() { room });
         }
@@ -341,6 +372,119 @@ public partial class Map : Node2D
         {
             layers.Add(new Array<Room>() { bossRoom });
         }
+    }
+
+    /// <summary>
+    /// 掷出本次直线的普通房间数量。
+    /// 范围取自Map的minNormalRoomCount~maxNormalRoomCount；
+    /// 两者都≤0时退回MapData.normalRoomCount作为固定数量（兼容没有配置范围的旧数据）
+    /// </summary>
+    private int RollNormalRoomCount()
+    {
+        int min = Mathf.Max(0, minNormalRoomCount);
+        int max = Mathf.Max(0, maxNormalRoomCount);
+
+        if (max <= 0)
+        {
+            int fallback = data != null ? data.normalRoomCount : 5;
+            fallback = Mathf.Max(1, fallback);
+            GD.Print($"[Map] 未设置普通房间数量范围，改用MapData.normalRoomCount={fallback}");
+            return fallback;
+        }
+
+        // 写反了也能用：自动交换上下限
+        if (max < min)
+        {
+            (min, max) = (max, min);
+        }
+
+        return RandomInt(min, max);
+    }
+
+    /// <summary>
+    /// 按"离某一端的距离"加权抽取一个路径槽位。
+    /// 权重 = pow(1 - bias, distance)，distance是该槽位与指定端之间隔着的槽位数：
+    ///   - bias = 0：所有槽位权重都是1，等价于完全随机
+    ///   - bias 越大：越靠近指定端的槽位权重越高（bias = 1时只会抽到最靠近该端的槽位）
+    /// </summary>
+    /// <param name="slotCount">路径槽位总数（不含起始房间与Boss房间）</param>
+    /// <param name="fromStart">true = 越靠近起始房间越容易抽到；false = 越靠近Boss房间越容易抽到</param>
+    /// <param name="bias">位置倾向强度（0~1）</param>
+    /// <param name="excludeSlot">需要排除的槽位（已被另一个特殊房间占用），传-1表示不排除</param>
+    /// <returns>抽到的槽位索引；没有可用槽位时返回-1</returns>
+    private int PickSlotByDistancePreference(int slotCount, bool fromStart, float bias, int excludeSlot = -1)
+    {
+        if (slotCount <= 0)
+        {
+            return -1;
+        }
+
+        float ratio = 1f - Mathf.Clamp(bias, 0f, 1f);
+
+        float[] weights = new float[slotCount];
+        float total = 0f;
+        for (int slot = 0; slot < slotCount; slot++)
+        {
+            if (slot == excludeSlot)
+            {
+                continue;
+            }
+
+            int distance = fromStart ? slot : slotCount - 1 - slot;
+            weights[slot] = Mathf.Pow(ratio, distance);
+            total += weights[slot];
+        }
+
+        // 极端配置（bias=1且最靠近该端的槽位已被占用）下所有权重都是0：
+        // 退化成在剩余槽位里均匀抽取，保证特殊房间不会因此消失
+        if (total <= 0f)
+        {
+            System.Collections.Generic.List<int> candidates = new();
+            for (int slot = 0; slot < slotCount; slot++)
+            {
+                if (slot != excludeSlot)
+                {
+                    candidates.Add(slot);
+                }
+            }
+
+            if (candidates.Count <= 0)
+            {
+                return -1;
+            }
+
+            return candidates[RandomInt(0, candidates.Count - 1)];
+        }
+
+        float roll = RandomFloat(0f, total);
+        float accumulated = 0f;
+        for (int slot = 0; slot < slotCount; slot++)
+        {
+            if (weights[slot] <= 0f)
+            {
+                continue;
+            }
+
+            accumulated += weights[slot];
+            if (roll <= accumulated)
+            {
+                return slot;
+            }
+        }
+
+        // 浮点误差兜底：返回权重最大的槽位
+        int bestSlot = -1;
+        float bestWeight = -1f;
+        for (int slot = 0; slot < slotCount; slot++)
+        {
+            if (weights[slot] > bestWeight)
+            {
+                bestWeight = weights[slot];
+                bestSlot = slot;
+            }
+        }
+
+        return bestSlot;
     }
 
     /// <summary>
@@ -561,6 +705,21 @@ public partial class Map : Node2D
     }
 
     /// <summary>
+    /// 把房间连向下一个房间：先占用一扇门保证串联，再把剩余的空闲门也指向同一个目标，避免出现死门。
+    /// 直线地图里每个房间都只有"下一个"这一个去向，所以多余的门也一起连过去
+    /// </summary>
+    private static void LinkLineRoom(Room previous, Room next)
+    {
+        if (previous == null || next == null)
+        {
+            return;
+        }
+
+        previous.SetNextRoom(next);
+        LinkAllFreeDoors(previous, next);
+    }
+
+    /// <summary>
     /// 把房间所有空闲的普通门都连向同一个目标房间（没有空闲门时不做任何事）。
     /// 用于"不分叉的房间"和"最后一层连向Boss"，避免出现没有目标的死门
     /// </summary>
@@ -702,23 +861,13 @@ public partial class Map : Node2D
     }
 
     /// <summary>
-    /// 固定模式下主线房间的位置：沿X轴依次排开（0是起始房间，末尾是Boss）
+    /// 直线模式下房间的位置：从起始房间开始沿X轴依次排开（0是起始房间，末尾是Boss房间）。
+    /// 房间之间靠门的传送移动，世界坐标只用于摆放与在编辑器里观察地图形状
     /// </summary>
-    /// <param name="mainIndex">主线上的序号</param>
-    private Vector2 CalculateFixedRoomPosition(int mainIndex)
+    /// <param name="mainIndex">房间在直线上的序号</param>
+    private Vector2 CalculateLineRoomPosition(int mainIndex)
     {
         return new Vector2(mainIndex * ROOM_SPACING_X, 0f);
-    }
-
-    /// <summary>
-    /// 固定模式下支路房间的位置：资源房间挂在父房间上方，商店房间挂在最后一个普通房间下方
-    /// </summary>
-    /// <param name="mainIndex">父房间在主线上的序号</param>
-    /// <param name="above">true = 放在主线之上（资源房间），false = 放在主线之下（商店房间）</param>
-    private Vector2 CalculateFixedBranchPosition(int mainIndex, bool above)
-    {
-        float y = above ? -ROOM_SPACING_Y : ROOM_SPACING_Y;
-        return new Vector2(mainIndex * ROOM_SPACING_X, y);
     }
 
     #endregion

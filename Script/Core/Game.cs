@@ -95,6 +95,7 @@ public partial class Game : Node
     [Export] public Node roomNode;
 
     [Export] public Node2D dropItemNode;
+    [Export] public Node2D energyNode;
 
     [Export] public Node smallObjectNode;
 
@@ -181,7 +182,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyNextRoom(int roomIndex)
     {
-     currentMode?.OnNextRoom(roomIndex);
+        currentMode?.OnNextRoom(roomIndex);
     }
 
     /// <summary>
@@ -189,7 +190,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyNextLevel(int levelIndex)
     {
-     currentMode?.OnNextLevel(levelIndex);
+        currentMode?.OnNextLevel(levelIndex);
     }
 
     /// <summary>
@@ -197,7 +198,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyGetItem(string itemId, int quantity = 1)
     {
-     currentMode?.OnGetItem(itemId, quantity);
+        currentMode?.OnGetItem(itemId, quantity);
     }
 
     /// <summary>
@@ -205,7 +206,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyUseItem(string itemId)
     {
-     currentMode?.OnUseItem(itemId);
+        currentMode?.OnUseItem(itemId);
     }
 
     /// <summary>
@@ -213,7 +214,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyDropItem(string itemId)
     {
-     currentMode?.OnDropItem(itemId);
+        currentMode?.OnDropItem(itemId);
     }
 
     /// <summary>
@@ -221,7 +222,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerDamaged(float damage, string source = "")
     {
-     currentMode?.OnPlayerDamaged(damage, source);
+        currentMode?.OnPlayerDamaged(damage, source);
     }
 
     /// <summary>
@@ -229,7 +230,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerHealed(float amount)
     {
-     currentMode?.OnPlayerHealed(amount);
+        currentMode?.OnPlayerHealed(amount);
     }
 
     /// <summary>
@@ -237,7 +238,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyPlayerDeath()
     {
-     currentMode?.OnPlayerDeath();
+        currentMode?.OnPlayerDeath();
     }
 
     /// <summary>
@@ -245,7 +246,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEnemyKilled(string enemyId, string enemyType)
     {
-     currentMode?.OnEnemyKilled(enemyId, enemyType);
+        currentMode?.OnEnemyKilled(enemyId, enemyType);
     }
 
     /// <summary>
@@ -253,7 +254,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyRoomCleared(int roomIndex)
     {
-     currentMode?.OnRoomCleared(roomIndex);
+        currentMode?.OnRoomCleared(roomIndex);
     }
 
     /// <summary>
@@ -261,7 +262,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyBossStart(string bossId)
     {
-     currentMode?.OnBossStart(bossId);
+        currentMode?.OnBossStart(bossId);
     }
 
     /// <summary>
@@ -269,7 +270,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyBossDefeated(string bossId)
     {
-     currentMode?.OnBossDefeated(bossId);
+        currentMode?.OnBossDefeated(bossId);
     }
 
     /// <summary>
@@ -277,7 +278,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEventTriggered(string eventName, Variant data = default)
     {
-     currentMode?.OnEventTriggered(eventName, data);
+        currentMode?.OnEventTriggered(eventName, data);
     }
 
     /// <summary>
@@ -285,7 +286,7 @@ public partial class Game : Node
     /// </summary>
     public void NotifyEnd(bool isVictory)
     {
-     currentMode?.OnEnd(isVictory);
+        currentMode?.OnEnd(isVictory);
     }
 
     #region 音效池

@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_nclyo")
-roomId = "Level1Test"
+roomId = "Start"
 roomTags = Array[int]([1])
 tileMap = ExtResource("2_3wh3p")
 metadata/_custom_type_script = "uid://bodfjcgco84dp"

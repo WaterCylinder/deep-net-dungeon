@@ -10,11 +10,11 @@ using System.Collections.Generic;
 ///   - ShowAll = true：所有房间按真实类型着色（全图透视）
 ///   - ShowAll = false：未进入过（alreadyEntered == false）的房间以灰色色块显示
 ///
-/// 布局规则（自上而下）：
-///   起始房间固定在最上方，主线自上而下依次排列；
-///   支路按门的实际左右位置向主线两侧展开 —— 玩家从右边门进入的房间就画在右边。
+/// 布局规则（自左而右）：
+///   起始房间固定在最左侧，主线自左而右依次排列；
+///   支路按门的实际上下位置向主线两侧展开 —— 玩家从上边门进入的房间就画在上边。
 ///   具体做法：以起始房间为根，对"下一房间"关系做 BFS，
-///   门顺序中的第一个子房间延续主线（保持所在列），其余子房间作为支路按门的坐标分居左右。
+///   门顺序中的第一个子房间延续主线（保持所在行），其余子房间作为支路按门的坐标分居上下。
 ///   布局既不依赖房间的世界坐标，也不依赖门的节点顺序，地图生成规则或房间预制体变化后都无需改本脚本。
 ///
 /// 使用方式：
@@ -55,14 +55,14 @@ public partial class MapUI : Control
     [Export] public float blockSize = 22f;
 
     /// <summary>
-    /// 左右相邻列的色块中心距（横向，主要影响支路的展开宽度）
+    /// 主线方向（横向）相邻房间的色块中心距，即主线自左而右的推进节奏
     /// </summary>
-    [Export] public float spacingX = 36f;
+    [Export] public float spacingMain = 44f;
 
     /// <summary>
-    /// 上下相邻层的色块中心距（纵向，即主线的推进节奏）
+    /// 支路方向（纵向）相邻房间的色块中心距，主要影响支路向上下展开的宽度
     /// </summary>
-    [Export] public float spacingY = 44f;
+    [Export] public float spacingBranch = 36f;
 
     /// <summary>
     /// 内容与节点边缘的间距（用于计算可用空间）
@@ -135,15 +135,15 @@ public partial class MapUI : Control
     #region 布局数据
 
     /// <summary>
-    /// 判断支路门在主线门左边还是右边的横坐标容差（像素）。
-    /// 门的横坐标与该容差比较：大于则判为右侧、小于负容差则判为左侧、之间视为无法判断
+    /// 判断支路门在主线门上方还是下方的纵坐标容差（像素）。
+    /// 门的纵坐标与该容差比较：大于则判为下方、小于负容差则判为上方、之间视为无法判断
     /// </summary>
     private const float LaneSideThreshold = 1f;
 
     /// <summary>
     /// 布局节点：一个房间在网格中的坐标。
-    /// depth 为距离起始房间的层数（0 = 起始房间，向下递增）；
-    /// lane 为所在列（0 = 主线，负数在左、正数在右）
+    /// depth 为距离起始房间的层数（0 = 起始房间，向右递增）；
+    /// lane 为所在行（0 = 主线，负数在上、正数在下）
     /// </summary>
     private class MapNode
     {
@@ -193,8 +193,10 @@ public partial class MapUI : Control
 
     // 绘制几何（每次 _Draw 时按当前节点尺寸重算）
     private float _drawBlockSize;
-    private float _drawStepX;
-    private float _drawStepY;
+    /// <summary>横向步距（主线推进方向）</summary>
+    private float _drawMainStep;
+    /// <summary>纵向步距（支路展开方向）</summary>
+    private float _drawBranchStep;
     private Vector2 _drawOffset;
 
     #endregion
@@ -379,7 +381,7 @@ public partial class MapUI : Control
             return;
         }
 
-        // 2. BFS 分配网格坐标（起始房间在最上方，depth 即自上而下的层数）
+        // 2. BFS 分配网格坐标（起始房间在最左侧，depth 即自左而右的层数）
         MapNode rootNode = new(root, 0, 0);
         _nodes.Add(rootNode);
         _nodeOf[root] = rootNode;
@@ -392,13 +394,13 @@ public partial class MapUI : Control
             MapNode current = queue.Dequeue();
             List<(Door door, Room target)> children = GetNextDoors(current.room);
 
-            // 左右判断的基准：以该房间的主线门（door 顺序里的第一个）的横坐标为参考线，
+            // 上下判断的基准：以该房间的主线门（door 顺序里的第一个）的纵坐标为参考线，
             // 没有可用门时退化为房间中线。使用相对比较，房间整体位移不影响结果
-            float centerX = children.Count > 0 ? children[0].door.Position.X : 0f;
+            float centerY = children.Count > 0 ? children[0].door.Position.Y : 0f;
 
             int childIndex = 0;
-            int leftCount = 0;
-            int rightCount = 0;
+            int upCount = 0;
+            int downCount = 0;
 
             foreach ((Door door, Room target) in children)
             {
@@ -407,32 +409,32 @@ public partial class MapUI : Control
                     continue;
                 }
 
-                // 第一个子房间延续主线：保持同一列，继续向下
+                // 第一个子房间延续主线：保持同一行，继续向右
                 int lane = current.lane;
 
-                // 其余子房间作为支路，按门在房间里的实际左右位置展开，
-                // 保证小地图上的左右与玩家实际进出的门一致（不依赖门的节点顺序）
+                // 其余子房间作为支路，按门在房间里的实际上下位置展开，
+                // 保证小地图上的上下与玩家实际进出的门一致（不依赖门的节点顺序）
                 if (childIndex > 0)
                 {
-                    float offsetX = door.Position.X - centerX;
-                    if (offsetX > LaneSideThreshold)
+                    float offsetY = door.Position.Y - centerY;
+                    if (offsetY > LaneSideThreshold)
                     {
-                        lane = current.lane + (++rightCount);
+                        lane = current.lane + (++downCount);
                     }
-                    else if (offsetX < -LaneSideThreshold)
+                    else if (offsetY < -LaneSideThreshold)
                     {
-                        lane = current.lane - (++leftCount);
+                        lane = current.lane - (++upCount);
                     }
                     else
                     {
-                        // 门的横坐标与主线门重合（例如门在房间正中），无从判断左右时退化为先右后左
+                        // 门的纵坐标与主线门重合（例如门在房间正中），无从判断上下时退化为先下后上
                         if (childIndex % 2 == 1)
                         {
-                            lane = current.lane + (++rightCount);
+                            lane = current.lane + (++downCount);
                         }
                         else
                         {
-                            lane = current.lane - (++leftCount);
+                            lane = current.lane - (++upCount);
                         }
                     }
                 }
@@ -447,7 +449,7 @@ public partial class MapUI : Control
 
         UpdateBounds();
 
-        // 3. 兜底：从起始房间走不到的孤立房间放在最下方的额外一层，避免被静默漏掉
+        // 3. 兜底：从起始房间走不到的孤立房间放在最右侧的额外一列，避免被静默漏掉
         int orphanLane = 0;
         foreach (Room room in currentMap.rooms)
         {
@@ -573,11 +575,12 @@ public partial class MapUI : Control
             return false;
         }
 
-        int lanes = _maxLane - _minLane + 1;
+        // 横向是主线推进方向（depth），纵向是支路展开方向（lane）
         int depths = _maxDepth - _minDepth + 1;
+        int lanes = _maxLane - _minLane + 1;
 
-        float contentWidth = (lanes - 1) * spacingX + blockSize;
-        float contentHeight = (depths - 1) * spacingY + blockSize;
+        float contentWidth = (depths - 1) * spacingMain + blockSize;
+        float contentHeight = (lanes - 1) * spacingBranch + blockSize;
 
         float scale = 1f;
         Vector2 available = Size - new Vector2(padding * 2, padding * 2);
@@ -587,8 +590,8 @@ public partial class MapUI : Control
         }
 
         _drawBlockSize = blockSize * scale;
-        _drawStepX = spacingX * scale;
-        _drawStepY = spacingY * scale;
+        _drawMainStep = spacingMain * scale;
+        _drawBranchStep = spacingBranch * scale;
 
         Vector2 content = new(contentWidth * scale, contentHeight * scale);
         _drawOffset = (Size - content) * 0.5f;
@@ -597,13 +600,13 @@ public partial class MapUI : Control
     }
 
     /// <summary>
-    /// 获取房间色块的绘制矩形（横向由所在列决定，纵向由层数决定）
+    /// 获取房间色块的绘制矩形（横向由层数决定，纵向由所在行决定）
     /// </summary>
     private Rect2 GetBlockRect(MapNode node)
     {
         Vector2 position = _drawOffset + new Vector2(
-            (node.lane - _minLane) * _drawStepX,
-            (node.depth - _minDepth) * _drawStepY);
+            (node.depth - _minDepth) * _drawMainStep,
+            (node.lane - _minLane) * _drawBranchStep);
 
         return new Rect2(position, new Vector2(_drawBlockSize, _drawBlockSize));
     }

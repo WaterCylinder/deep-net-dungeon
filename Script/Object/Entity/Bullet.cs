@@ -392,6 +392,8 @@ public partial class Bullet : Entity
 
     #endregion
 
+    public void PlayAnime(string animeName) => PlayAnime(animeName, animNode);
+
     #region 弹幕属性
 
     /// <summary>
@@ -704,8 +706,7 @@ public partial class Bullet : Entity
         aliveTime = 0f;
         // 障碍物碰撞
         BodyEntered += OnWallEnter;
-        //播放音频
-        PlaySoundGlobal(soundOnShot);
+        owner?.PlaySound(soundOnShot, owner.bulletAudioPlayer);
     }
 
     protected override void OnUpdate(double delta)

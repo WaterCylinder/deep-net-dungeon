@@ -18,10 +18,6 @@ public partial class EnemyBehavior : Behavior
         enemy.Attack();
     }
 
-    /// <summary>
-    /// 朝向玩家（仅左右）
-    /// </summary>
-    /// <param name="enemy"></param>
     public void FaceToPlayer(Enemy enemy)
     {
         if(player == null || !IsInstanceValid(player) || player.IsQueuedForDeletion())return;
@@ -46,6 +42,32 @@ public partial class EnemyBehavior : Behavior
         else
             diff = 1;
         enemy.ScaleLayout(new Vector2(diff, 1));
+    }
+
+    /// <summary>
+    /// 朝向玩家移动
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void UpdateCloseToPalyer(Enemy enemy)
+    {
+        //朝着玩家移动
+        enemy.MoveTarget(player.GlobalPosition);
+    }
+
+    /// <summary>
+    /// 朝向玩家发射子弹
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void AttackShotPlayer(Enemy enemy)
+    {
+        Vector2 toward = player.GlobalPosition - enemy.GlobalPosition;
+
+        float bulletSpeed = Arg("speed", 3);
+        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
+
+        enemy.ChangeBullet(bulletData);
+
+        enemy.Shot(toward.Normalized() * bulletSpeed);
     }
 
     # endregion

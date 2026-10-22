@@ -1,0 +1,144 @@
+[gd_scene format=3 uid="uid://bhs6bbrb3ankt"]
+
+[ext_resource type="Script" uid="uid://bm4uk5djxmnx0" path="res://Script/Object/Entity/EnergyPoint.cs" id="1_1g0qh"]
+[ext_resource type="AudioStream" uid="uid://bs1gxr1thlihv" path="res://Asset/Sound/score.wav" id="2_2k883"]
+[ext_resource type="Script" uid="uid://diq52f4adg8kl" path="res://Script/Data/Attribute/ValueMultiplier.cs" id="2_8jkta"]
+[ext_resource type="Script" uid="uid://dm4xprmsfj8fi" path="res://Script/Data/Attribute/Value.cs" id="3_2k883"]
+[ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="4_tnvos"]
+[ext_resource type="Shader" uid="uid://d3lurc4h5361h" path="res://Resource/Shader/EnergyLight.gdshader" id="5_mgg1e"]
+[ext_resource type="Texture2D" uid="uid://s02gce4krrua" path="res://Asset/Sprite/energy.png" id="6_l784s"]
+
+[sub_resource type="Resource" id="Resource_8jkta"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_2k883"]
+script = ExtResource("3_2k883")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_8jkta")
+})
+
+[sub_resource type="Resource" id="Resource_tnvos"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_mgg1e"]
+script = ExtResource("3_2k883")
+baseValue = 10.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_tnvos")
+})
+
+[sub_resource type="Resource" id="Resource_l784s"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_heifp"]
+script = ExtResource("3_2k883")
+baseValue = 5.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_l784s")
+})
+
+[sub_resource type="Resource" id="Resource_nbpep"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_pdy6i"]
+script = ExtResource("3_2k883")
+baseValue = 1.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_nbpep")
+})
+
+[sub_resource type="Resource" id="Resource_ru31i"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_dreay"]
+script = ExtResource("3_2k883")
+baseValue = 100.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_ru31i")
+})
+
+[sub_resource type="Resource" id="Resource_7pj04"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_r3tgd"]
+script = ExtResource("3_2k883")
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_7pj04")
+})
+
+[sub_resource type="Resource" id="Resource_6qo5v"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_h6wgq"]
+script = ExtResource("3_2k883")
+baseValue = 1.5
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_6qo5v")
+})
+
+[sub_resource type="Resource" id="Resource_ic7gh"]
+script = ExtResource("2_8jkta")
+id = "Base"
+sortCode = -2147483648
+
+[sub_resource type="Resource" id="Resource_d6661"]
+script = ExtResource("3_2k883")
+baseValue = 800.0
+_multipliers = Dictionary[String, ExtResource("2_8jkta")]({
+"Base": SubResource("Resource_ic7gh")
+})
+
+[sub_resource type="Resource" id="Resource_14ref"]
+script = ExtResource("4_tnvos")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sq4tt"]
+shader = ExtResource("5_mgg1e")
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/flash_hold = 0.10000000475
+shader_parameter/base_hold = 0.6400000304
+shader_parameter/fade_time = 0.2000000095
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vmjmr"]
+radius = 4.0
+
+[node name="EnergyPoint" type="RigidBody2D" unique_id=652490869 node_paths=PackedStringArray("spriteNode")]
+collision_layer = 32
+collision_mask = 0
+gravity_scale = 0.0
+script = ExtResource("1_1g0qh")
+spriteNode = NodePath("Sprite2D")
+value = 1.0
+pickSound = ExtResource("2_2k883")
+maxHealth = SubResource("Resource_2k883")
+attack = SubResource("Resource_mgg1e")
+defense = SubResource("Resource_heifp")
+attackSpeed = SubResource("Resource_pdy6i")
+attackRange = SubResource("Resource_dreay")
+critRate = SubResource("Resource_r3tgd")
+critDamage = SubResource("Resource_h6wgq")
+speed = SubResource("Resource_d6661")
+args = SubResource("Resource_14ref")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=744670497]
+self_modulate = Color(0.77683353, 0, 0.79, 0.78431374)
+material = SubResource("ShaderMaterial_sq4tt")
+texture = ExtResource("6_l784s")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1166057929]
+shape = SubResource("CircleShape2D_vmjmr")
+debug_color = Color(0, 0.5950001, 0.7, 0)

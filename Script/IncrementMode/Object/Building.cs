@@ -222,6 +222,7 @@ public partial class Building : Node2D
 
         value.SetBase(data.value.Get());
 
+        args = new();
         args.Init(data.defaultArgs);
 
         foreach(BuildingTag tag in data.tags)

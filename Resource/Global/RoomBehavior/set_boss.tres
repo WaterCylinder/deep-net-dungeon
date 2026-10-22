@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="RoomBehaviorDemo" format=3 uid="uid://b5wkkx5gj5xxt"]
+
+[ext_resource type="Script" uid="uid://cdv0wi7vrua4i" path="res://Resource/Demo/DemoRoom/RoomBehaviorDemo.cs" id="1_qnn2j"]
+
+[resource]
+script = ExtResource("1_qnn2j")
+behaviorName = "SetBoss"
+metadata/_custom_type_script = "uid://cdv0wi7vrua4i"

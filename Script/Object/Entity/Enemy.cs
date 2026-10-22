@@ -131,7 +131,8 @@ public partial class Enemy : Entity
 
     #endregion
 
-   
+    public void PlayAnime(string animeName = "idle") => PlayAnime(animeName, animNode);
+    protected Game game => GameManager.Instance.game;
 
     #region 敌人属性
 
@@ -162,6 +163,11 @@ public partial class Enemy : Entity
     [Export] public Effect onUpdate;
     [Export] public Effect onAttack;
     [Export] public Effect onDeath;
+
+    /// <summary>
+    /// 掉落资源点数量区间
+    /// </summary>
+    [Export] public Vector2I dropValue;
 
     #endregion
     
@@ -252,6 +258,8 @@ public partial class Enemy : Entity
         onAttack = data.onAttack;
         onDeath = data.onDeath;
 
+        dropValue = data.dropValue;
+
         //设置节点属性
         Name = data.enemyName;
 
@@ -316,6 +324,7 @@ public partial class Enemy : Entity
         scale = data.scale;
 
         //设置初始额外参数
+        args = new();
         args.Init(data.args);
 
         // 重置生命值到最大值
@@ -391,6 +400,11 @@ public partial class Enemy : Entity
     protected override void OnDeath(Damage damage, Entity other)
     {
         base.OnDeath(damage, other);
+        int dvalue = game.randomSystem.Int(dropValue.X, dropValue.Y);
+        if(dvalue > 0)
+        {
+            EnergyPoint.CreateEnergyPoint(EnergyType.Coin, GlobalPosition, dvalue);
+        }
         //如果有死亡动画，则在死亡时播放死亡动画。
         if(animNode.SpriteFrames != null && animNode.SpriteFrames.HasAnimation("death"))
         {

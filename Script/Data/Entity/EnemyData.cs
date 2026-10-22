@@ -124,4 +124,6 @@ public partial class EnemyData : Resource
     [Export] public Effect onUpdate;
     [Export] public Effect onAttack;
     [Export] public Effect onDeath;
+
+    [Export] public Vector2I dropValue = Vector2I.One;
 }

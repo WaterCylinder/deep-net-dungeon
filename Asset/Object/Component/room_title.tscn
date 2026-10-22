@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bsvmpnjd6qt5d"]
+
+[ext_resource type="Script" uid="uid://dsofxxqna0am6" path="res://Script/UI/Component/RoomTitle.cs" id="1_doduk"]
+[ext_resource type="Script" uid="uid://dywqu0xq2xtsw" path="res://Plugin/AutoSizedText/addons/AutoSizeText/ui/AutoSizeLabel.gd" id="2_i6qy6"]
+
+[node name="RoomTitle" type="Control" unique_id=890958009 node_paths=PackedStringArray("roomMap", "label")]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 3
+anchors_preset = 0
+offset_left = -320.0
+offset_top = -372.0
+offset_right = 448.0
+offset_bottom = -336.0
+script = ExtResource("1_doduk")
+roomMap = NodePath("")
+label = NodePath("Label")
+
+[node name="Label" type="Label" parent="." unique_id=1341092962]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 35
+text = "RoomTitle"
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("2_i6qy6")
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"

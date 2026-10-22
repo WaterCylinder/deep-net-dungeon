@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EnemyBehavior" format=3 uid="uid://uyh2fun404kh"]
+
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="1_0ani7"]
+
+[resource]
+script = ExtResource("1_0ani7")
+behaviorName = "FaceToMove"
+metadata/_custom_type_script = "uid://dblyxvivec0w8"

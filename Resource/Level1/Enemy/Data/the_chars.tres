@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://c71lm0ye4cw7v"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_mwudr"]
+[ext_resource type="Script" uid="uid://dh6u0gbckh2vx" path="res://Resource/Level1/EnemyBehaviorLevel1.cs" id="2_o07wm"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_r15ig"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="3_570nm"]
+[ext_resource type="Resource" uid="uid://os0nvoivt45p" path="res://Resource/Global/EnemyBehavior/attack.tres" id="3_ij7k1"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_qn0jp"]
+[ext_resource type="SpriteFrames" uid="uid://dsi5h4t831xk5" path="res://Resource/Level1/Enemy/SpriteFrames/the_chars.tres" id="3_r15ig"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_qn0jp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o07wm"]
+radius = 32.0
+
+[sub_resource type="Resource" id="Resource_qn0jp"]
+script = ExtResource("2_o07wm")
+behaviorName = "AttackShotPlayerThree"
+metadata/_custom_type_script = "uid://dh6u0gbckh2vx"
+
+[sub_resource type="Resource" id="Resource_p0v2h"]
+script = ExtResource("4_qn0jp")
+condition = ExtResource("3_570nm")
+behavior = SubResource("Resource_qn0jp")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_ij7k1"]
+script = ExtResource("2_o07wm")
+behaviorName = "UpdateReboundMove"
+metadata/_custom_type_script = "uid://dh6u0gbckh2vx"
+
+[sub_resource type="Resource" id="Resource_tj4m3"]
+script = ExtResource("3_qn0jp")
+behaviorArray = Array[Object]([SubResource("Resource_ij7k1"), ExtResource("3_ij7k1")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_aa3x3"]
+script = ExtResource("4_qn0jp")
+condition = ExtResource("3_570nm")
+behavior = SubResource("Resource_tj4m3")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_r15ig")
+enemyName = "TheChars"
+displayName = "字符集"
+description = "字符集"
+maxHealth = 150.0
+attackSpeed = 0.1
+speed = 200.0
+spriteFrames = ExtResource("3_r15ig")
+attackShape = SubResource("CircleShape2D_o07wm")
+onUpdate = SubResource("Resource_aa3x3")
+onAttack = SubResource("Resource_p0v2h")
+dropValue = Vector2i(2, 3)
+metadata/_custom_type_script = "uid://mqed4halsexx"

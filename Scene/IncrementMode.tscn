@@ -83,9 +83,9 @@ shader_parameter/color_bright = Color(0.8950001, 0.37, 1, 1)
 shader_parameter/blocks_x = 128.000005985
 shader_parameter/blocks_y = 128.000005985
 shader_parameter/spiral_twist = 8.00000038
-shader_parameter/spiral_speed = 1.0
-shader_parameter/abyss_radius = 0.50000002375
-shader_parameter/abyss_darkness = 1.0
+shader_parameter/spiral_speed = 0.2
+shader_parameter/abyss_radius = 0.4400000209
+shader_parameter/abyss_darkness = 0.95
 shader_parameter/abyss_color = Color(0.02, 0, 0.05, 1)
 shader_parameter/color_bands = 7.742000272745
 
@@ -895,14 +895,13 @@ shopItemPool = SubResource("Resource_ai0q7")
 tasks = Array[Resource]([SubResource("Resource_eg0h7"), SubResource("Resource_6bp8m"), SubResource("Resource_yu6n2")])
 rarityPools = Array[Object]([ExtResource("18_yu6n2"), ExtResource("19_ai0q7"), ExtResource("20_eqr41")])
 
-[node name="BG" type="Node2D" parent="World" unique_id=236564426 node_paths=PackedStringArray("camera", "bg")]
+[node name="BG" type="Node2D" parent="World" unique_id=236564426 node_paths=PackedStringArray("camera")]
 script = ExtResource("2_05cjt")
 camera = NodePath("../../MainCamera")
-bg = NodePath("")
 
 [node name="ColorRect" type="ColorRect" parent="World/BG" unique_id=782388161]
 material = SubResource("ShaderMaterial_jk8qv")
-anchors_preset = -1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -1024.0

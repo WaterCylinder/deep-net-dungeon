@@ -61,5 +61,7 @@ void fragment() {
     final_color = mix(final_color, abyss_color.rgb, abyss);
 
     // 每个方格输出单一颜色
-    COLOR = vec4(final_color, 1.0);
+	float base_alpha = COLOR.a;
+    COLOR = vec4(final_color, base_alpha);
+	
 }

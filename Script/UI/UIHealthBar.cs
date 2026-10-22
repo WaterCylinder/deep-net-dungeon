@@ -17,6 +17,8 @@ public partial class UIHealthBar : Control
         healthSlowCover.Scale = new(1f, 1f);
     }
 
+    protected virtual void OnUpdate(double delta){}
+
     public override void _Process(double delta)
     {
         // 血条覆盖条
@@ -53,12 +55,13 @@ public partial class UIHealthBar : Control
 
         // 血条滚动
         float diff = healthInnerBar.PivotOffsetRatio.X;
-        diff -= (float)delta * 0.16f;
+        diff -= (float)delta * 0.08f;
         if (diff < 0f)
         {
             diff = 1f;
         }
         healthInnerBar.PivotOffsetRatio = new Vector2(diff, PivotOffsetRatio.Y);
+        OnUpdate(delta);
     }
 
 }

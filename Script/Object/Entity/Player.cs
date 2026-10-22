@@ -6,11 +6,15 @@ using Godot;
 public partial class Player : Entity
 {
     [Export] Trigger enemyTrigger;
+    [Export] Trigger energyTrigger;
 
     [Export] AnimatedSprite2D animeNode;
 
     [Export] Node2D shotPoint;
     [Export] AudioStream hitSound;
+
+    [ExportCategory("局内属性")]
+    [Export] public int score;
 
     #region 玩家即时属性
 
@@ -21,6 +25,8 @@ public partial class Player : Entity
     public Vector2 targetShotToward = Vector2.Zero;
 
     #endregion 
+
+    Game game => GameManager.Instance.game;
 
     protected override void OnEnterTree()
     {
@@ -44,6 +50,15 @@ public partial class Player : Entity
                 {
                     return false;
                 }
+            }
+            return true;
+        };
+
+        energyTrigger.beforeEntityEntered += e =>
+        {
+            if(e is EnergyPoint ep)
+            {
+                ep.target = this;
             }
             return true;
         };
@@ -166,6 +181,12 @@ public partial class Player : Entity
             Callable.From((float v) => mat.SetShaderParameter("flash_modifier", v)),
             1.0f, 0.0f, 0.2f
         );
+    }
+
+    protected override void OnDeath(Damage damage, Entity other)
+    {
+        base.OnDeath(damage, other);
+        game.NotifyPlayerDeath();
     }
 
     #region 工具方法

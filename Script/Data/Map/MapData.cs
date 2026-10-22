@@ -7,10 +7,11 @@ using Godot.Collections;
 public enum MapMode
 {
     /// <summary>
-    /// 固定地图：起始房间 → N个普通房间 → Boss房间（主线单向连接）。
-    /// 商店房间挂在最后一个普通房间的支路上；资源房间随机出现在前面某个普通房间的支路上
+    /// 直线地图：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间，
+    /// 所有房间单向串联成一条直线，没有任何支路。
+    /// 普通房间数量、资源/商店房间的位置倾向在Map脚本的"直线地图生成"栏目里配置
     /// </summary>
-    Fixed,
+    Line,
 
     /// <summary>
     /// 树状地图：主干每层1个房间、末端接唯一Boss；主干节点按概率长出支路，支路按概率继续延伸
@@ -24,11 +25,12 @@ public partial class MapData : Resource
     /// <summary>
     /// 地图生成模式
     /// </summary>
-    [Export] public MapMode mapMode = MapMode.Fixed;
+    [Export] public MapMode mapMode = MapMode.Line;
 
     /// <summary>
-    /// 固定模式：主线上的普通房间数量（默认5）。
-    /// 主线是 起始房间 → N个普通房间 → Boss房间
+    /// 直线模式：普通房间数量。
+    /// 现在普通房间数量由Map脚本的minNormalRoomCount~maxNormalRoomCount随机决定，
+    /// 这个值只在Map上没配置范围（两者都≤0）时作为兜底数量使用
     /// </summary>
     [Export] public int normalRoomCount = 5;
 
@@ -52,13 +54,13 @@ public partial class MapData : Resource
 
     /// <summary>
     /// 树状模式：资源房间出现的层（从1开始计数，表示"该层及之后的第一条支路"放资源房间）；≤0 表示不生成。
-    /// 固定模式下不使用该参数（固定模式下资源房间随机挂在前面的普通房间上）
+    /// 直线模式下不使用该参数（直线模式下资源房间按"越靠近起始房间概率越高"随机插在路径上）
     /// </summary>
     [Export] public int treasureLayer = 1;
 
     /// <summary>
     /// 树状模式：商店房间出现的层（从1开始计数）；≤0 表示放在最后一层。
-    /// 固定模式下不使用该参数（固定模式下商店房间固定在最后一个普通房间的支路）
+    /// 直线模式下不使用该参数（直线模式下商店房间按"越靠近Boss房间概率越高"随机插在路径上）
     /// </summary>
     [Export] public int shopLayer = 0;
 

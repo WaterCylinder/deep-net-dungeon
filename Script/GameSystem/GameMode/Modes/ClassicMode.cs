@@ -9,27 +9,52 @@ public partial class ClassicMode : GameModeBase
 {
     public override string ModeName => "Classic";
 
-    public override void OnInit()
-    {
-        base.OnInit();
-        // 初始化经典模式特有的数据
-    }
-
     public override void OnStart()
     {
         base.OnStart();
-        // 启动经典模式游戏逻辑
+        //设置摄像机无限移动范围
+        camera.posLimitX = new Vector2(-Mathf.Inf, Mathf.Inf);
+        camera.posLimitY = new Vector2(-Mathf.Inf, Mathf.Inf);
+        //传送时重置摄像机位置
+        player.OnTrans += camera.SetPosition;
     }
 
-    public override void OnNextRoom(int roomIndex)
+    void Init()
     {
-        base.OnNextRoom(roomIndex);
-        // 经典模式：房间推进逻辑
     }
 
-    public override void OnGetItem(string itemId, int quantity = 1)
+    public override void OnProcess(double delta)
     {
-        base.OnGetItem(itemId, quantity);
-        // 经典模式：物品获取处理
+        base.OnProcess(delta);
+        switch (game.A)
+        {
+            case 0:
+            //初始化
+            Init();
+            game.Next();
+            break;
+            case 100:
+            //生成地图
+            map.Initialize(null, game.randomSystem);
+            map.startRoom.Enter(player);
+            game.Next();
+            break;
+        }
+    }
+
+    public override void OnPlayerDeath()
+    {
+        base.OnPlayerDeath();
+        GD.Print("玩家死亡");
+        //默认进入死亡界面
+        game.hud.endUi.Visible = true;
+        game.hud.endUi.endText.Text = "失败";
+    }
+
+    public override void OnPhysicsProcess(double delta)
+    {
+        base.OnPhysicsProcess(delta);
+        //对其摄像机到玩家位置
+        CameraFollowPlayer();
     }
 }

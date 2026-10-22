@@ -20,10 +20,13 @@
 [ext_resource type="Script" uid="uid://gk4obmr7dv15" path="res://Script/UI/UIHealthBar.cs" id="8_0yiub"]
 [ext_resource type="Script" uid="uid://c7b0sk33c3gb3" path="res://Script/UI/MapUI.cs" id="8_1mx4w"]
 [ext_resource type="PackedScene" uid="uid://cnhkoacuwafyq" path="res://Asset/UI/item_layout_item.tscn" id="8_hbowo"]
+[ext_resource type="Texture2D" uid="uid://bsiqwipsr8s5s" path="res://Asset/Sprite/Temp.png" id="8_yl8rb"]
 [ext_resource type="Script" uid="uid://cf5pj3pio105u" path="res://Script/Data/Attribute/Args.cs" id="9_jwmyi"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="9_p323j"]
 [ext_resource type="SpriteFrames" uid="uid://ctusjok3ndrff" path="res://Resource/Demo/Player/player_frames.tres" id="12_aawhf"]
 [ext_resource type="Script" uid="uid://c4uh4w2l8r4hj" path="res://Script/UI/Demo/BGAutoRotateZoom.cs" id="12_ghk2r"]
+[ext_resource type="Script" uid="uid://db10we0pf4bac" path="res://Script/UI/EndUI.cs" id="14_vmjmr"]
+[ext_resource type="Script" uid="uid://dywqu0xq2xtsw" path="res://Plugin/AutoSizedText/addons/AutoSizeText/ui/AutoSizeLabel.gd" id="15_10r1t"]
 [ext_resource type="Shader" uid="uid://bguaybsuni2ee" path="res://Resource/Shader/Flash.gdshader" id="16_kfjtm"]
 [ext_resource type="Shader" uid="uid://ciovxesw37t62" path="res://Resource/Shader/Abyss.gdshader" id="17_10r1t"]
 [ext_resource type="Resource" uid="uid://b0oqadijwxkwx" path="res://Resource/Level1/level1_map.tres" id="18_0yiub"]
@@ -31,6 +34,20 @@
 [ext_resource type="AudioStream" uid="uid://ba8xn7a85s2ct" path="res://Resource/Sounds/hit_001.wav" id="23_vmjmr"]
 [ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="24_65ldo"]
 [ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="34_yl8rb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0yiub"]
+shader = ExtResource("17_10r1t")
+shader_parameter/color_deep = Color(0.288518, 0.288518, 0.28851795, 1)
+shader_parameter/color_mid = Color(0.08468992, 0.08468992, 0.08468992, 1)
+shader_parameter/color_bright = Color(0.74, 0.74, 0.74, 1)
+shader_parameter/blocks_x = 16.000000665
+shader_parameter/blocks_y = 128.000005985
+shader_parameter/spiral_twist = 5.0000002375
+shader_parameter/spiral_speed = 0.8
+shader_parameter/abyss_radius = 0.0
+shader_parameter/abyss_darkness = 0.95
+shader_parameter/abyss_color = Color(0.02, 0, 0.05, 1)
+shader_parameter/color_bands = 6.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_10r1t"]
 shader = ExtResource("17_10r1t")
@@ -40,7 +57,7 @@ shader_parameter/color_bright = Color(0.8950001, 0.37, 1, 1)
 shader_parameter/blocks_x = 128.000005985
 shader_parameter/blocks_y = 128.000005985
 shader_parameter/spiral_twist = 8.00000038
-shader_parameter/spiral_speed = 1.0
+shader_parameter/spiral_speed = 0.2
 shader_parameter/abyss_radius = 1.0
 shader_parameter/abyss_darkness = 1.0
 shader_parameter/abyss_color = Color(0.020000005, 0, 0.05, 1)
@@ -145,19 +162,21 @@ radius = 12.0
 radius = 15.0
 height = 46.0
 
-[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("hud", "musicPlayer", "soundPlayeyPoolNode", "enemyNode", "roomNode", "dropItemNode", "smallObjectNode")]
+[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("hud", "musicPlayer", "soundPlayeyPoolNode", "enemyNode", "roomNode", "dropItemNode", "energyNode", "smallObjectNode")]
 script = ExtResource("1_6igcf")
+gameMode = "Classic"
 hud = NodePath("CanvasLayer/HUD")
 musicPlayer = NodePath("MainCamera/MusicPlayer")
 soundPlayeyPoolNode = NodePath("SoundPlayerPool")
 enemyNode = NodePath("World/EnemyNode")
 roomNode = NodePath("World/RoomNode")
 dropItemNode = NodePath("World/ItemNode")
+energyNode = NodePath("World/EnergyNode")
 smallObjectNode = NodePath("World/SmallObject")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
 
-[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983 node_paths=PackedStringArray("BossHealthBar")]
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=180641983 node_paths=PackedStringArray("BossHealthBar", "endUi")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -167,6 +186,7 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("2_10r1t")
 BossHealthBar = NodePath("PUI/BossHealthBar")
+endUi = NodePath("../End")
 
 [node name="PUI" type="Control" parent="CanvasLayer/HUD" unique_id=898275018]
 layout_mode = 1
@@ -177,15 +197,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("smallTextPoint", "buffNode", "buffIntroNode", "buffIntroLabel", "healthInnerBar", "healthCover", "healthSlowCover", "healthText")]
+[node name="HealthBar" type="Control" parent="CanvasLayer/HUD/PUI" unique_id=1882577718 node_paths=PackedStringArray("smallTextPoint", "scoreLabel", "buffNode", "buffIntroNode", "buffIntroLabel", "healthInnerBar", "healthCover", "healthSlowCover", "healthText")]
 layout_mode = 1
 anchor_left = 0.03
 anchor_top = 0.03
 anchor_right = 0.5
-anchor_bottom = 0.15
+anchor_bottom = 0.2
 mouse_filter = 2
 script = ExtResource("2_ilbig")
 smallTextPoint = NodePath("SmallTextPoint")
+scoreLabel = NodePath("Score/Label")
 buffLayoutItemPrefab = ExtResource("5_p323j")
 buffNode = NodePath("BuffShowOut/HBoxContainer")
 buffIntroNode = NodePath("BuffShowOut/BuffIntro")
@@ -277,9 +298,72 @@ offset_bottom = 40.0
 grow_horizontal = 0
 mouse_filter = 2
 
-[node name="BuffShowOut" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=1325119690]
+[node name="Score" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=740773400]
 layout_mode = 1
 anchor_top = 0.3
+anchor_right = 1.0
+anchor_bottom = 0.6
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HUD/PUI/HealthBar/Score" unique_id=901149890]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 5.0
+offset_right = -12.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="AutoSizeLabel" type="Label" parent="CanvasLayer/HUD/PUI/HealthBar/Score" unique_id=672662119]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.1
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 27
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("15_10r1t")
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/Score/AutoSizeLabel" unique_id=1896910134]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_yl8rb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD/PUI/HealthBar/Score" unique_id=40281915]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "0000"
+vertical_alignment = 1
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("15_10r1t")
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
+
+[node name="BuffShowOut" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar" unique_id=1325119690]
+layout_mode = 1
+anchor_top = 0.6
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -292,20 +376,6 @@ offset_bottom = 40.0
 
 [node name="BuffLayoutItem" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1416346317 instance=ExtResource("5_p323j")]
 layout_mode = 2
-
-[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1858317370]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer/AspectRatioContainer2" unique_id=231932329]
-layout_mode = 2
-texture = ExtResource("6_0mc8i")
-
-[node name="AspectRatioContainer3" type="AspectRatioContainer" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer" unique_id=1957854290]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut/HBoxContainer/AspectRatioContainer3" unique_id=1681028932]
-layout_mode = 2
-texture = ExtResource("9_p323j")
 
 [node name="BuffIntro" type="Control" parent="CanvasLayer/HUD/PUI/HealthBar/BuffShowOut" unique_id=449563920]
 visible = false
@@ -437,13 +507,12 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -150.0
+offset_left = -330.0
 offset_top = 16.0
 offset_right = -16.0
-offset_bottom = 150.0
+offset_bottom = 112.0
 grow_horizontal = 0
 script = ExtResource("8_1mx4w")
-ShowAll = false
 
 [node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemsNode", "introNode", "introImage", "introLabel", "introLevel", "introName", "introTag", "stateUI", "maxHealth", "currentHealth", "attack", "defense", "attackspeed", "critRate", "critDamage", "speed")]
 layout_mode = 1
@@ -1022,19 +1091,88 @@ layout_mode = 2
 texture_normal = ExtResource("5_3jynh")
 stretch_mode = 0
 
+[node name="End" type="Control" parent="CanvasLayer" unique_id=1457759628 node_paths=PackedStringArray("returnButton", "replayButton", "endText")]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_vmjmr")
+returnButton = NodePath("Button/Button")
+replayButton = NodePath("Button/Buttons")
+endText = NodePath("Text")
+
+[node name="BG" type="Control" parent="CanvasLayer/End" unique_id=1563418465]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/End/BG" unique_id=1324080370]
+material = SubResource("ShaderMaterial_0yiub")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.5019608)
+
+[node name="Text" type="Label" parent="CanvasLayer/End" unique_id=1738998762]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.6
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 38
+text = "失败"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("15_10r1t")
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
+
+[node name="Button" type="HBoxContainer" parent="CanvasLayer/End" unique_id=1507983265]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.6
+anchor_right = 0.8
+anchor_bottom = 0.7
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="CanvasLayer/End/Button" unique_id=584139563]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "返回主菜单"
+
+[node name="Buttons" type="Button" parent="CanvasLayer/End/Button" unique_id=845371556]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "重新开始
+"
+
 [node name="InGameMenu" parent="CanvasLayer" unique_id=1229394865 instance=ExtResource("0_ingamemenu")]
 
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
 
-[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera", "bg")]
+[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera")]
 position = Vector2(500, 0)
 script = ExtResource("12_ghk2r")
 camera = NodePath("../../MainCamera")
-bg = NodePath("")
 
 [node name="ColorRect" type="ColorRect" parent="World/BG" unique_id=709489278]
 material = SubResource("ShaderMaterial_10r1t")
-anchors_preset = -1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -1024.0
@@ -1057,7 +1195,7 @@ metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="ItemNode" type="Node2D" parent="World" unique_id=2040611529]
 
-[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "animeNode", "shotPoint", "area")]
+[node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "energyTrigger", "animeNode", "shotPoint", "area")]
 unique_name_in_owner = true
 collision_mask = 129
 gravity_scale = 0.0
@@ -1065,7 +1203,8 @@ lock_rotation = true
 contact_monitor = true
 max_contacts_reported = 64
 script = ExtResource("2_ou18a")
-enemyTrigger = NodePath("Trigger")
+enemyTrigger = NodePath("EnemyTrigger")
+energyTrigger = NodePath("EnergyTrigger")
 animeNode = NodePath("AnimatedSprite2D")
 shotPoint = NodePath("ShotPoint")
 hitSound = ExtResource("23_vmjmr")
@@ -1100,9 +1239,15 @@ frame_progress = 0.92028964
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player" unique_id=339944285]
 shape = SubResource("CircleShape2D_tujvx")
 
-[node name="Trigger" parent="World/Player" unique_id=653166855 instance=ExtResource("6_48ymf")]
+[node name="EnemyTrigger" parent="World/Player" unique_id=653166855 instance=ExtResource("6_48ymf")]
 radius = 3.0
 ignoreTags = Array[int]([2, 0])
+includeTags = Array[int]([1])
+
+[node name="EnergyTrigger" parent="World/Player" unique_id=1177613118 instance=ExtResource("6_48ymf")]
+radius = 0.5
+ignoreTags = Array[int]([2, 0, 1])
+includeTags = Array[int]([4])
 
 [node name="Area2D" type="Area2D" parent="World/Player" unique_id=1207618881]
 
@@ -1116,6 +1261,8 @@ position = Vector2(0, -15)
 [node name="Bag" parent="World/Player" unique_id=301600655 instance=ExtResource("19_1e3q2")]
 
 [node name="SmallObject" type="Node2D" parent="World" unique_id=1589920352]
+
+[node name="EnergyNode" type="Node2D" parent="World" unique_id=1304733795]
 
 [node name="MainCamera" type="Camera2D" parent="." unique_id=1820549867]
 unique_name_in_owner = true

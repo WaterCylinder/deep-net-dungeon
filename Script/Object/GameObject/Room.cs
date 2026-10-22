@@ -146,6 +146,8 @@ public partial class Room : Node2D
     [Export] public RoomTileMap tileMap = null;
     public Array<Enemy> enemiesNow => tileMap.enemiesNow;
 
+    [Export] public string roomTitle = "None Name Room";
+
     public Effect onCreate;
     public Effect onFirstEnter;
     public Effect onGenerateEnemy;
@@ -223,6 +225,7 @@ public partial class Room : Node2D
 
         this.data = data;
         Name = string.IsNullOrEmpty(data.roomId) ? "Room" : data.roomId;
+        roomTitle = data.roomId;
 
         useDefaultRoomProcess = data.useDefaultRoomProcess;
         

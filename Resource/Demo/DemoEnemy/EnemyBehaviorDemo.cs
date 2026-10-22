@@ -5,15 +5,6 @@ using Godot.Collections;
 [GlobalClass]
 public partial class EnemyBehaviorDemo : EnemyBehavior
 {
-    /// <summary>
-    /// 朝向玩家移动
-    /// </summary>
-    /// <param name="enemy"></param>
-    public void UpdateCloseToPalyer(Enemy enemy)
-    {
-        //朝着玩家移动
-        enemy.MoveTarget(player.GlobalPosition);
-    }
 
     /// <summary>
     /// 和玩家保持一定距离
@@ -37,22 +28,6 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
         {
             enemy.MoveStop();
         }
-    }
-
-    /// <summary>
-    /// 朝向玩家发射普通子弹
-    /// </summary>
-    /// <param name="enemy"></param>
-    public void AttackShotPlayer(Enemy enemy)
-    {
-        Vector2 toward = player.GlobalPosition - enemy.GlobalPosition;
-
-        float bulletSpeed = Arg("speed", 3);
-        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
-
-        enemy.ChangeBullet(bulletData);
-
-        enemy.Shot(toward.Normalized() * bulletSpeed);
     }
 
     /// <summary>
@@ -148,7 +123,11 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
             enemy.AddTempTimer(
                 "follow_and_charged_impact_timer1",
                 game.randomSystem.Float(2,3),
-                () => enemy.args.Set("follow_and_charged_impact_state", "charge")
+                () => 
+                {
+                    enemy.PlayAnime("charge");
+                    enemy.args.Set("follow_and_charged_impact_state", "charge");
+                }
             );
         }
         else if(enemy.args.Get<string>("follow_and_charged_impact_state") == "charge")
@@ -159,6 +138,7 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
                 game.randomSystem.Float(0.5f,1f),
                 () => 
                 {
+                    enemy.PlayAnime();
                     enemy.args.Set("follow_and_charged_impact_state", "impact");
                     enemy.MoveToward(player.GlobalPosition - enemy.GlobalPosition);
                     enemy.speed.Multi(5, "impact_speed_up", 5);

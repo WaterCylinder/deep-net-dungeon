@@ -260,10 +260,14 @@ public partial class Trigger : Area2D
     public void ChangeRadius(float newRadius)
     {
         radius = newRadius;
-        CollisionShape2D shape = GetNode<CollisionShape2D>("CollisionShape2D");
-        if (shape != null && shape.Shape is CircleShape2D circle)
+        CollisionShape2D shape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+        if (shape != null)
         {
-            circle.Radius = radius * 128f;
+            CircleShape2D circle = new CircleShape2D
+            {
+                Radius = radius * 128f
+            };
+            shape.Shape = circle;
         }
     }
 

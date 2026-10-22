@@ -6,6 +6,8 @@ public partial class PUIHealthBar : UIHealthBar
 {
     [Export] public Control smallTextPoint;
 
+    [Export] public Label scoreLabel;
+
     [Export] public PackedScene buffLayoutItemPrefab;
     [Export] public Control buffNode;
     [Export] public Control buffIntroNode;
@@ -70,4 +72,14 @@ public partial class PUIHealthBar : UIHealthBar
             };
         }
     }
+
+    protected override void OnUpdate(double delta)
+    {
+        base.OnUpdate(delta);
+        if (Game.IsAble(player))
+        {
+            scoreLabel.Text = player.score.ToString();
+        }
+    }
+
 }

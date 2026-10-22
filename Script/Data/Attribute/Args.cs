@@ -71,6 +71,20 @@ public partial class Args : Resource
         args = initialArgs.Duplicate(true);
     }
 
+    /// <summary>
+    /// 复制出一份独立的参数对象（内部字典深拷贝，字典里的对象引用保持原样）
+    ///
+    /// 为什么需要：以[Export]方式挂到节点上的Args，在PackedScene里会被存成SubResource，
+    /// 而同一个预制体的所有实例默认共享这一个Resource对象。
+    /// 如果不复制，同类实体的运行期参数（行为状态机、事件标记等）会互相覆盖。
+    /// </summary>
+    public Args Copy()
+    {
+        Args copy = new Args();
+        copy.Init(args);
+        return copy;
+    }
+
     public bool Check(string key, Type type = null)
     {
         if(type != null)

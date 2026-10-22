@@ -8,6 +8,7 @@ public enum EntityTag
     Enemy,
     Bullet,
     Obstacle,
+    Energy,
 }
 
 /// <summary>
@@ -82,6 +83,10 @@ public abstract partial class Entity : RigidBody2D
     /// 音频播放器
     /// </summary>
     [Export] public AudioStreamPlayer2D audioPlayer;
+    /// <summary>
+    /// 专用弹幕音频播放器
+    /// </summary>
+    [Export] public AudioStreamPlayer2D bulletAudioPlayer;
 
     #endregion
 
@@ -858,6 +863,12 @@ public abstract partial class Entity : RigidBody2D
     public override void _EnterTree()
     {
         base._EnterTree();
+
+        // [Export]的Args在PackedScene里是共享的SubResource：同一个预制体的所有实例
+        // 默认指向同一个Args对象，运行期写入的参数（行为状态机、事件标记等）会互相覆盖。
+        // 这里给每个实体实例复制一份独立参数，保证参数是"每实例"的。
+        args = args != null ? args.Copy() : new Args();
+
         OnEnterTree();
     }
 
@@ -902,6 +913,13 @@ public abstract partial class Entity : RigidBody2D
             AddChild(player);
             audioPlayer = player;
         }
+        if(bulletAudioPlayer == null)
+        {
+            AudioStreamPlayer2D player = new();
+            AddChild(player);
+            bulletAudioPlayer = player;
+        }
+
 
         OnStart();
     }
@@ -1110,12 +1128,13 @@ public abstract partial class Entity : RigidBody2D
 
     #region 音频
 
-    public void PlaySound(AudioStream sound, string bus = "Sound")
+    public void PlaySound(AudioStream sound, AudioStreamPlayer2D player = null, string bus = "Sound")
     {
         if(sound == null)return;
-        audioPlayer.Stream = sound;
-        audioPlayer.Bus = bus;
-        audioPlayer.Play();
+        if(player == null)player = audioPlayer;
+        player.Stream = sound;
+        player.Bus = bus;
+        player.Play();
     }
 
     public void PlaySoundGlobal(AudioStream sound)
@@ -1123,6 +1142,30 @@ public abstract partial class Entity : RigidBody2D
         if(sound == null)return;
         Game game = GameManager.Instance.game;
         game.PlaySound(sound);
+    }
+
+    #endregion
+
+    #region 动画
+
+    /// <summary>
+    /// 播放动画，需指定动画节点，默认播放“idle”
+    /// </summary>
+    /// <param name="animeName"></param>
+    /// <param name="animeNode"></param>
+    public void PlayAnime(string animeName, AnimatedSprite2D animeNode)
+    {
+        if (animeNode.SpriteFrames.HasAnimation(animeName))
+        {
+            animeNode.Play(animeName);
+        }
+        else
+        {
+            if (animeNode.SpriteFrames.HasAnimation("idle"))
+            {
+                animeNode.Play("idle");
+            }
+        }
     }
 
     #endregion
