@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemPool" format=3 uid="uid://6yu1wposxh3e"]
+
+[ext_resource type="Resource" uid="uid://ckulloctyx210" path="res://Resource/v1/Item/Data/NormalItem/attack_module.tres" id="1_g5nil"]
+[ext_resource type="Script" uid="uid://bc5j8miuab1g0" path="res://Script/Object/ItemPool.cs" id="1_wgv3c"]
+[ext_resource type="Resource" uid="uid://bpqi0dh4nmuis" path="res://Resource/v1/Item/Data/NormalItem/defense_module.tres" id="2_pdu02"]
+[ext_resource type="Resource" uid="uid://drqq1silobm0m" path="res://Resource/v1/Item/Data/NormalItem/health_module.tres" id="3_ws7y5"]
+[ext_resource type="Resource" uid="uid://d4ge0qmuq6xuu" path="res://Resource/v1/Item/Data/NormalItem/speed_module.tres" id="4_xl238"]
+
+[resource]
+script = ExtResource("1_wgv3c")
+pool = Dictionary[Object, int]({
+ExtResource("1_g5nil"): 8,
+ExtResource("2_pdu02"): 8,
+ExtResource("3_ws7y5"): 8,
+ExtResource("4_xl238"): 8
+})
+metadata/_custom_type_script = "uid://bc5j8miuab1g0"

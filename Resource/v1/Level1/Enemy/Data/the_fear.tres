@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bt0u0lq1uq8xr"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_y6hj8"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="2_iu6w2"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_wwlif"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_8qayp"]
+[ext_resource type="Resource" uid="uid://b82exrtkrb411" path="res://Resource/Global/EnemyBehavior/move_target_player.tres" id="3_gjog0"]
+[ext_resource type="SpriteFrames" uid="uid://drlm8iqrn35dy" path="res://Resource/v1/Level1/Enemy/SpriteFrames/the_fear_sprite_frames.tres" id="3_wwlif"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="4_gjog0"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_366mx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8qayp"]
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_v5bj6"]
+script = ExtResource("3_8qayp")
+behaviorArray = Array[Object]([ExtResource("2_iu6w2"), ExtResource("3_gjog0")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_k7rki"]
+script = ExtResource("5_366mx")
+condition = ExtResource("4_gjog0")
+behavior = SubResource("Resource_v5bj6")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_wwlif")
+enemyName = "TheFear"
+displayName = "恐惧"
+description = "其实不可怕"
+maxHealth = 80.0
+spriteFrames = ExtResource("3_wwlif")
+layoutOffset = Vector2(0, -10)
+areaShape = SubResource("CircleShape2D_8qayp")
+areaOffset = Vector2(0, 0)
+attackShape = SubResource("CircleShape2D_8qayp")
+meleeOffest = Vector2(0, 0)
+onUpdate = SubResource("Resource_k7rki")
+dropValue = Vector2i(1, 2)
+metadata/_custom_type_script = "uid://mqed4halsexx"

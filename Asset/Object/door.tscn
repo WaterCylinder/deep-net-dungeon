@@ -1,7 +1,16 @@
 [gd_scene format=3 uid="uid://c2ddfp6q8lbyt"]
 
 [ext_resource type="Script" uid="uid://b1kymj1a2vkdj" path="res://Script/Object/GameObject/Door.cs" id="1_p8eba"]
+[ext_resource type="Shader" uid="uid://cxwo728yiss1s" path="res://Resource/Shader/Spiral.gdshader" id="2_uhogv"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="2_yt0f0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lv2pn"]
+shader = ExtResource("2_uhogv")
+shader_parameter/spin_speed = 1.0000002849999996
+shader_parameter/edge_transparency = 1.0
+shader_parameter/center_color = Color(0.5833335, 0, 1, 1)
+shader_parameter/arm_count = 3
+shader_parameter/pixel_size = 64.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_c6gdm"]
 radius = 32.0
@@ -9,7 +18,21 @@ radius = 32.0
 [node name="Door" type="Area2D" unique_id=1902877401]
 script = ExtResource("1_p8eba")
 
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1288089558]
+material = SubResource("ShaderMaterial_lv2pn")
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1684120142]
+visible = false
 texture = ExtResource("2_yt0f0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1042312309]

@@ -11,4 +11,5 @@ metadata/_custom_type_script = "uid://cglobalbhv1demo"
 [resource]
 script = ExtResource("1_cond")
 behavior = SubResource("Resource_fk6jl")
+info = "玩家是否可用，用于Effect的条件判断"
 metadata/_custom_type_script = "uid://dap5hs4p56xf3"

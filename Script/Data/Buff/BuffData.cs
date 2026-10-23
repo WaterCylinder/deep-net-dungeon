@@ -73,6 +73,8 @@ public partial class BuffData : Resource
     /// </summary>
     [Export] public bool isAdded = false;
 
+    [Export] public Dictionary<string, Variant> args;
+ 
     #region Effect行为
 
     /// <summary>

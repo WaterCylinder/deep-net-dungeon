@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://dwgy2wkdarjpo"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_an0q6"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="1_e5vom"]
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="1_k5bvm"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="2_k5bvm"]
+[ext_resource type="Texture2D" uid="uid://cy3typ50uwrs4" path="res://Resource/v1/Item/Sprite/Void energy tank.png" id="2_pm5rm"]
+
+[sub_resource type="Resource" id="Resource_k5bvm"]
+script = ExtResource("1_k5bvm")
+behaviorName = "RemoveHealOneWhenGetScore"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_0mh8t"]
+script = ExtResource("2_k5bvm")
+condition = ExtResource("1_e5vom")
+behavior = SubResource("Resource_k5bvm")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_41max"]
+script = ExtResource("1_k5bvm")
+behaviorName = "HealOneWhenGetScore"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_4kn2y"]
+script = ExtResource("2_k5bvm")
+condition = ExtResource("1_e5vom")
+behavior = SubResource("Resource_41max")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_an0q6")
+sprite = ExtResource("2_pm5rm")
+id = "buff_heal_when_get_score"
+name = "虚空蒸馏"
+intro = "获得资源点时回复1生命值"
+maxStack = 1
+tags = null
+args = null
+onStart = SubResource("Resource_4kn2y")
+onEnd = SubResource("Resource_0mh8t")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

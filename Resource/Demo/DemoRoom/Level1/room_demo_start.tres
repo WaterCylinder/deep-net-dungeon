@@ -21,6 +21,7 @@ metadata/_custom_type_script = "uid://bext0m7l2otpv"
 script = ExtResource("1_v7msx")
 roomId = "Level1Normal"
 tileMap = ExtResource("2_v7msx")
+args = null
 useDefaultRoomProcess = false
 onFirstEnter = SubResource("Resource_vhulu")
 metadata/_custom_type_script = "uid://bodfjcgco84dp"

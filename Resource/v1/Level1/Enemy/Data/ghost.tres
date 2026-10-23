@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bt3u3ujc5ptrg"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_j06xl"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_48c6y"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="2_85mmc"]
+[ext_resource type="Resource" uid="uid://dpavoc6kddppo" path="res://Resource/Global/EnemyBehavior/face2target.tres" id="2_jixut"]
+[ext_resource type="Resource" uid="uid://crbp4lnv6ch3u" path="res://Resource/Global/EnemyBehavior/shot_target_player.tres" id="2_rn1pp"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_j8wj5"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_kio6a"]
+[ext_resource type="Resource" uid="uid://os0nvoivt45p" path="res://Resource/Global/EnemyBehavior/attack.tres" id="4_vp0io"]
+[ext_resource type="Script" uid="uid://dh6u0gbckh2vx" path="res://Resource/v1/Level1/EnemyBehaviorLevel1.cs" id="6_rn1pp"]
+[ext_resource type="SpriteFrames" uid="uid://2fuglulnx4mf" path="res://Resource/v1/Level1/Enemy/SpriteFrames/ghost_sprite_frames.tres" id="10_rn1pp"]
+
+[sub_resource type="Resource" id="Resource_iocjv"]
+script = ExtResource("3_j8wj5")
+condition = ExtResource("2_85mmc")
+behavior = ExtResource("2_rn1pp")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_kqo86"]
+script = ExtResource("6_rn1pp")
+behaviorName = "KeepDistanceToPlayer"
+metadata/_custom_type_script = "uid://dh6u0gbckh2vx"
+
+[sub_resource type="Resource" id="Resource_vp0io"]
+script = ExtResource("3_kio6a")
+behaviorArray = Array[Object]([ExtResource("2_jixut"), SubResource("Resource_kqo86"), ExtResource("4_vp0io")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_jixut"]
+script = ExtResource("3_j8wj5")
+condition = ExtResource("2_85mmc")
+behavior = SubResource("Resource_vp0io")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_48c6y")
+enemyName = "Ghost"
+displayName = "幽灵"
+description = "幽灵"
+maxHealth = 60.0
+defense = 0.0
+attackSpeed = 0.2
+spriteFrames = ExtResource("10_rn1pp")
+onUpdate = SubResource("Resource_jixut")
+onAttack = SubResource("Resource_iocjv")
+dropValue = Vector2i(1, 2)
+metadata/_custom_type_script = "uid://mqed4halsexx"

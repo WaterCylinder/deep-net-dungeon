@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ItemBehavior" format=3 uid="uid://nmw7aodsnohf"]
+
+[ext_resource type="Script" uid="uid://cigb1f3wr7pp1" path="res://Script/Data/Item/ItemBehavior.cs" id="1_y0kff"]
+
+[resource]
+script = ExtResource("1_y0kff")
+behaviorName = "ChangeAttackAddNormal"
+metadata/_custom_type_script = "uid://cigb1f3wr7pp1"

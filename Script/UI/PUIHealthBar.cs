@@ -20,7 +20,7 @@ public partial class PUIHealthBar : UIHealthBar
     {
         SetTarget(player);
 
-        player.OnHurtSignal += dmg =>
+        player.OnHurtSignal += (e, dmg) =>
         {
             string text = dmg.ToString("F1");
             SmallText smt = SmallText.CreateSmallText(
@@ -36,7 +36,7 @@ public partial class PUIHealthBar : UIHealthBar
         };
 
         //玩家信号添加更新buffs
-        player.OnAttachBuffSignal += UpdateBuffs;
+        player.OnAttachBuffSignal += (e, b) => UpdateBuffs(b);
         foreach (var child in buffNode.GetChildren())
         {
             child.QueueFree();

@@ -170,17 +170,17 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 攻击信号
     /// </summary>
-    [Signal] public delegate void OnAttackSignalEventHandler();
+    [Signal] public delegate void OnAttackSignalEventHandler(Entity entity);
     /// <summary>
     /// 受伤信号
     /// </summary>
     /// <param name="damageValue"></param>
-    [Signal] public delegate void OnHurtSignalEventHandler(float damageValue);
+    [Signal] public delegate void OnHurtSignalEventHandler(Entity entity, float damageValue);
     /// <summary>
     /// 添加buff信号
     /// </summary>
     /// <param name="buff"></param>
-    [Signal] public delegate void OnAttachBuffSignalEventHandler(Buff buff);
+    [Signal] public delegate void OnAttachBuffSignalEventHandler(Entity entity, Buff buff);
     /// <summary>
     /// 碰撞点信号
     /// </summary>
@@ -191,11 +191,16 @@ public abstract partial class Entity : RigidBody2D
     /// 发射弹幕时
     /// </summary>
     /// <param name="bullet"></param>
-    [Signal] public delegate void OnShotEventHandler(Bullet bullet);
+    [Signal] public delegate void OnShotEventHandler(Entity entity, Bullet bullet);
     /// <summary>
     /// 死亡时信号
     /// </summary>
-    [Signal] public delegate void OnDeathSignalEventHandler(Damage damage);
+    [Signal] public delegate void OnDeathSignalEventHandler(Entity entity, Damage damage);
+
+    /// <summary>
+    /// 拾取能量点时信号
+    /// </summary>
+    [Signal] public delegate void OnPickEnergyEventHandler(Entity entity, EnergyPoint energyPoint);
 
     #endregion
     
@@ -402,7 +407,7 @@ public abstract partial class Entity : RigidBody2D
         buff.OnAttach();
 
         OnBuffAttached(buff);
-        EmitSignal(nameof(OnAttachBuffSignal), buff);
+        EmitSignal(nameof(OnAttachBuffSignal), this, buff);
         
         return buff;
     }
@@ -686,9 +691,9 @@ public abstract partial class Entity : RigidBody2D
         float rawDamage = damage.value.Get();
         float def = defense.Get();
         
-        // 伤害公式：原始伤害 * (100 / (100 + 防御力))
+        // 伤害公式：原始伤害 * (100 / (100 + 防御力)) - (防御力 / 10)
         float damageReduction = 100f / (100f + def);
-        float finalDamage = rawDamage * damageReduction;
+        float finalDamage = rawDamage * damageReduction - (def * 0.1f);
         
         // 确保伤害不为负
         finalDamage = Mathf.Max(0f, finalDamage);
@@ -709,7 +714,7 @@ public abstract partial class Entity : RigidBody2D
         // 触发受伤抽象方法
         OnHurt(damage, finalDamage);
 
-        EmitSignal(nameof(OnHurtSignal), finalDamage);
+        EmitSignal(nameof(OnHurtSignal), this, finalDamage);
 
         // 检查死亡
         if (newHealth <= 0 && oldHealth > 0)
@@ -1045,7 +1050,7 @@ public abstract partial class Entity : RigidBody2D
     {
         isDead = true;
         OnDeath(damage, other);
-        EmitSignal(SignalName.OnDeathSignal, damage);
+        EmitSignal(SignalName.OnDeathSignal, this, damage);
         if(queueFreeOnDeath)
         {
             QueueFree();
@@ -1086,6 +1091,20 @@ public abstract partial class Entity : RigidBody2D
         return true;
     }
 
+    /// <summary>
+    /// 清除所有计时器
+    /// </summary>
+    public void ClearAllTimer()
+    {
+        foreach (Node child in GetChildren())
+        {
+            if (child is Timer && IsInstanceValid(child))
+            {
+                child.QueueFree();
+            }
+        }
+    }
+
     #endregion
 
     #region 弹幕融合
@@ -1119,7 +1138,7 @@ public abstract partial class Entity : RigidBody2D
             toward,
             bulletData
         );
-        EmitSignal(SignalName.OnShot, but);
+        EmitSignal(SignalName.OnShot, this, but);
         latestBullet = but;
     }
 
@@ -1177,7 +1196,7 @@ public abstract partial class Entity : RigidBody2D
         if(attackTimer >= 1f)
         {
             OnAttack();
-            EmitSignal(nameof(OnAttackSignal));
+            EmitSignal(nameof(OnAttackSignal), this);
             attackTimer = 0;
         }
     }
@@ -1189,7 +1208,7 @@ public abstract partial class Entity : RigidBody2D
     public void ForceAttack(bool resetAttackTime = false)
     {
         OnAttack();
-        EmitSignal(nameof(OnAttackSignal));
+        EmitSignal(nameof(OnAttackSignal), this);
         if (resetAttackTime)
         {
             attackTimer = 0;

@@ -27,4 +27,14 @@ public partial class GlobalBehavior : Behavior
     {
         GD.Print($"[GlobalBehavior] {info}");
     }
+
+    /// <summary>
+    /// 传入的第一个实体参数是否可用。
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public bool IsEntityAble(Entity entity)
+    {
+        return Game.IsAble(entity);
+    }
 }

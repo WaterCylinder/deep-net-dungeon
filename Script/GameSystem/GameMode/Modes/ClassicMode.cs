@@ -17,6 +17,8 @@ public partial class ClassicMode : GameModeBase
         camera.posLimitY = new Vector2(-Mathf.Inf, Mathf.Inf);
         //传送时重置摄像机位置
         player.OnTrans += camera.SetPosition;
+        //打开黑幕
+        game.hud.SetBlack(0);
     }
 
     void Init()
@@ -29,15 +31,38 @@ public partial class ClassicMode : GameModeBase
         switch (game.A)
         {
             case 0:
-            //初始化
-            Init();
-            game.Next();
+                //初始化生成地图
+                Init();
+                map.Initialize(null, game.randomSystem);
+                game.camera.Zoom = new Vector2(5,5);
+                game.camera.targetZoom = 5;
+                game.Next();
             break;
             case 100:
-            //生成地图
-            map.Initialize(null, game.randomSystem);
-            map.startRoom.Enter(player);
-            game.Next();
+                //等待黑幕
+                map.startRoom.Enter(player);
+                player.opera += 1;
+                player.animeNode.Play("prone");
+                player.animeNode.Connect(
+                    AnimatedSprite2D.SignalName.AnimationFinished,
+                    Callable.From(() => game.Next()),
+                    (uint)ConnectFlags.OneShot
+                );
+                game.hud.SetBlack(0.1f);
+                game.Next();
+            break;
+            case 200:
+                //等待动画
+            break;
+            case 300:
+                player.opera -= 1;
+                game.camera.targetZoom = 1;
+                game.hud.BlackOpen(0.1f);
+                game.Next();
+            break;
+            case 400:
+                game.hud.ShowTips(0);
+                game.Next();
             break;
         }
     }
@@ -56,5 +81,20 @@ public partial class ClassicMode : GameModeBase
         base.OnPhysicsProcess(delta);
         //对其摄像机到玩家位置
         CameraFollowPlayer();
+    }
+
+    public override void OnRoomCleared(Room room)
+    {
+        base.OnRoomCleared(room);
+        foreach(var point in game.energyNode.GetChildren())
+        {
+            if(point is EnergyPoint ep)
+            {
+                if(ep.energyType == EnergyType.Coin)
+                {
+                    ep.target = player;
+                }
+            }
+        }
     }
 }

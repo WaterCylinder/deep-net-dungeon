@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://drqq1silobm0m"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_61ebx"]
+[ext_resource type="Resource" uid="uid://brs28icn5l7mu" path="res://Resource/v1/Item/Behavior/item_add_max_health_normal.tres" id="2_61ebx"]
+[ext_resource type="Resource" uid="uid://bhbbf7b1e1fqe" path="res://Resource/v1/Item/Behavior/item_heal.tres" id="3_e0e0s"]
+[ext_resource type="Texture2D" uid="uid://6ti1vhphdf7q" path="res://Resource/v1/Item/Sprite/HealthModule.png" id="3_ofx54"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="3_ta6r1"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_y2jrq"]
+
+[sub_resource type="Resource" id="Resource_b0ue6"]
+script = ExtResource("4_y2jrq")
+behaviorArray = Array[Object]([ExtResource("2_61ebx"), ExtResource("3_e0e0s")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[resource]
+script = ExtResource("3_ta6r1")
+ItemName = "health_module"
+showName = "生命模块"
+intro = "最大生命值提升 30，恢复等量生命值"
+args = Dictionary[String, Variant]({
+"value": 30.0
+})
+itemLevel = 1
+sprite = ExtResource("3_ofx54")
+onPick = SubResource("Resource_b0ue6")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

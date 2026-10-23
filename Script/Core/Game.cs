@@ -242,19 +242,27 @@ public partial class Game : Node
     }
 
     /// <summary>
+    /// 敌人生成时调用
+    /// </summary>
+    public void NotifyEnemySpawned(Enemy enemy)
+    {
+        currentMode?.OnEnemySpawned(enemy);
+    }
+
+    /// <summary>
     /// 敌人被击杀时调用
     /// </summary>
-    public void NotifyEnemyKilled(string enemyId, string enemyType)
+    public void NotifyEnemyKilled(Enemy enemy)
     {
-        currentMode?.OnEnemyKilled(enemyId, enemyType);
+        currentMode?.OnEnemyKilled(enemy);
     }
 
     /// <summary>
     /// 房间被清理时调用
     /// </summary>
-    public void NotifyRoomCleared(int roomIndex)
+    public void NotifyRoomCleared(Room room)
     {
-        currentMode?.OnRoomCleared(roomIndex);
+        currentMode?.OnRoomCleared(room);
     }
 
     /// <summary>
@@ -353,6 +361,8 @@ public partial class Game : Node
 
         // 发出敌人生成信号
         EmitSignal(SignalName.EnemySpawned, enemy);
+
+        NotifyEnemySpawned(enemy);
 
         return enemy;
     }

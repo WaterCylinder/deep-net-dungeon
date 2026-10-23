@@ -19,6 +19,7 @@ public partial class RoomData : Resource
     /// 房间瓦片地图
     /// </summary>
     [Export] public PackedScene tileMap;
+    [Export] public Dictionary<string, Variant> args;
     /// <summary>
     /// 是否使用标准的房间流程，即清理完毕所有敌怪之后开门
     /// </summary>
@@ -26,7 +27,9 @@ public partial class RoomData : Resource
     [Export] public Effect onCreate;
     [Export] public Effect onFirstEnter;
     [Export] public Effect onGenerateEnemy;
+    [Export] public Effect onGenerateItem;
     [Export] public Effect onEnter;
     [Export] public Effect onExit;
     [Export] public Effect onUpdate;
+    [Export] public Effect onClear;
 }

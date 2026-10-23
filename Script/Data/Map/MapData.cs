@@ -9,7 +9,7 @@ public enum MapMode
     /// <summary>
     /// 直线地图：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间，
     /// 所有房间单向串联成一条直线，没有任何支路。
-    /// 普通房间数量、资源/商店房间的位置倾向在Map脚本的"直线地图生成"栏目里配置
+    /// 普通房间数量、资源/商店房间的位置倾向由本资源上的"直线地图"参数决定
     /// </summary>
     Line,
 
@@ -19,6 +19,12 @@ public enum MapMode
     Tree
 }
 
+/// <summary>
+/// 地图数据（Resource）
+///
+/// 一张地图的生成规则全部定义在这里：生成模式、规模参数、以及各类房间的数据池。
+/// Map脚本只负责按这里的数据执行生成，本身不再保存任何生成参数。
+/// </summary>
 [GlobalClass]
 public partial class MapData : Resource
 {
@@ -27,17 +33,44 @@ public partial class MapData : Resource
     /// </summary>
     [Export] public MapMode mapMode = MapMode.Line;
 
+    #region 直线地图
+
     /// <summary>
-    /// 直线模式：普通房间数量。
-    /// 现在普通房间数量由Map脚本的minNormalRoomCount~maxNormalRoomCount随机决定，
-    /// 这个值只在Map上没配置范围（两者都≤0）时作为兜底数量使用
+    /// 直线模式：普通房间数量的最小值（含）。
+    /// 与maxNormalRoomCount一起决定本次直线路径上有几个普通房间（在这个区间里随机）
     /// </summary>
-    [Export] public int normalRoomCount = 5;
+    [ExportCategory("直线地图")]
+    [Export] public int minNormalRoomCount = 3;
+
+    /// <summary>
+    /// 直线模式：普通房间数量的最大值（含）。
+    /// 小于minNormalRoomCount时会自动互换，写反了也不会报错
+    /// </summary>
+    [Export] public int maxNormalRoomCount = 7;
+
+    /// <summary>
+    /// 直线模式：资源房间的位置倾向（0~1）。
+    /// 0 = 在路径上完全随机，数值越大越集中在靠近起始房间的位置
+    /// （1 = 只会出现在离起始房间最近的那个槽位）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,1,0.05")] public float treasureNearStartBias = 0.5f;
+
+    /// <summary>
+    /// 直线模式：商店房间的位置倾向（0~1）。
+    /// 0 = 在路径上完全随机，数值越大越集中在靠近Boss房间的位置
+    /// （1 = 只会出现在离Boss最近的那个槽位）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
+
+    #endregion
+
+    #region 树状地图
 
     /// <summary>
     /// 树状模式：主干的层数（层0是起始房间；主干每层1个房间，单向连接到下一层）。
     /// Boss房间接在主干的最末端，因此主干就是整张地图里最长的那条枝干
     /// </summary>
+    [ExportCategory("树状地图")]
     [Export] public int treeDepth = 3;
 
     /// <summary>
@@ -64,6 +97,13 @@ public partial class MapData : Resource
     /// </summary>
     [Export] public int shopLayer = 0;
 
+    #endregion
+
+    #region 房间数据池
+
+    /// <summary>
+    /// 按房间标签分类的房间数据池，生成时从对应池子里随机抽取
+    /// </summary>
     [Export] public Dictionary<RoomTag, Array<RoomData>> roomDatas = new()
     {
         {RoomTag.Start, new()},
@@ -72,5 +112,11 @@ public partial class MapData : Resource
         {RoomTag.Treasure, new()},
         {RoomTag.Boss, new()}
     };
+
+    /// <summary>
+    /// 特殊房间数据（供剧情等特殊流程使用）
+    /// </summary>
     [Export] public Array<RoomData> specialRoomDatas = new();
+
+    #endregion
 }

@@ -44,7 +44,7 @@ public partial class BuffBehaviorDemo : BuffBehavior
     public void AddFireBulletBuff(Entity owner, Buff buff)
     {
         BuffData data = AssetManager.Instance.GetData<BuffData>("Resource.Demo.DemoBuff.buff_fire_bullet", null);
-        owner.OnShot += bullet =>
+        owner.OnShot += (e, bullet) =>
         {
             bullet.AttachBuff(data);
         };

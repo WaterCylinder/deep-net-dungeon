@@ -11,4 +11,5 @@ metadata/_custom_type_script = "uid://b84i0tjh1tt4x"
 [resource]
 script = ExtResource("1_2s2wd")
 behavior = SubResource("Resource_30agi")
+info = "永远为True"
 metadata/_custom_type_script = "uid://dap5hs4p56xf3"

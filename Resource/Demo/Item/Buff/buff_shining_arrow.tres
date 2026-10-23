@@ -28,5 +28,6 @@ name = "闪耀箭头"
 intro = "箭头弹幕的伤害增加30%"
 tags = null
 isUnique = true
+args = null
 onStart = SubResource("Resource_501m2")
 metadata/_custom_type_script = "uid://bctrndevbmqqd"

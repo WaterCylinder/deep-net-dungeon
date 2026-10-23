@@ -359,5 +359,71 @@ namespace Utils
 
             return result;
         }
+
+        /// <summary>
+        /// 计算子弹提前量发射的朝向，以击中以 targetVel 匀速直线运动的目标。
+        /// 返回 false 表示无解（打不中）。
+        /// </summary>
+        /// <param name="pos">子弹发射位置</param>
+        /// <param name="bulletSpeed">子弹速率（>0）</param>
+        /// <param name="targetPos">目标当前位置</param>
+        /// <param name="targetVel">目标速度矢量（方向 * 速率）</param>
+        /// <param name="shootDir">输出：子弹发射单位朝向</param>
+        /// <param name="timeToHit">输出：命中所需时间</param>
+        /// <returns></returns>
+        public static bool TryGetInterceptDirection(
+            Vector2 pos,            // 子弹发射位置
+            float bulletSpeed,      // 子弹速率（>0）
+            Vector2 targetPos,      // 目标当前位置
+            Vector2 targetVel,      // 目标速度矢量（方向 * 速率）
+            out Vector2 shootDir,   // 输出：子弹发射单位朝向
+            out float timeToHit)    // 输出：命中所需时间
+        {
+            shootDir = Vector2.Zero;
+            timeToHit = 0f;
+
+            Vector2 D = targetPos - pos;
+            float targetSpeedSq = targetVel.LengthSquared();
+            float bulletSpeedSq = bulletSpeed * bulletSpeed;
+
+            // 系数
+            float a = bulletSpeedSq - targetSpeedSq;
+            float b = -2f * D.Dot(targetVel);
+            float c = -D.LengthSquared();
+
+            float t;
+
+            if (Mathf.Abs(a) < 1e-6f)
+            {
+                // 退化为一次方程 b*t + c = 0
+                if (Mathf.Abs(b) < 1e-6f)
+                    return false;               // 无解（或目标与子弹同速且共线）
+                t = -c / b;
+                if (t <= 0f) return false;
+            }
+            else
+            {
+                float disc = b * b - 4f * a * c;
+                if (disc < 0f) return false;    // 无实根
+
+                float sqrtDisc = Mathf.Sqrt(disc);
+                float t1 = (-b - sqrtDisc) / (2f * a);
+                float t2 = (-b + sqrtDisc) / (2f * a);
+
+                // 取最小正根
+                if (t1 > 0f && t2 > 0f) t = Mathf.Min(t1, t2);
+                else if (t1 > 0f)       t = t1;
+                else if (t2 > 0f)       t = t2;
+                else return false;      // 两根都非正
+            }
+
+            Vector2 hitPoint = targetPos + targetVel * t;
+            Vector2 dir = hitPoint - pos;
+            if (dir.LengthSquared() < 1e-12f) return false; // 重合，方向无意义
+
+            shootDir = dir.Normalized();
+            timeToHit = t;
+            return true;
+        }
     }
 }

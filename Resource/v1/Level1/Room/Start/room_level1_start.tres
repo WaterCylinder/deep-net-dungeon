@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://ddihw6cvcikg3"]
+
+[ext_resource type="Script" uid="uid://dfoahnmpv6c10" path="res://Resource/v1/Level1/Room/RoomBehaviorLevel1.cs" id="1_47aaa"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_024iy"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_bkq03"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="4_xuoui"]
+[ext_resource type="PackedScene" uid="uid://4cof3mi7poi4" path="res://Resource/v1/Level1/Room/Start/room_level1_start.tscn" id="5_ba168"]
+
+[sub_resource type="Resource" id="Resource_ba168"]
+script = ExtResource("1_47aaa")
+behaviorName = "StartRoomInit"
+metadata/_custom_type_script = "uid://dfoahnmpv6c10"
+
+[sub_resource type="Resource" id="Resource_me2m2"]
+script = ExtResource("3_bkq03")
+condition = ExtResource("2_024iy")
+behavior = SubResource("Resource_ba168")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_024iy"]
+script = ExtResource("1_47aaa")
+behaviorName = "StartToomSetOpenDoor"
+metadata/_custom_type_script = "uid://dfoahnmpv6c10"
+
+[sub_resource type="Resource" id="Resource_47aaa"]
+script = ExtResource("3_bkq03")
+condition = ExtResource("2_024iy")
+behavior = SubResource("Resource_024iy")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("4_xuoui")
+roomId = "Start"
+roomTags = Array[int]([1])
+tileMap = ExtResource("5_ba168")
+args = null
+useDefaultRoomProcess = false
+onFirstEnter = SubResource("Resource_me2m2")
+onGenerateItem = SubResource("Resource_47aaa")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

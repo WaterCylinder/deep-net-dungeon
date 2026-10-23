@@ -8,7 +8,7 @@ using System;
 /// 2. 房间之间在画面上没有明显链接，玩家在房间之间移动依赖门之间的传送。
 /// 3. 生成模式由MapData.mapMode决定：
 ///    - Line（默认，直线地图）：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间。
-///      普通房间数量在Map.minNormalRoomCount~Map.maxNormalRoomCount之间随机；
+///      普通房间数量在MapData.minNormalRoomCount~MapData.maxNormalRoomCount之间随机；
 ///      资源房间越靠近起始房间越容易抽到，商店房间越靠近Boss房间越容易抽到。
 ///      所有房间单向串联成一条直线，没有支路。
 ///    - Tree（树状地图）：主干每层1个房间、单向连接到下一层，末端接唯一Boss；
@@ -78,36 +78,6 @@ public partial class Map : Node2D
     /// 本次生成使用的随机数系统（由Initialize传入，用于房间数据挑选与分叉判定）
     /// </summary>
     private RandomSystem randomSystem;
-
-    #endregion
-
-    #region 直线地图生成参数
-
-    /// <summary>
-    /// 直线地图：普通房间数量的最小值（含）。
-    /// 与maxNormalRoomCount一起决定本次直线的普通房间数量（在这个区间里随机）；
-    /// 两个都填0（或负数）时退回MapData.normalRoomCount作为固定数量
-    /// </summary>
-    [ExportCategory("直线地图生成")]
-    [Export] public int minNormalRoomCount = 3;
-
-    /// <summary>
-    /// 直线地图：普通房间数量的最大值（含）。
-    /// 小于minNormalRoomCount时会自动互换，写反了也不会报错
-    /// </summary>
-    [Export] public int maxNormalRoomCount = 7;
-
-    /// <summary>
-    /// 资源房间的位置倾向（0~1）：
-    /// 0 = 在路径上完全随机，数值越大越集中在靠近起始房间的位置（1 = 只出现在离起始房间最近的那个槽位）
-    /// </summary>
-    [Export(PropertyHint.Range, "0,1,0.05")] public float treasureNearStartBias = 0.5f;
-
-    /// <summary>
-    /// 商店房间的位置倾向（0~1）：
-    /// 0 = 在路径上完全随机，数值越大越集中在靠近Boss房间的位置（1 = 只出现在离Boss最近的那个槽位）
-    /// </summary>
-    [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
 
     #endregion
 
@@ -234,10 +204,10 @@ public partial class Map : Node2D
 
     /// <summary>
     /// 直线地图：起始房间 → [若干普通房间 + 1个资源房间 + 1个商店房间 混排] → Boss房间。
-    /// - 普通房间数量在Map的minNormalRoomCount~maxNormalRoomCount之间随机
+    /// - 普通房间数量在MapData的minNormalRoomCount~maxNormalRoomCount之间随机
     /// - 资源房间与商店房间各只有一个，随机夹杂在路径中间，且不会落在同一个槽位上
     /// - 抽取槽位带权重：资源房间越靠近起始房间概率越高，商店房间越靠近Boss房间概率越高
-    ///   （强度由treasureNearStartBias / shopNearBossBias控制）
+    ///   （强度由MapData.treasureNearStartBias / shopNearBossBias控制）
     /// - 所有房间单向串联成一条直线，没有任何支路
     /// </summary>
     private void GenerateLineMap()
@@ -267,10 +237,10 @@ public partial class Map : Node2D
 
         // 2. 抽取特殊房间的槽位：先抽资源房间，商店房间在剩下的槽位里抽
         int treasureSlot = treasureData != null
-            ? PickSlotByDistancePreference(slotCount, true, treasureNearStartBias)
+            ? PickSlotByDistancePreference(slotCount, true, data.treasureNearStartBias)
             : -1;
         int shopSlot = shopData != null
-            ? PickSlotByDistancePreference(slotCount, false, shopNearBossBias, treasureSlot)
+            ? PickSlotByDistancePreference(slotCount, false, data.shopNearBossBias, treasureSlot)
             : -1;
 
         if (shopData != null && shopSlot < 0)
@@ -376,21 +346,18 @@ public partial class Map : Node2D
 
     /// <summary>
     /// 掷出本次直线的普通房间数量。
-    /// 范围取自Map的minNormalRoomCount~maxNormalRoomCount；
-    /// 两者都≤0时退回MapData.normalRoomCount作为固定数量（兼容没有配置范围的旧数据）
+    /// 范围取自MapData的minNormalRoomCount~maxNormalRoomCount（数据缺失时按0~0处理，即没有普通房间）
     /// </summary>
     private int RollNormalRoomCount()
     {
-        int min = Mathf.Max(0, minNormalRoomCount);
-        int max = Mathf.Max(0, maxNormalRoomCount);
-
-        if (max <= 0)
+        if (data == null)
         {
-            int fallback = data != null ? data.normalRoomCount : 5;
-            fallback = Mathf.Max(1, fallback);
-            GD.Print($"[Map] 未设置普通房间数量范围，改用MapData.normalRoomCount={fallback}");
-            return fallback;
+            GD.PrintErr("[Map] MapData为空，无法确定普通房间数量");
+            return 0;
         }
+
+        int min = Mathf.Max(0, data.minNormalRoomCount);
+        int max = Mathf.Max(0, data.maxNormalRoomCount);
 
         // 写反了也能用：自动交换上下限
         if (max < min)
@@ -881,24 +848,29 @@ public partial class Map : Node2D
     {
         if (data == null || !data.roomDatas.ContainsKey(tag))
         {
+            GD.PushWarning($"[Map] MapData里没有{tag}房间的数据池");
             return null;
         }
 
         Array<RoomData> candidates = data.roomDatas[tag];
         if (candidates == null || candidates.Count == 0)
         {
+            GD.PushWarning($"[Map] {tag}房间的数据池是空的");
             return null;
         }
 
         // 使用随机数系统选取
         RandomSystem randomSystem = GetRandomSystem();
-        if (randomSystem != null)
-        {
-            return randomSystem.Pick(candidates, randomGeneratorName);
-        }
+        RoomData picked = randomSystem != null
+            ? randomSystem.Pick(candidates, randomGeneratorName)
+            : candidates[(int)(GD.Randi() % (ulong)candidates.Count)];
 
-        // 回退：直接随机
-        return candidates[(int)(GD.Randi() % (ulong)candidates.Count)];
+        // 诊断日志：能直接看出池子里有几个候选、这次抽到了哪一个
+        // 如果每次都是同一个房间，先看这里的"候选N个"是否正确
+        GD.Print($"[Map] 抽取{tag}房间：候选{candidates.Count}个 → " +
+                 $"{(picked != null ? picked.roomId : "null")}（{picked?.ResourcePath ?? "无"}）");
+
+        return picked;
     }
 
     #endregion

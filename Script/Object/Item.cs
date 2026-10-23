@@ -4,9 +4,12 @@ using Godot.Collections;
 public enum ItemTag
 {
     None,
-    Coin,
+    EnergyPoint,
     NormalItem,
     KeyItem,
+    BulletItem,
+    SpecialItem,
+    UsableItem,
 }
 
 /// <summary>
@@ -89,7 +92,7 @@ public partial class Item : Area2D
         }
 
         item.GlobalPosition = pos;
-        parent.AddChild(item);
+        parent.CallDeferred("add_child", item);
         item.Initialize(data);
 
         return item;
@@ -111,12 +114,48 @@ public partial class Item : Area2D
 
     #endregion
 
+    #region 映射表
+
+    public static Dictionary<ItemTag, string> ItemTagMapping = new Dictionary<ItemTag, string>()
+    {
+        {ItemTag.EnergyPoint, "能量点"},
+        {ItemTag.BulletItem, "弹幕道具"},
+        {ItemTag.KeyItem, "关键道具"},
+        {ItemTag.NormalItem, "通常道具"},
+        {ItemTag.SpecialItem, "特殊道具"},
+        {ItemTag.UsableItem, "主动道具"},
+    };
+
+    public static Dictionary<int, Color> ItemLevelColorMapping = new Dictionary<int, Color>()
+    {
+        {1, Colors.Blue},
+        {2, Colors.Purple},
+        {3, Colors.Gold},
+        {4, Colors.Red},
+    };
+
+    public static Color GetLevelColor(int level)
+    {
+        if (ItemLevelColorMapping.ContainsKey(level))
+        {
+            return ItemLevelColorMapping[level];
+        }
+        else
+        {
+            return Colors.Gray;
+        }
+    }
+
+    #endregion
+
     #region 道具属性
     [Export] public ItemData data;
     /// <summary>
     /// 放置在场景中时立刻初始化，用于测试以及房间固有掉落物
     /// </summary>
     [Export] public bool initImmediately;
+
+    [Export] public Args args = new();
 
     [Export] public string ItemName;
     [Export] public string intro;
@@ -219,6 +258,7 @@ public partial class Item : Area2D
         {
             AddTag(tag);
         }
+        args.Init(data.args);
         itemLevel = data.itemLevel;
 
         carryBuffs = data.carryBuffs;
@@ -230,6 +270,9 @@ public partial class Item : Area2D
         onDrop = data.onDrop;
         onRemove = data.onRemove;
         onUpdate = data.onUpdate;
+
+        spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
+        animNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
         if (spriteNode != null)
         {
@@ -266,8 +309,6 @@ public partial class Item : Area2D
         {
             Initialize(this.data);
         }
-        spriteNode = GetNodeOrNull<Sprite2D>("Sprite2D");
-        animNode = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
         float FloatHeight = 10f;   // 浮动幅度（像素）
         float Duration = 1.0f;     // 单程时间（秒）
@@ -301,7 +342,7 @@ public partial class Item : Area2D
         {
             AddCarryBuffs(picker);
         }
-        onPick?.Run(picker);
+        onPick?.Run(this, picker);
         EmitSignal(nameof(OnPickSignal), picker);
         GameManager.Instance.game.PlaySound(pickSound);
         ///被拾取时移除自身
@@ -310,7 +351,7 @@ public partial class Item : Area2D
 
     public void Use(Entity user)
     {
-        onPick?.Run(user);
+        onUse?.Run(this, user);
         EmitSignal(nameof(OnUseSignal), user);
     }
 
@@ -326,7 +367,7 @@ public partial class Item : Area2D
         {
             RemoveCarryBuffs(droper);
         }
-        onDrop?.Run(droper);
+        onDrop?.Run(this, droper);
         EmitSignal(nameof(OnDropSignal), droper);
     }
 

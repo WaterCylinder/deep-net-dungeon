@@ -88,18 +88,20 @@ public partial class Buff : RefCounted
     /// </summary>
     [Export] public Array<BuffTag> tags = new();
 
+    [Export] public Args args = new();
+
     #endregion
 
     #region Effect
 
-    private Effect _onStartEffect;
-    private Effect _onUpdateEffect;
-    private Effect _onTimerEffect;
-    private Effect _onEndEffect;
-    private Effect _onEntityHurtEffect;
-    private Effect _onEntityDeathEffect;
-    private Effect _onStackIncreaseEffect;
-    private Effect _onStackDecreaseEffect;
+    public Effect onStartEffect;
+    public Effect onUpdateEffect;
+    public Effect onTimerEffect;
+    public Effect onEndEffect;
+    public Effect onEntityHurtEffect;
+    public Effect onEntityDeathEffect;
+    public Effect onStackIncreaseEffect;
+    public Effect onStackDecreaseEffect;
 
     #endregion
 
@@ -136,17 +138,21 @@ public partial class Buff : RefCounted
         isAdded = data.isAdded;
         
         // 浅克隆标签列表
-        tags = new Array<BuffTag>(data.tags);
+        tags = [.. data.tags];
+
+        //参数
+        args = new();
+        args.Init(data.args);
         
         // 加载Effect引用
-        _onStartEffect = data.onStart;
-        _onUpdateEffect = data.onUpdate;
-        _onTimerEffect = data.onTimer;
-        _onEndEffect = data.onEnd;
-        _onEntityHurtEffect = data.onEntityHurt;
-        _onEntityDeathEffect = data.onEntityDeath;
-        _onStackIncreaseEffect = data.onStackIncrease;
-        _onStackDecreaseEffect = data.onStackDecrease;
+        onStartEffect = data.onStart;
+        onUpdateEffect = data.onUpdate;
+        onTimerEffect = data.onTimer;
+        onEndEffect = data.onEnd;
+        onEntityHurtEffect = data.onEntityHurt;
+        onEntityDeathEffect = data.onEntityDeath;
+        onStackIncreaseEffect = data.onStackIncrease;
+        onStackDecreaseEffect = data.onStackDecrease;
     }
 
     #endregion
@@ -158,7 +164,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnAttach()
     {
-        _onStartEffect?.Run(owner, this);
+        onStartEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -166,7 +172,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnRemove()
     {
-        _onEndEffect?.Run(owner, this);
+        onEndEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -174,7 +180,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnTimer()
     {
-        _onTimerEffect?.Run(owner, this);
+        onTimerEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -183,7 +189,7 @@ public partial class Buff : RefCounted
     /// <param name="delta">帧间隔时间</param>
     public void OnUpdate(double delta)
     {
-        _onUpdateEffect?.Run(owner, this);
+        onUpdateEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -192,7 +198,7 @@ public partial class Buff : RefCounted
     /// <param name="damage">伤害数据</param>
     public void OnEntityHurt(Damage damage)
     {
-        _onEntityHurtEffect?.Run(owner, this, damage);
+        onEntityHurtEffect?.Run(owner, this, damage);
     }
 
     /// <summary>
@@ -200,7 +206,7 @@ public partial class Buff : RefCounted
     /// </summary>
     public void OnEntityDeath()
     {
-        _onEntityDeathEffect?.Run(owner, this);
+        onEntityDeathEffect?.Run(owner, this);
     }
 
     #endregion
@@ -288,7 +294,7 @@ public partial class Buff : RefCounted
     /// </summary>
     private void OnStackIncrease(int oldStack, int newStack)
     {
-        _onStackIncreaseEffect?.Run(owner, this);
+        onStackIncreaseEffect?.Run(owner, this);
     }
 
     /// <summary>
@@ -296,7 +302,7 @@ public partial class Buff : RefCounted
     /// </summary>
     private void OnStackDecrease(int oldStack, int newStack)
     {
-        _onStackDecreaseEffect?.Run(owner, this);
+        onStackDecreaseEffect?.Run(owner, this);
     }
 
     #endregion

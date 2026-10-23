@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EnemyBehavior" format=3 uid="uid://b0qrjh8cbpyqk"]
+
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="1_6fvqp"]
+
+[resource]
+script = ExtResource("1_6fvqp")
+behaviorName = "ChangeShotBullet"
+metadata/_custom_type_script = "uid://dblyxvivec0w8"

@@ -126,6 +126,7 @@ public partial class EnergyPoint : Entity
                 entity.Heal(value);
             break;
         }
+        entity.EmitSignal(Entity.SignalName.OnPickEnergy, entity, this);
     }
 
     public void Init(EnergyType type)

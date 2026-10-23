@@ -117,6 +117,7 @@ public partial class EnemyGenerator : Node2D
         }
         enemyNow = GameManager.Instance.game.SpawnEnemy(data, pos, parent);
         GD.Print($"生成敌怪 {enemyNow.Name}");
+        enemyNow.OnGenerate();
         EmitSignal(nameof(AfterGenerate), enemyNow);
         return enemyNow;
     }

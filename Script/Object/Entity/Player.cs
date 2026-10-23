@@ -1,23 +1,25 @@
 using Godot;
+using Utils;
 
 /// <summary>
 /// 玩家实体类
 /// </summary>
 public partial class Player : Entity
 {
-    [Export] Trigger enemyTrigger;
-    [Export] Trigger energyTrigger;
+    [Export] public Trigger enemyTrigger;
+    [Export] public Trigger energyTrigger;
 
-    [Export] AnimatedSprite2D animeNode;
+    [Export] public AnimatedSprite2D animeNode;
 
-    [Export] Node2D shotPoint;
-    [Export] AudioStream hitSound;
+    [Export] public Node2D shotPoint;
+    [Export] public AudioStream hitSound;
 
     [ExportCategory("局内属性")]
     [Export] public int score;
 
     #region 玩家即时属性
 
+    public int opera = 0;
     public float bulletSpeed = 10f;
 
     public Enemy targetEnemy = null;
@@ -72,6 +74,8 @@ public partial class Player : Entity
     {
         HandleMoveInput();
 
+        if(opera > 0)return;
+
         //更新动画朝向
 
         if(GetVelocity().Length() > 100)
@@ -96,6 +100,8 @@ public partial class Player : Entity
     /// </summary>
     private void HandleMoveInput()
     {
+        if(opera > 0)return;
+
         InputManager input = InputManager.Instance;
         if (input == null)
         {
@@ -140,7 +146,11 @@ public partial class Player : Entity
         {
             return;
         }
-        targetShotToward = targetEnemy.GlobalPosition - GlobalPosition;
+        //简单预判
+        if(!Tools.TryGetInterceptDirection(shotPoint.GlobalPosition, bulletSpeed * Bullet.BASE_SHOT_SPEED_FECTOR, targetEnemy.GlobalPosition, targetEnemy.GetVelocity(), out targetShotToward, out _))
+        {
+            targetShotToward = targetEnemy.GlobalPosition - GlobalPosition;
+        }
         targetShotToward = targetShotToward.Normalized();
         TryAttack();
     }
@@ -186,6 +196,8 @@ public partial class Player : Entity
     protected override void OnDeath(Damage damage, Entity other)
     {
         base.OnDeath(damage, other);
+        ShaderMaterial mat = animeNode.Material as ShaderMaterial;
+        mat.SetShaderParameter("flash_modifier", 0);
         game.NotifyPlayerDeath();
     }
 

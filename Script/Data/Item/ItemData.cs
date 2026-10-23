@@ -8,6 +8,7 @@ public partial class ItemData : Resource
     [Export] public string showName;
     [Export] public string intro;
     [Export] public Array<ItemTag> tags = new();
+    [Export] public Dictionary<string, Variant> args = new();
     [Export] public int itemLevel;
 
     [Export] public Texture2D sprite;
@@ -39,5 +40,14 @@ public partial class ItemData : Resource
     [Export] public Behavior onDrop;
     [Export] public Behavior onRemove;
     [Export] public Behavior onUpdate;
+
+    public T Arg<[MustBeVariant] T>(string key)
+    {
+        if (args.TryGetValue(key, out Variant value))
+        {
+            return value.As<T>();
+        }
+        return default;
+    }
 
 }

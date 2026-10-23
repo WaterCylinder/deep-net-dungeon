@@ -62,6 +62,10 @@ public partial class EnemyGeneratorCluster : EnemyGenerator
         {
             cache = clusterData.ToDictionary();
         }
+        if (!Game.IsAble(game.player))
+        {
+            return;
+        }
         int spawnCount = (int)random.NextInt64(onceSpawnRange.X, onceSpawnRange.Y + 1);
         var posList = Tools.GetSpawnPoints(spawnArea, [game.player.GlobalPosition], spawnCount, random);
         foreach(Vector2 pos in posList)

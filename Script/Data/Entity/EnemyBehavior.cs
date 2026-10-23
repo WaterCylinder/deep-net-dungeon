@@ -69,6 +69,17 @@ public partial class EnemyBehavior : Behavior
 
         enemy.Shot(toward.Normalized() * bulletSpeed);
     }
+    
+    /// <summary>
+    /// 切换弹幕
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void ChangeShotBullet(Enemy enemy)
+    {
+        BulletData data = enemy.args.Get<BulletData>("bullet_data");
+        GD.Print($"设置弹幕{data}");
+        enemy.ChangeBullet(data);
+    }
 
     # endregion
 

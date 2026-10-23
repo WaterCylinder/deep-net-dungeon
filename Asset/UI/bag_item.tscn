@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://da6c7vp5b73i4"]
+
+[ext_resource type="Script" uid="uid://da1dwx6amltaa" path="res://Script/UI/v1/BagUIItem.cs" id="1_r682u"]
+[ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Sprite/Temp.png" id="2_gv34m"]
+
+[node name="BagItem" type="AspectRatioContainer" unique_id=1828753313 node_paths=PackedStringArray("button")]
+size_flags_horizontal = 3
+script = ExtResource("1_r682u")
+button = NodePath("Control/TextureButton")
+
+[node name="Control" type="Control" parent="." unique_id=1973451270]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="Control" unique_id=252032474]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("2_gv34m")
+stretch_mode = 5

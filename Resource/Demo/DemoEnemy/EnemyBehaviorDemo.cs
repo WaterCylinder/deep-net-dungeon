@@ -138,7 +138,7 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
                 game.randomSystem.Float(0.5f,1f),
                 () => 
                 {
-                    enemy.PlayAnime();
+                    enemy.PlayAnime("idle");
                     enemy.args.Set("follow_and_charged_impact_state", "impact");
                     enemy.MoveToward(player.GlobalPosition - enemy.GlobalPosition);
                     enemy.speed.Multi(5, "impact_speed_up", 5);

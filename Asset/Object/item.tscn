@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="4_2ocfx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dsgh2"]
+radius = 16.0
 
 [node name="Item" type="Area2D" unique_id=1376092522]
 collision_layer = 8

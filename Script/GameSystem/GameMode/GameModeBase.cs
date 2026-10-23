@@ -142,18 +142,28 @@ public abstract partial class GameModeBase : RefCounted
     /// </summary>
     /// <param name="enemyId">敌人ID</param>
     /// <param name="enemyType">敌人类型</param>
-    public virtual void OnEnemyKilled(string enemyId, string enemyType)
+    public virtual void OnEnemySpawned(Enemy enemy)
     {
-        GD.Print($"[GameMode:{ModeName}] 敌人被击杀: {enemyType}");
+        GD.Print($"[GameMode:{ModeName}] 敌人生成: {enemy}");
+    }
+
+    /// <summary>
+    /// 敌人被击杀时调用
+    /// </summary>
+    /// <param name="enemyId">敌人ID</param>
+    /// <param name="enemyType">敌人类型</param>
+    public virtual void OnEnemyKilled(Enemy enemy)
+    {
+        GD.Print($"[GameMode:{ModeName}] 敌人被击杀: {enemy}");
     }
 
     /// <summary>
     /// 房间被清理时调用
     /// </summary>
     /// <param name="roomIndex">房间索引</param>
-    public virtual void OnRoomCleared(int roomIndex)
+    public virtual void OnRoomCleared(Room room)
     {
-        GD.Print($"[GameMode:{ModeName}] 房间已清理: {roomIndex}");
+        GD.Print($"[GameMode:{ModeName}] 房间已清理: {room.Name}");
     }
 
     /// <summary>

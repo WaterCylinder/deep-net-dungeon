@@ -7,6 +7,12 @@ public partial class ItemGenerator : Node2D
 	[Export] public ItemPool pool;
 	[Export] public bool GenerateImmediately = false;
 
+	[Signal]
+    public delegate void BeforeGenerateEventHandler(ItemData data);
+
+    [Signal]
+    public delegate void AfterGenerateEventHandler(Item enemy);
+
 	public override void _Ready()
     {
         //生成器在运行时不可见
@@ -24,7 +30,9 @@ public partial class ItemGenerator : Node2D
 			//没设定物品数据则在物品池中抽取，注意重复生成时该抽取的物品数据会保留。
 			itemData = pool.Pick();
 		}
+		EmitSignal(SignalName.BeforeGenerate, itemData);
 		Item item = GenerateItem(itemData, parent);
+		EmitSignal(SignalName.AfterGenerate, item);
 		if(del)QueueFree();
 		return item;
 	}

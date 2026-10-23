@@ -147,13 +147,16 @@ public partial class Room : Node2D
     public Array<Enemy> enemiesNow => tileMap.enemiesNow;
 
     [Export] public string roomTitle = "None Name Room";
+    [Export] public Args args = new();
 
     public Effect onCreate;
     public Effect onFirstEnter;
     public Effect onGenerateEnemy;
+    public Effect onGenerateItem;
     public Effect onEnter;
     public Effect onExit;
     public Effect onUpdate;
+    public Effect onClear;
 
     /// <summary>
     /// 玩家是否已经进入过该房间
@@ -181,6 +184,8 @@ public partial class Room : Node2D
 
 
     #endregion
+
+    Game game => GameManager.Instance.game;
 
     #region tag
 
@@ -232,9 +237,14 @@ public partial class Room : Node2D
         onCreate = data.onCreate?.Duplicate() as Effect;
         onFirstEnter = data.onFirstEnter?.Duplicate() as Effect;
         onGenerateEnemy = data.onGenerateEnemy?.Duplicate() as Effect;
+        onGenerateItem = data.onGenerateItem?.Duplicate() as Effect;
         onEnter = data.onEnter?.Duplicate() as Effect;
         onExit = data.onExit?.Duplicate() as Effect;
         onUpdate = data.onUpdate?.Duplicate() as Effect;
+        onClear = data.onClear?.Duplicate() as Effect;
+
+        args = new();
+        args.Init(data.args);
 
         // 初始化门
 
@@ -357,13 +367,20 @@ public partial class Room : Node2D
                     break;
                 case 3:
                     //房间清理完毕，开门
-                    OpenAllDoor();
-                    isCleared = true;
+                    OnClear();
                     A = -1;
                     break;
             }
         }
         
+    }
+
+    public void OnClear()
+    {
+        OpenAllDoor();
+        isCleared = true;
+        onClear?.Run(this);
+        game.NotifyRoomCleared(this);
     }
 
     # endregion

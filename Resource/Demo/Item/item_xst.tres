@@ -9,7 +9,8 @@
 script = ExtResource("3_dnyma")
 ItemName = "xst"
 showName = "小石头"
-intro = "没什么用的石头，拿来砸人似乎不错"
+intro = "没什么用的石头，拿来砸人似乎不错。"
+itemLevel = 3
 sprite = ExtResource("4_yyn6k")
 carryBuffs = Dictionary[ExtResource("1_n77n3"), int]({
 ExtResource("2_6m3lq"): 1

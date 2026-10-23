@@ -80,16 +80,16 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 8.0,
+"duration": 7.0,
 "texture": SubResource("AtlasTexture_53avt")
 }, {
-"duration": 5.0,
+"duration": 4.0,
 "texture": SubResource("AtlasTexture_ehpjv")
 }, {
 "duration": 2.0,
 "texture": SubResource("AtlasTexture_el8hd")
 }, {
-"duration": 2.0,
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_daftl")
 }],
 "loop": false,

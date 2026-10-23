@@ -4,4 +4,7 @@
 
 [resource]
 default_font = ExtResource("1_xyh11")
+Label/colors/font_shadow_color = Color(0.55, 0.55, 0.55, 1)
+Label/constants/shadow_offset_x = 0
+Label/constants/shadow_outline_size = 1
 Label/fonts/font = ExtResource("1_xyh11")

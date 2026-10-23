@@ -1,0 +1,32 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://b4ratua3lg1xr"]
+
+[ext_resource type="Texture2D" uid="uid://c75vpouaqohqn" path="res://Resource/Demo/Bullet/Sprite/RiftFire.png" id="1_n2uqy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_movcx"]
+atlas = ExtResource("1_n2uqy")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sf407"]
+atlas = ExtResource("1_n2uqy")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eiu1m"]
+atlas = ExtResource("1_n2uqy")
+region = Rect2(64, 0, 32, 32)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_movcx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sf407")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eiu1m")
+}],
+"loop": true,
+"name": &"normal",
+"speed": 5.0
+}]

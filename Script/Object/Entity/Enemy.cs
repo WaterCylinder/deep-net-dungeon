@@ -342,6 +342,11 @@ public partial class Enemy : Entity
 
     #region 行为更新
 
+    public void OnGenerate()
+    {
+        onGenerate?.Run(this);
+    }
+
     float timer = 0f;
     protected override void OnUpdate(double delta)
     {
@@ -409,6 +414,8 @@ public partial class Enemy : Entity
         if(animNode.SpriteFrames != null && animNode.SpriteFrames.HasAnimation("death"))
         {
             queueFreeOnDeath = false;
+            ClearAllTimer();
+            animNode.Stop();
             animNode.Play("death");
             animNode.AnimationFinished += QueueFree;
         }
