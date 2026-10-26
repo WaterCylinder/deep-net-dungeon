@@ -6,18 +6,44 @@
 [ext_resource type="Resource" uid="uid://drqq1silobm0m" path="res://Resource/v1/Item/Data/NormalItem/health_module.tres" id="3_aht5y"]
 [ext_resource type="Resource" uid="uid://d4ge0qmuq6xuu" path="res://Resource/v1/Item/Data/NormalItem/speed_module.tres" id="4_3q6yw"]
 [ext_resource type="Resource" uid="uid://bcofng4sbx6mp" path="res://Resource/v1/Item/Data/NormalItem/void_energy_tank.tres" id="5_re88x"]
-[ext_resource type="Resource" uid="uid://bm7l7b0cjoeg5" path="res://Resource/Demo/Item/item_fire_arrrow.tres" id="6_aht5y"]
 [ext_resource type="Resource" uid="uid://2yb8kr3sybeg" path="res://Resource/Demo/Item/item_xst.tres" id="7_3q6yw"]
+[ext_resource type="Resource" uid="uid://cxa7ko75a0en2" path="res://Resource/v1/Item/Data/NormalItem/edition1/shield_module.tres" id="8_0oey6"]
+[ext_resource type="Resource" uid="uid://b11r1vte7u1wk" path="res://Resource/v1/Item/Data/NormalItem/green_chip.tres" id="9_xoe3w"]
+[ext_resource type="Resource" uid="uid://bjahpcf0ss6dp" path="res://Resource/v1/Item/Data/NormalItem/red_chip.tres" id="10_wuywv"]
+[ext_resource type="Resource" uid="uid://ywfawlbkgt4m" path="res://Resource/v1/Item/Data/NormalItem/blue_chip.tres" id="11_1cqlk"]
+[ext_resource type="Resource" uid="uid://o1po5532qrdn" path="res://Resource/v1/Item/Data/NormalItem/edition1/emergency_manual.tres" id="11_xoe3w"]
+[ext_resource type="Resource" uid="uid://f686lla5sh07" path="res://Resource/v1/Item/Data/UsableItem/usable_item_electronic_barrier.tres" id="12_wuywv"]
+[ext_resource type="Resource" uid="uid://l1ayp5qpupmq" path="res://Resource/v1/Item/Data/NormalItem/edition1/cpu.tres" id="13_1cqlk"]
+[ext_resource type="Resource" uid="uid://byxah71vai3by" path="res://Resource/v1/Item/Data/NormalItem/edition1/doll.tres" id="14_1si4s"]
+[ext_resource type="Resource" uid="uid://cfsvk6irt6nhv" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_glod_bullet.tres" id="15_yem58"]
+[ext_resource type="Resource" uid="uid://b1bg7b4kmmlt7" path="res://Resource/v1/Item/Data/NormalItem/edition1/gpu.tres" id="16_iousb"]
+[ext_resource type="Resource" uid="uid://dhibw4p6r8pqn" path="res://Resource/v1/Item/Data/UsableItem/usable_item_grey_dove.tres" id="17_4pewt"]
+[ext_resource type="Resource" uid="uid://bh64q31hpu84c" path="res://Resource/v1/Item/Data/NormalItem/edition1/iterator.tres" id="18_xbyf6"]
+[ext_resource type="Resource" uid="uid://bbk1baa1a7f20" path="res://Resource/v1/Item/Data/NormalItem/edition1/ram.tres" id="19_gv602"]
+[ext_resource type="Resource" uid="uid://cdmgsp5qpofo6" path="res://Resource/v1/Item/Data/NormalItem/edition1/ssd.tres" id="20_rpq8q"]
 
 [resource]
 script = ExtResource("1_ebaih")
 pool = Dictionary[Object, int]({
-ExtResource("1_gmvd8"): 8,
-ExtResource("2_re88x"): 8,
-ExtResource("3_aht5y"): 12,
+ExtResource("20_rpq8q"): 2,
+ExtResource("19_gv602"): 2,
+ExtResource("18_xbyf6"): 2,
+ExtResource("17_4pewt"): 2,
+ExtResource("16_iousb"): 2,
+ExtResource("15_yem58"): 1,
+ExtResource("14_1si4s"): 2,
+ExtResource("13_1cqlk"): 2,
+ExtResource("12_wuywv"): 1,
+ExtResource("11_xoe3w"): 1,
+ExtResource("11_1cqlk"): 4,
+ExtResource("10_wuywv"): 4,
+ExtResource("9_xoe3w"): 4,
+ExtResource("8_0oey6"): 4,
+ExtResource("7_3q6yw"): 1,
+ExtResource("5_re88x"): 1,
 ExtResource("4_3q6yw"): 2,
-ExtResource("5_re88x"): 8,
-ExtResource("6_aht5y"): 4,
-ExtResource("7_3q6yw"): 4
+ExtResource("3_aht5y"): 4,
+ExtResource("2_re88x"): 4,
+ExtResource("1_gmvd8"): 4
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

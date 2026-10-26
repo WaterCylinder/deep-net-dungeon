@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://dfmk4fenvhpsd"]
+
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="1_33h2d"]
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="1_wg3tg"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_wic46"]
+[ext_resource type="Texture2D" uid="uid://df1oeiy8hps6i" path="res://Resource/v1/Item/Sprite/edition1/EmergencyManual.png" id="2_oowqw"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="2_wg3tg"]
+
+[sub_resource type="Resource" id="Resource_wg3tg"]
+script = ExtResource("1_wg3tg")
+behaviorName = "EmergencyManualRemoveDefense"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_d75ha"]
+script = ExtResource("2_wg3tg")
+condition = ExtResource("1_33h2d")
+behavior = SubResource("Resource_wg3tg")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_pjylr"]
+script = ExtResource("1_wg3tg")
+behaviorName = "EmergencyManualGetDefense"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_wc50o"]
+script = ExtResource("2_wg3tg")
+condition = ExtResource("1_33h2d")
+behavior = SubResource("Resource_pjylr")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_wic46")
+sprite = ExtResource("2_oowqw")
+id = "buff_emergency_defense"
+name = "紧急护甲"
+intro = "获得100点护甲持续5秒"
+duration = 5.0
+maxStack = 1
+tags = null
+isUnique = true
+args = null
+onStart = SubResource("Resource_wc50o")
+onEnd = SubResource("Resource_d75ha")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

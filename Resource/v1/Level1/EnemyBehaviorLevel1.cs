@@ -56,9 +56,6 @@ public partial class EnemyBehaviorLevel1 : EnemyBehavior
         int shotNum = Arg("shot_num", 8);
         if(shotNum == 0)shotNum = 1;
 
-        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
-        enemy.ChangeBullet(bulletData);
-
         Array<Vector2> towards = new();
         float angle = 360 / shotNum;
         for(int i = 1; i<=shotNum; i++)

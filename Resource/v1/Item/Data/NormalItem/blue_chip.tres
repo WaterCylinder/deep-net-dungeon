@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://ywfawlbkgt4m"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_43mhs"]
+[ext_resource type="Script" uid="uid://b8u5u88o0k163" path="res://Resource/v1/Item/ItemBehaviorLevel1.cs" id="2_sepm3"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_sopih"]
+[ext_resource type="Texture2D" uid="uid://daq21gye87kd3" path="res://Resource/v1/Item/Sprite/blue_.png" id="3_sopih"]
+
+[sub_resource type="Resource" id="Resource_wqh7p"]
+script = ExtResource("2_sepm3")
+behaviorName = "GetShieldWithDefense"
+metadata/_custom_type_script = "uid://b8u5u88o0k163"
+
+[resource]
+script = ExtResource("2_sopih")
+ItemName = "blue_chip"
+showName = "蓝色芯片"
+intro = "获得等同于护甲值的护盾"
+tags = Array[int]([2])
+itemLevel = 1
+sprite = ExtResource("3_sopih")
+onPick = SubResource("Resource_wqh7p")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

@@ -132,7 +132,6 @@ public partial class Enemy : Entity
     #endregion
 
     public void PlayAnime(string animeName = "idle") => PlayAnime(animeName, animNode);
-    protected Game game => GameManager.Instance.game;
 
     #region 敌人属性
 
@@ -168,6 +167,8 @@ public partial class Enemy : Entity
     /// 掉落资源点数量区间
     /// </summary>
     [Export] public Vector2I dropValue;
+
+    public bool canMelee = true;
 
     #endregion
     
@@ -344,6 +345,10 @@ public partial class Enemy : Entity
 
     public void OnGenerate()
     {
+        if(bulletData == null)
+        {
+            ChangeBullet(Bullet.DefaultData);
+        }
         onGenerate?.Run(this);
     }
 
@@ -353,7 +358,7 @@ public partial class Enemy : Entity
         base.OnUpdate(delta);
 
         // 如果有近战形状则生成近战弹幕
-        if (data.attackShape != null)
+        if (data.attackShape != null && canMelee)
         {
             timer += (float)delta;
             if(timer > (1 / MELEE_SPEED))
@@ -418,6 +423,11 @@ public partial class Enemy : Entity
             animNode.Stop();
             animNode.Play("death");
             animNode.AnimationFinished += QueueFree;
+            if (meleeBullet != null && IsInstanceValid(meleeBullet))
+            {
+                meleeBullet.QueueFree();
+                canMelee = false;
+            }
         }
         onDeath?.Run(this);
     }

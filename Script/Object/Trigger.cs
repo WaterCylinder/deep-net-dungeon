@@ -8,6 +8,23 @@ using System.Collections.Generic;
 /// </summary>
 public partial class Trigger : Area2D
 {
+    #region 工厂方法
+
+    public static PackedScene _triggerPrefab;
+    public static PackedScene TriggerPrefab
+    {
+        get
+        {
+            if(_triggerPrefab == null)
+            {
+                _triggerPrefab = AssetManager.Instance.GetPrefab("Asset.Object.Component.trigger", null);
+            }
+            return _triggerPrefab;
+        }
+    }
+
+    #endregion
+
     #region 配置
 
     /// <summary>
@@ -234,6 +251,13 @@ public partial class Trigger : Area2D
     /// </summary>
     private void SortEntityList()
     {
+        for (int i = entityList.Count - 1; i >= 0; i--)
+        {
+            if (entityList[i] == null || entityList[i].isDead)
+            {
+                entityList.RemoveAt(i);
+            }
+        }
         // 使用冒泡排序，因为列表通常较小且需要频繁更新
         for (int i = 0; i < entityList.Count - 1; i++)
         {

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://g6a2t8h7v865"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_mp8bd"]
+[ext_resource type="Resource" uid="uid://k0gcs10jamt5" path="res://Resource/Buff/collapse.tres" id="2_d36yq"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_fdlg5"]
+[ext_resource type="Texture2D" uid="uid://bcqr0w7n1gtcf" path="res://Resource/Buff/collapse.png" id="4_d36yq"]
+
+[resource]
+script = ExtResource("2_fdlg5")
+ItemName = "get_collapse"
+showName = "崩坏"
+intro = "获得10层崩坏效果"
+sprite = ExtResource("4_d36yq")
+carryBuffs = Dictionary[ExtResource("1_mp8bd"), int]({
+ExtResource("2_d36yq"): 10
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

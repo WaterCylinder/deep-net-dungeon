@@ -1,32 +1,45 @@
 [gd_scene format=3 uid="uid://c2ddfp6q8lbyt"]
 
 [ext_resource type="Script" uid="uid://b1kymj1a2vkdj" path="res://Script/Object/GameObject/Door.cs" id="1_p8eba"]
-[ext_resource type="Shader" uid="uid://cxwo728yiss1s" path="res://Resource/Shader/Spiral.gdshader" id="2_uhogv"]
+[ext_resource type="Shader" uid="uid://b6rkweav7ben2" path="res://Resource/Shader/Door.gdshader" id="2_uhogv"]
 [ext_resource type="Texture2D" uid="uid://chxyrhnnpyp3c" path="res://Asset/Sprite/doordemo.png" id="2_yt0f0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lv2pn"]
 shader = ExtResource("2_uhogv")
-shader_parameter/spin_speed = 1.0000002849999996
+shader_parameter/spin_speed = 0.3000002517500002
+shader_parameter/arm_count = 1
+shader_parameter/pixel_size = 32.0000014725
+shader_parameter/energy = 1.0
+shader_parameter/open_progress = 1.0
+shader_parameter/core_color = Color(1, 1, 1, 1)
+shader_parameter/mid_color = Color(0.29, 0.29, 0.29, 1)
+shader_parameter/rim_color = Color(1, 1, 1, 1)
+shader_parameter/void_color = Color(0, 0, 0, 1)
 shader_parameter/edge_transparency = 1.0
-shader_parameter/center_color = Color(0.5833335, 0, 1, 1)
-shader_parameter/arm_count = 3
-shader_parameter/pixel_size = 64.0
+shader_parameter/rim_width = 0.1150000054625
+shader_parameter/pulse_speed = 2.0
+shader_parameter/pulse_strength = 0.25
+shader_parameter/twist_strength = 6.450000306375
+shader_parameter/color_levels = 5.826000181735
+shader_parameter/stripe_levels = 32.0
+shader_parameter/radial_levels = 32.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_c6gdm"]
-radius = 32.0
+radius = 50.0
 
-[node name="Door" type="Area2D" unique_id=1902877401]
+[node name="Door" type="Area2D" unique_id=1902877401 node_paths=PackedStringArray("colorRect")]
 script = ExtResource("1_p8eba")
+colorRect = NodePath("ColorRect")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1288089558]
 material = SubResource("ShaderMaterial_lv2pn")
-anchors_preset = -1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = -47.0
+offset_top = -47.0
+offset_right = 41.0
+offset_bottom = 41.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset_ratio = Vector2(0.5, 0.5)

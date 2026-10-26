@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MapData" format=3 uid="uid://c23add18md4ki"]
+
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_11rdc"]
+[ext_resource type="Resource" uid="uid://dcdspsyktvji8" path="res://Resource/v1/Level2/Start/room_level2_start.tres" id="2_tekky"]
+[ext_resource type="Resource" uid="uid://d1ww25xyh2tca" path="res://Resource/v1/Level2/Normal/room_level2_normal001.tres" id="3_q8bgi"]
+[ext_resource type="Resource" uid="uid://df4cjghcygoys" path="res://Resource/v1/Level2/Boss/room_level2_boss.tres" id="4_tekky"]
+[ext_resource type="Resource" uid="uid://iethhph8e5xt" path="res://Resource/v1/Level2/Shop/room_level2_shop.tres" id="5_tekky"]
+[ext_resource type="Resource" uid="uid://dinbk16sajv37" path="res://Resource/v1/Level2/Resource/room_level2_resource.tres" id="6_tekky"]
+[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="9_a1ovh"]
+
+[resource]
+script = ExtResource("9_a1ovh")
+mapMode = 1
+maxNormalRoomCount = 4
+normalRoomCount = 16
+treasureRoomCount = 2
+shopRoomCount = 2
+maxLayerRooms = 8
+roomDatas = Dictionary[int, Array]({
+0: Array[ExtResource("1_11rdc")]([ExtResource("2_tekky")]),
+1: Array[ExtResource("1_11rdc")]([ExtResource("3_q8bgi")]),
+2: Array[ExtResource("1_11rdc")]([ExtResource("4_tekky")]),
+3: Array[ExtResource("1_11rdc")]([ExtResource("5_tekky")]),
+4: Array[ExtResource("1_11rdc")]([ExtResource("6_tekky")])
+})
+metadata/_custom_type_script = "uid://cdikju4kdlymr"

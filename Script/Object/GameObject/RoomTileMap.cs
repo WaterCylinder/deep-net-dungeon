@@ -204,9 +204,11 @@ public partial class RoomTileMap : Node2D
                 }
                 else if(door.doorType == DoorType.Back)
                 {
-                    room.returnDoor = door;
+                    //入口门可以有多扇，全部记录下来；returnDoor保留第一个用于兼容旧逻辑
+                    room.returnDoor ??= door;
+                    room.returnDoors.Add(door);
                 }
-                else if(door.doorType == DoorType.Other)
+                else
                 {
                     room.otherDoors.Add(door);
                 }

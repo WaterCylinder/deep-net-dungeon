@@ -56,12 +56,12 @@ public partial class EnemyData : Resource
     /// <summary>
     /// 暴击率（0-1）
     /// </summary>
-    [Export] public float critRate = 1;
+    [Export] public float critRate = 0;
 
     /// <summary>
     /// 暴击伤害倍数
     /// </summary>
-    [Export] public float critDamage = 1;
+    [Export] public float critDamage = 1.5f;
 
     /// <summary>
     /// 移动速度

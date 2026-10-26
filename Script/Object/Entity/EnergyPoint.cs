@@ -146,7 +146,7 @@ public partial class EnergyPoint : Entity
     public override void _Process(double delta)
     {
         base._Process(delta);
-        if(target != null)
+        if(Game.IsAble(target))
         {
             MoveTarget(target.GlobalPosition);
             ///靠近目标实体并在最近的时候触发pick

@@ -145,6 +145,23 @@ public partial class Bag : EntityComponent
 
     public void Update()
     {
+        if(entity is Player player)
+        {
+            ItemData data = specialItemDict[ItemTag.UsableItem];
+            if(data != null)
+            {
+                if(Game.IsAble(player.usableItem) && player.usableItem.data != data)
+                {
+                    player.usableItem.QueueFree();
+                }
+                if (!Game.IsAble(player.usableItem))
+                {
+                    player.usableItem = Item.CreateItem(data, player.GlobalPosition, player, false);
+                    player.usableItemCD = player.usableItem.args.Get<float>("cd");
+                    player.usableItemCDNow = player.usableItemCD;
+                }
+            }
+        }
         EmitSignal(SignalName.OnUpdate);
     }
 

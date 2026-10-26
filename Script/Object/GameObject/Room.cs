@@ -162,6 +162,10 @@ public partial class Room : Node2D
     /// 玩家是否已经进入过该房间
     /// </summary>
     public bool alreadyEntered = false;
+    /// <summary>
+    /// 玩家是否已经清理过该房间
+    /// </summary>
+    public bool alreadyCleared = false;
 
     /// <summary>
     /// 房间是否已被清理过
@@ -171,9 +175,16 @@ public partial class Room : Node2D
 
     public Array<Door> nextDoors = new();
     /// <summary>
-    /// 返回门
+    /// 返回门（兼容旧数据：多个入口门时取第一个）。
+    /// 新逻辑请用returnDoors：房间可以有多个入口，每扇入口门各自记录自己的targetDoor
     /// </summary>
     public Door returnDoor;
+    /// <summary>
+    /// 所有入口门（DoorType.Back）。
+    /// 房间允许有多个入口，从哪扇门进来就由那扇门自己决定回程落点，
+    /// 不再共用Room.returnDoor
+    /// </summary>
+    public Array<Door> returnDoors = new();
     public Array<Door> otherDoors = new();
     /// <summary>
     /// 玩家进入该房间前的上一个房间
@@ -379,8 +390,12 @@ public partial class Room : Node2D
     {
         OpenAllDoor();
         isCleared = true;
-        onClear?.Run(this);
-        game.NotifyRoomCleared(this);
+        if (!alreadyCleared)
+        {
+            alreadyCleared = true;
+            onClear?.Run(this);
+            game.NotifyRoomCleared(this);
+        }
     }
 
     # endregion
@@ -447,7 +462,7 @@ public partial class Room : Node2D
         {
             if(child is Door door)
             {
-                if(door.IsBound)
+                if(door.IsBound || door.doorType == DoorType.NextLevel)
                 {
                     door.Open();
                 }

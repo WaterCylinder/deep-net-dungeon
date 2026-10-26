@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://b11r1vte7u1wk"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_v06xb"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_7qspa"]
+[ext_resource type="Resource" uid="uid://bhbbf7b1e1fqe" path="res://Resource/v1/Item/Behavior/item_heal.tres" id="2_cbsb8"]
+[ext_resource type="Script" uid="uid://cigb1f3wr7pp1" path="res://Script/Data/Item/ItemBehavior.cs" id="2_pgylo"]
+[ext_resource type="Texture2D" uid="uid://bpfwbmlxh8vdx" path="res://Resource/v1/Item/Sprite/green_.png" id="3_7qspa"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_j3dxl"]
+
+[sub_resource type="Resource" id="Resource_sgy78"]
+script = ExtResource("2_pgylo")
+behaviorName = "ClearAllNegativeBuff"
+metadata/_custom_type_script = "uid://cigb1f3wr7pp1"
+
+[sub_resource type="Resource" id="Resource_jqx7q"]
+script = ExtResource("4_j3dxl")
+behaviorArray = Array[Object]([ExtResource("2_cbsb8"), SubResource("Resource_sgy78")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[resource]
+script = ExtResource("2_7qspa")
+ItemName = "green_chip"
+showName = "绿色芯片"
+intro = "回复10点生命值，清除所有负面效果"
+tags = Array[int]([2])
+args = Dictionary[String, Variant]({
+"value": 10.0
+})
+itemLevel = 1
+sprite = ExtResource("3_7qspa")
+onPick = SubResource("Resource_jqx7q")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

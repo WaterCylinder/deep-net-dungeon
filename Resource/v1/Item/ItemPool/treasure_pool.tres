@@ -5,6 +5,11 @@
 [ext_resource type="Resource" uid="uid://bpqi0dh4nmuis" path="res://Resource/v1/Item/Data/NormalItem/defense_module.tres" id="2_pdu02"]
 [ext_resource type="Resource" uid="uid://drqq1silobm0m" path="res://Resource/v1/Item/Data/NormalItem/health_module.tres" id="3_ws7y5"]
 [ext_resource type="Resource" uid="uid://d4ge0qmuq6xuu" path="res://Resource/v1/Item/Data/NormalItem/speed_module.tres" id="4_xl238"]
+[ext_resource type="Resource" uid="uid://cxa7ko75a0en2" path="res://Resource/v1/Item/Data/NormalItem/edition1/shield_module.tres" id="5_pdu02"]
+[ext_resource type="Resource" uid="uid://l1ayp5qpupmq" path="res://Resource/v1/Item/Data/NormalItem/edition1/cpu.tres" id="6_ws7y5"]
+[ext_resource type="Resource" uid="uid://b1bg7b4kmmlt7" path="res://Resource/v1/Item/Data/NormalItem/edition1/gpu.tres" id="7_xl238"]
+[ext_resource type="Resource" uid="uid://bbk1baa1a7f20" path="res://Resource/v1/Item/Data/NormalItem/edition1/ram.tres" id="8_jwiyl"]
+[ext_resource type="Resource" uid="uid://cdmgsp5qpofo6" path="res://Resource/v1/Item/Data/NormalItem/edition1/ssd.tres" id="9_f81qf"]
 
 [resource]
 script = ExtResource("1_wgv3c")
@@ -12,6 +17,11 @@ pool = Dictionary[Object, int]({
 ExtResource("1_g5nil"): 8,
 ExtResource("2_pdu02"): 8,
 ExtResource("3_ws7y5"): 8,
-ExtResource("4_xl238"): 8
+ExtResource("4_xl238"): 8,
+ExtResource("5_pdu02"): 8,
+ExtResource("6_ws7y5"): 4,
+ExtResource("7_xl238"): 4,
+ExtResource("8_jwiyl"): 4,
+ExtResource("9_f81qf"): 4
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

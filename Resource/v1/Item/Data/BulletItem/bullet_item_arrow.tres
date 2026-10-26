@@ -4,13 +4,13 @@
 [ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="2_nby5m"]
 [ext_resource type="Resource" uid="uid://c7vcj8erb3qhf" path="res://Resource/v1/Item/Behavior/item_set_bullet.tres" id="3_p700g"]
 [ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="4_nyku2"]
-[ext_resource type="Texture2D" uid="uid://d06wh3glyey60" path="res://Resource/v1/Item/Sprite/Arrow.png" id="5_uqvbw"]
+[ext_resource type="Texture2D" uid="uid://d06wh3glyey60" path="res://Resource/v1/Item/Sprite/arrow.png" id="5_uqvbw"]
 
 [resource]
 script = ExtResource("4_nyku2")
 ItemName = "bullet_item_arrow"
 showName = "箭头"
-intro = "【箭头弹幕】造成1倍伤害"
+intro = "【弹幕】发射箭头弹幕，造成1倍伤害"
 tags = Array[int]([4])
 args = Dictionary[String, Variant]({
 "bullet": ExtResource("1_tio0c")

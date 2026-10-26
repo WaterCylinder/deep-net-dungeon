@@ -30,5 +30,6 @@ intro = "攻击力提升"
 tags = null
 isVisible = false
 isUnique = true
+args = null
 onStart = SubResource("Resource_rwqot")
 metadata/_custom_type_script = "uid://bctrndevbmqqd"

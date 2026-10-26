@@ -32,7 +32,7 @@ public partial class Args : Resource
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    public T Get<[MustBeVariant] T>(string key)
+    public T Get<[MustBeVariant] T>(string key, T _default = default)
     {
         if(args.ContainsKey(key))
         {
@@ -41,7 +41,7 @@ public partial class Args : Resource
         else
         {
             args.Add(key, default);
-            return default;
+            return _default;
         }
     }
 

@@ -9,6 +9,9 @@ public partial class ClassicMode : GameModeBase
 {
     public override string ModeName => "Classic";
 
+    public int level = 1;
+    public MapData mapData = null;
+
     public override void OnStart()
     {
         base.OnStart();
@@ -19,6 +22,21 @@ public partial class ClassicMode : GameModeBase
         player.OnTrans += camera.SetPosition;
         //打开黑幕
         game.hud.SetBlack(0);
+    }
+
+    MapData GetMapData(int level)
+    {
+        this.level = level;
+
+        var data = AssetManager.Instance.GetData<MapData>($"Resource.v1.MapData.level{level}", null);
+        if(data == null)
+        {
+            return GetMapData(2);
+        }
+        else
+        {
+            return data;
+        }
     }
 
     void Init()
@@ -33,13 +51,21 @@ public partial class ClassicMode : GameModeBase
             case 0:
                 //初始化生成地图
                 Init();
-                map.Initialize(null, game.randomSystem);
+                map.Initialize(GetMapData(1), game.randomSystem);
+                if(map.bossRoom != null)
+                {
+                    foreach(Door door in map.bossRoom.otherDoors)
+                    {
+                        door.OnEnter += (e) => NextLevel();
+                    }
+                }
                 game.camera.Zoom = new Vector2(5,5);
                 game.camera.targetZoom = 5;
                 game.Next();
             break;
             case 100:
                 //等待黑幕
+                player.TransTo(map.startRoom.GlobalPosition);
                 map.startRoom.Enter(player);
                 player.opera += 1;
                 player.animeNode.Play("prone");
@@ -64,6 +90,52 @@ public partial class ClassicMode : GameModeBase
                 game.hud.ShowTips(0);
                 game.Next();
             break;
+            case 500:
+                //游戏中
+            break;
+            case 600:
+                //玩家死亡
+            break;
+
+            //进入下层
+            case 1600:
+                //玩家进入下一层的动画开始
+                game.hud.BlackClose();
+                player.opera += 1;
+                player.MoveStop();
+                game.Next();
+            break;
+            case 1700:
+                player.MoveStop();
+                if(game.hud.blackEnd)
+                {
+                    game.Next();
+                }
+            break;
+            case 1800:
+                mapData = GetMapData(level);
+                map.Initialize(mapData, game.randomSystem);
+                if(map.bossRoom != null)
+                {
+                    foreach(Door door in map.bossRoom.otherDoors)
+                    {
+                        door.OnEnter += (e) => NextLevel();
+                    }
+                }
+                player.TransTo(map.startRoom.GlobalPosition);
+                map.startRoom.Enter(player);
+                game.hud.BlackOpen();
+                game.Next();
+            break;
+            case 1900:
+                if(game.hud.blackEnd)
+                {
+                    //前往游戏等待
+                    player.opera -= 1;
+                    game.GoTo(500);
+                }
+            break;
+
         }
     }
 
@@ -74,6 +146,7 @@ public partial class ClassicMode : GameModeBase
         //默认进入死亡界面
         game.hud.endUi.Visible = true;
         game.hud.endUi.endText.Text = "失败";
+        game.Next();
     }
 
     public override void OnPhysicsProcess(double delta)
@@ -96,5 +169,38 @@ public partial class ClassicMode : GameModeBase
                 }
             }
         }
+    }
+
+    public override void OnEnemySpawned(Enemy enemy)
+    {
+        base.OnEnemySpawned(enemy);
+        //根据level提升敌怪属性，提升为当前等级 - 1乘以30%
+        enemy.attack.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
+        enemy.maxHealth.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
+        enemy.maxHealth.Add((level - 1) * 50f, "LEVEL", 80);
+        enemy.Heal(enemy.maxHealth);
+        enemy.defense.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
+    }
+
+    public void NextLevel()
+    {
+        level+=1;
+        game.GoTo(1600);
+    }
+
+    public void ChangeLevel()
+    {
+        mapData = GetMapData(level);
+        map.Initialize(mapData, game.randomSystem);
+        if(map.bossRoom != null)
+        {
+            foreach(Door door in map.bossRoom.otherDoors)
+            {
+                door.OnEnter += (e) => NextLevel();
+            }
+        }
+        GD.Print(map.startRoom);
+        player.TransTo(map.startRoom.GlobalPosition);
+        map.startRoom.Enter(player);
     }
 }

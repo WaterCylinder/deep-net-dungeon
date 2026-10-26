@@ -1,11 +1,6 @@
 using Godot;
 using Godot.Collections;
 
-public enum BuffTag
-{
-    None
-}
-
 [GlobalClass]
 public partial class BuffData : Resource
 {
@@ -32,7 +27,7 @@ public partial class BuffData : Resource
     /// <summary>
     /// 持续时间（秒），0表示永久
     /// </summary>
-    [Export] public int duration;
+    [Export] public float duration;
 
     /// <summary>
     /// 最大层数

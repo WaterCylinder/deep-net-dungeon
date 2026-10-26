@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://cxqno3kantbjm"]
+
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="1_va4jr"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_wtbb0"]
+[ext_resource type="Texture2D" uid="uid://b5krx7icm8yli" path="res://Resource/v1/Item/Sprite/edition1/AntivirusSoftware.png" id="2_by438"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="2_l7o7o"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_5oxjo"]
+
+[sub_resource type="Resource" id="Resource_va4jr"]
+script = ExtResource("1_va4jr")
+behaviorName = "RemoveAntivirusSoftware"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_l7o7o"]
+script = ExtResource("3_5oxjo")
+condition = ExtResource("2_l7o7o")
+behavior = SubResource("Resource_va4jr")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_k8p4e"]
+script = ExtResource("1_va4jr")
+behaviorName = "AntivirusSoftware"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_fjbcj"]
+script = ExtResource("3_5oxjo")
+condition = ExtResource("2_l7o7o")
+behavior = SubResource("Resource_k8p4e")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_wtbb0")
+sprite = ExtResource("2_by438")
+id = "buff_antivirus_software"
+name = "病毒免疫"
+intro = "免疫病毒效果"
+maxStack = 1
+tags = Array[int]([2])
+isUnique = true
+args = null
+onStart = SubResource("Resource_fjbcj")
+onEnd = SubResource("Resource_l7o7o")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

@@ -31,7 +31,7 @@ metadata/_custom_type_script = "uid://bext0m7l2otpv"
 [resource]
 script = ExtResource("4_xuoui")
 roomId = "Start"
-roomTags = Array[int]([1])
+roomTags = Array[int]([0])
 tileMap = ExtResource("5_ba168")
 args = null
 useDefaultRoomProcess = false

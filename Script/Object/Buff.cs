@@ -1,12 +1,78 @@
 using Godot;
 using Godot.Collections;
+using System;
 using System.Collections.Generic;
+
+public enum BuffTag
+{
+    None,
+    Negative,
+    Positive,
+}
 
 /// <summary>
 /// Buff实例类 - 从BuffData加载属性，管理Buff状态和行为
 /// </summary>
 public partial class Buff : RefCounted
 {
+    #region 通用buff
+
+    public static BuffData _fire;
+    public static string _fireDataPath = "Resource.Buff.fire";
+    public static BuffData Fire
+    {
+        get
+        {
+            if(_fire == null)
+            {
+                _fire = AssetManager.Instance.GetData<BuffData>(_fireDataPath, null);
+                if(_fire == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_fireDataPath}找不到BUFF数据");
+                }
+            }
+            return _fire;
+        }
+    }
+
+    public static BuffData _virus;
+    public static string _virusDataPath = "Resource.Buff.virus";
+    public static BuffData Virus
+    {
+        get
+        {
+            if(_virus == null)
+            {
+                _virus = AssetManager.Instance.GetData<BuffData>(_virusDataPath, null);
+                if(_virus == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_virusDataPath}找不到BUFF数据");
+                }
+            }
+            return _virus;
+        }
+    }
+
+    public static BuffData _collapse;
+    public static string _collapseDataPath = "Resource.Buff.collapse";
+    public static BuffData Collapse
+    {
+        get
+        {
+            if(_collapse == null)
+            {
+                _collapse = AssetManager.Instance.GetData<BuffData>(_collapseDataPath, null);
+                if(_collapse == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_collapseDataPath}找不到BUFF数据");
+                }
+            }
+            return _collapse;
+        }
+    }
+
+    #endregion
+
     #region 属性
 
     /// <summary>
@@ -117,7 +183,11 @@ public partial class Buff : RefCounted
         this.data = data;
         this.baseStack = baseStack;
         currentStack = baseStack;
-        maxStack = data.maxStack > 0 ? data.maxStack : 1;
+        maxStack = data.maxStack != 0 ? data.maxStack : 1;
+        if(maxStack < 0)
+        {
+            maxStack = int.MaxValue;
+        }
 
         id = data.id;
         name = data.name;
@@ -286,6 +356,12 @@ public partial class Buff : RefCounted
         {
             // 层数减少
             OnStackDecrease(oldStack, newStack);
+        }
+
+        // 通知宿主：层数变了，让订阅了OnBuffsChanged的UI等刷新
+        if (GodotObject.IsInstanceValid(owner))
+        {
+            owner.NotifyBuffsChanged(this);
         }
     }
 

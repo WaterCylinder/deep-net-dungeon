@@ -63,16 +63,16 @@ metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="Resource" id="Resource_6bp8m"]
 script = ExtResource("17_3htsc")
-intro = "在32回合前累计获得10000资源"
+intro = "在32回合前累计获得100000资源"
 targetTurn = 32
-targetResourcePoint = 10000
+targetResourcePoint = 100000
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="Resource" id="Resource_yu6n2"]
 script = ExtResource("17_3htsc")
-intro = "在64回合前累计获得100000资源"
+intro = "在64回合前累计获得10000000资源"
 targetTurn = 64
-targetResourcePoint = 100000
+targetResourcePoint = 10000000
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jk8qv"]

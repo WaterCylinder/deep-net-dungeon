@@ -97,7 +97,8 @@ public partial class Game : Node
     [Export] public Node2D dropItemNode;
     [Export] public Node2D energyNode;
 
-    [Export] public Node smallObjectNode;
+    [Export] public Node2D smallObjectNode;
+    [Export] public Node2D particlesNode;
 
     [Export] public IncrementWorld incrementWorld;
 
@@ -159,18 +160,20 @@ public partial class Game : Node
 
     public override void _Process(double delta)
     {
-     currentMode?.OnProcess(delta);
+        currentMode?.OnProcess(delta);
+        //清理粒子
+        ClearParticles();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-     currentMode?.OnPhysicsProcess(delta);
+        currentMode?.OnPhysicsProcess(delta);
     }
 
     public override void _ExitTree()
     {
-     currentMode?.OnCleanup();
-     currentMode = null;
+        currentMode?.OnCleanup();
+        currentMode = null;
     }
 
     #endregion
@@ -337,6 +340,52 @@ public partial class Game : Node
         AudioStreamPlayer soundPlayer = GetFreeSoundPlayer();
         soundPlayer.Stream = sound;
         soundPlayer.Play();
+    }
+
+    #endregion
+
+    #region 粒子池
+
+    public Array<GpuParticles2D> particlesPool = new();
+    public int particlesMaxCount = 128;
+
+    public GpuParticles2D CreateParticles(string name, Vector2 pos, float scale = 1)
+    {
+        if(particlesPool.Count >= particlesMaxCount)
+        {
+            //粒子效果超过上限
+        }
+        string path = "Asset.Particles." + name;
+        PackedScene particlesPrefab = AssetManager.Instance.GetPrefab(path, null);
+        if(particlesPrefab != null)
+        {
+            GpuParticles2D p = particlesPrefab.Instantiate<GpuParticles2D>();
+            p.Scale = new Vector2(scale, scale);
+            p.GlobalPosition = pos;
+            particlesNode?.CallDeferred("add_child", p);
+            p.Emitting = true;
+            particlesPool.Add(p);
+            return p;
+        }
+        else
+        {
+            GD.Print($"未找到粒子预制体 {path}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 清除播放完毕的粒子
+    /// </summary>
+    public void ClearParticles()
+    {
+        foreach(var p in particlesPool)
+        {
+            if (IsAble(p) && !p.Emitting)
+            {
+                p.QueueFree();
+            }
+        }
     }
 
     #endregion

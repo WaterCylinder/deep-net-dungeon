@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cfsvk6irt6nhv"]
+
+[ext_resource type="Resource" uid="uid://d1356jlfsk4sb" path="res://Resource/v1/Bullet/Data/bullet_glod_bullet.tres" id="1_auwgm"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_gk1p8"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_4wi7e"]
+[ext_resource type="Texture2D" uid="uid://bvxbklmkv7ipc" path="res://Resource/v1/Item/Sprite/edition1/GlodBullet.png" id="3_4wi7e"]
+[ext_resource type="Resource" uid="uid://c7vcj8erb3qhf" path="res://Resource/v1/Item/Behavior/item_set_bullet.tres" id="3_731uc"]
+
+[resource]
+script = ExtResource("2_4wi7e")
+ItemName = "glod_bullet"
+showName = "金色弹壳"
+intro = "【弹幕】发射金色弹幕，造成0.5倍攻击力的伤害，额外造成0.1倍当前护盾值的伤害"
+tags = Array[int]([4])
+args = Dictionary[String, Variant]({
+"bullet": ExtResource("1_auwgm")
+})
+itemLevel = 3
+sprite = ExtResource("3_4wi7e")
+maxCount = 1
+onPick = ExtResource("3_731uc")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

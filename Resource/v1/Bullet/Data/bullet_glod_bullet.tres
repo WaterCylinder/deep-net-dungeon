@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://d1356jlfsk4sb"]
+
+[ext_resource type="Script" uid="uid://b71xk50lksw2m" path="res://Resource/v1/BulletBehaviorLevel1.cs" id="1_0trgo"]
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_ckjwd"]
+[ext_resource type="Texture2D" uid="uid://dolopiq5jfcfx" path="res://Resource/v1/Bullet/Sprite/glod_bullet.png" id="2_ley7s"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_o0gb1"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_fsa8e"]
+[ext_resource type="AudioStream" uid="uid://cl2gqh8brl8n3" path="res://Asset/Sound/kick.wav" id="5_o0gb1"]
+
+[sub_resource type="Resource" id="Resource_x7g66"]
+script = ExtResource("1_0trgo")
+behaviorName = "GoldBulletOnHit"
+metadata/_custom_type_script = "uid://b71xk50lksw2m"
+
+[sub_resource type="Resource" id="Resource_uoomd"]
+script = ExtResource("3_fsa8e")
+condition = ExtResource("2_o0gb1")
+behavior = SubResource("Resource_x7g66")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_ckjwd")
+bulletName = "GlodBullet"
+lifetime = 8.0
+damageMultiplier = 0.5
+sprite = ExtResource("2_ley7s")
+collisionRadius = 8.0
+onHit = SubResource("Resource_uoomd")
+soundOnShot = ExtResource("5_o0gb1")
+metadata/_custom_type_script = "uid://draiigge0qptw"

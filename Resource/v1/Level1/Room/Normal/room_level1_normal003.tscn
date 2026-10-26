@@ -51,6 +51,7 @@ enemyData = ExtResource("6_wxtma")
 [node name="2" type="Node2D" parent="EnemyGenerator" unique_id=2126909446]
 
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/2" unique_id=61005515 instance=ExtResource("4_4m36y")]
+visible = false
 position = Vector2(0, -192)
 onceSpawnRange = Vector2i(1, 2)
 spawnNum = 3
@@ -61,6 +62,7 @@ areaShape = SubResource("RectangleShape2D_fspln")
 dataList = []
 
 [node name="EnemyGeneratorCluster2" parent="EnemyGenerator/2" unique_id=374075672 instance=ExtResource("4_4m36y")]
+visible = false
 position = Vector2(0, 160)
 onceSpawnRange = Vector2i(1, 2)
 spawnNum = 3

@@ -9,9 +9,9 @@
 script = ExtResource("2_dlnqd")
 ItemName = "defense_module"
 showName = "防御模块"
-intro = "护甲值提升 10"
+intro = "护甲值提升 5"
 args = Dictionary[String, Variant]({
-"value": 10.0
+"value": 5.0
 })
 itemLevel = 1
 sprite = ExtResource("3_dlnqd")

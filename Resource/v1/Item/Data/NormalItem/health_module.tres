@@ -16,9 +16,9 @@ metadata/_custom_type_script = "uid://b6iq415gsv2dy"
 script = ExtResource("3_ta6r1")
 ItemName = "health_module"
 showName = "生命模块"
-intro = "最大生命值提升 30，恢复等量生命值"
+intro = "最大生命值提升 10，恢复等量生命值"
 args = Dictionary[String, Variant]({
-"value": 30.0
+"value": 10.0
 })
 itemLevel = 1
 sprite = ExtResource("3_ofx54")

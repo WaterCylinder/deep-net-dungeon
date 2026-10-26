@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dhibw4p6r8pqn"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_6ghsw"]
+[ext_resource type="Resource" uid="uid://djhdi2koe4bef" path="res://Resource/v1/Bullet/Data/bullet_gray_dove.tres" id="1_kx8kg"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_q41p3"]
+[ext_resource type="Texture2D" uid="uid://5710fxtq6rqc" path="res://Resource/v1/Item/Sprite/edition1/GreyDove.png" id="3_q41p3"]
+[ext_resource type="Script" uid="uid://b8u5u88o0k163" path="res://Resource/v1/Item/ItemBehaviorLevel1.cs" id="3_xcj8m"]
+
+[sub_resource type="Resource" id="Resource_uye64"]
+script = ExtResource("3_xcj8m")
+behaviorName = "ShotBulletTowardMouse"
+metadata/_custom_type_script = "uid://b8u5u88o0k163"
+
+[resource]
+script = ExtResource("2_q41p3")
+ItemName = "usable_item_grey_dove"
+showName = "灰鸽子注射器"
+intro = "【主动】发射一个注射弹幕，造成1倍攻击力的伤害，给予敌怪30%攻击力的病毒效果，冷却时间10s"
+tags = Array[int]([6])
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("1_kx8kg"),
+"bullet_speed": 3.0,
+"cd": 10.0
+})
+itemLevel = 2
+sprite = ExtResource("3_q41p3")
+maxCount = 1
+onUse = SubResource("Resource_uye64")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

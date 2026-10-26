@@ -63,9 +63,6 @@ public partial class EnemyBehavior : Behavior
         Vector2 toward = player.GlobalPosition - enemy.GlobalPosition;
 
         float bulletSpeed = Arg("speed", 3);
-        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
-
-        enemy.ChangeBullet(bulletData);
 
         enemy.Shot(toward.Normalized() * bulletSpeed);
     }
@@ -77,7 +74,7 @@ public partial class EnemyBehavior : Behavior
     public void ChangeShotBullet(Enemy enemy)
     {
         BulletData data = enemy.args.Get<BulletData>("bullet_data");
-        GD.Print($"设置弹幕{data}");
+        GD.Print($"{enemy.Name}设置弹幕{data.bulletName}");
         enemy.ChangeBullet(data);
     }
 

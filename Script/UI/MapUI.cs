@@ -11,12 +11,9 @@ using System.Collections.Generic;
 ///   - ShowAll = false：未进入过（alreadyEntered == false）的房间以灰色色块显示
 ///
 /// 布局规则（自左而右）：
-///   起始房间固定在最左侧，主线自左而右依次排列；
-///   支路按门的实际上下位置向主线两侧展开 —— 玩家从上边门进入的房间就画在上边。
-///   具体做法：以起始房间为根，对"下一房间"关系做 BFS，
-///   门顺序中的第一个子房间延续主线（保持所在行），其余子房间作为支路按门的坐标分居上下。
-///   布局既不依赖房间的世界坐标，也不依赖门的节点顺序，地图生成规则或房间预制体变化后都无需改本脚本。
-///
+///   直接读Map.layers：层号→列（起始房间在最左，Boss在最右），层内序号→行（以该层中线为0上下展开）。
+///   直线的每层只有1个房间、纺锤形的中段一层有多间房，都能如实画出来；
+///   层内多间房的左右/大小关系不受门的位置影响，房间有一条还是两条入口都不影响布局。
 /// 使用方式：
 ///   把本脚本挂到任意 Control 节点上，自行设置该节点的位置与大小。
 ///   绘制内容会自动适配节点矩形：空间不足时间距与色块等比缩小，空间充足时保持设定尺寸并居中。
@@ -135,23 +132,17 @@ public partial class MapUI : Control
     #region 布局数据
 
     /// <summary>
-    /// 判断支路门在主线门上方还是下方的纵坐标容差（像素）。
-    /// 门的纵坐标与该容差比较：大于则判为下方、小于负容差则判为上方、之间视为无法判断
-    /// </summary>
-    private const float LaneSideThreshold = 1f;
-
-    /// <summary>
     /// 布局节点：一个房间在网格中的坐标。
-    /// depth 为距离起始房间的层数（0 = 起始房间，向右递增）；
-    /// lane 为所在行（0 = 主线，负数在上、正数在下）
+    /// depth 为层号（0 = 起始房间所在列，向右递增），直接取自Map.layers；
+    /// lane 为层内行号（以本层中线为0，向上为负、向下为正，用浮点保证奇数/偶数房间都能居中）
     /// </summary>
     private class MapNode
     {
         public readonly Room room;
         public readonly int depth;
-        public readonly int lane;
+        public readonly float lane;
 
-        public MapNode(Room room, int depth, int lane)
+        public MapNode(Room room, int depth, float lane)
         {
             this.room = room;
             this.depth = depth;
@@ -181,8 +172,8 @@ public partial class MapUI : Control
 
     private int _minDepth;
     private int _maxDepth;
-    private int _minLane;
-    private int _maxLane;
+    private float _minLane;
+    private float _maxLane;
 
     // 刷新检测用的缓存
     private Map _cachedMap;
@@ -361,96 +352,43 @@ public partial class MapUI : Control
             return;
         }
 
-        // 1. 选取根节点：优先起始房间，没有则退化为第一个有效房间
-        Room root = Game.IsAble(currentMap.startRoom) ? currentMap.startRoom : null;
-        if (root == null)
+        // 1. 直接按Map.layers铺格子：层号→列（自左而右），层内序号→行（以该层中线为0上下展开）。
+        //    生成器已经把房间按"直线/纺锤"分好层，这里不再靠门的位置去猜拓扑，
+        //    因此纺锤形的中间宽两头窄、以及一个房间有多条入口的情况都能如实画出来
+        if (currentMap.layers != null)
         {
-            foreach (Room room in currentMap.rooms)
+            for (int layerIndex = 0; layerIndex < currentMap.layers.Count; layerIndex++)
             {
-                if (Game.IsAble(room))
-                {
-                    root = room;
-                    break;
-                }
-            }
-        }
-
-        if (root == null)
-        {
-            QueueRedraw();
-            return;
-        }
-
-        // 2. BFS 分配网格坐标（起始房间在最左侧，depth 即自左而右的层数）
-        MapNode rootNode = new(root, 0, 0);
-        _nodes.Add(rootNode);
-        _nodeOf[root] = rootNode;
-
-        Queue<MapNode> queue = new();
-        queue.Enqueue(rootNode);
-
-        while (queue.Count > 0)
-        {
-            MapNode current = queue.Dequeue();
-            List<(Door door, Room target)> children = GetNextDoors(current.room);
-
-            // 上下判断的基准：以该房间的主线门（door 顺序里的第一个）的纵坐标为参考线，
-            // 没有可用门时退化为房间中线。使用相对比较，房间整体位移不影响结果
-            float centerY = children.Count > 0 ? children[0].door.Position.Y : 0f;
-
-            int childIndex = 0;
-            int upCount = 0;
-            int downCount = 0;
-
-            foreach ((Door door, Room target) in children)
-            {
-                if (_nodeOf.ContainsKey(target))
+                Godot.Collections.Array<Room> layer = currentMap.layers[layerIndex];
+                if (layer == null)
                 {
                     continue;
                 }
 
-                // 第一个子房间延续主线：保持同一行，继续向右
-                int lane = current.lane;
-
-                // 其余子房间作为支路，按门在房间里的实际上下位置展开，
-                // 保证小地图上的上下与玩家实际进出的门一致（不依赖门的节点顺序）
-                if (childIndex > 0)
+                // 先挑出这一层里的有效房间，用于把整层沿Y轴居中
+                List<Room> validRooms = new();
+                foreach (Room room in layer)
                 {
-                    float offsetY = door.Position.Y - centerY;
-                    if (offsetY > LaneSideThreshold)
+                    if (Game.IsAble(room) && !_nodeOf.ContainsKey(room))
                     {
-                        lane = current.lane + (++downCount);
-                    }
-                    else if (offsetY < -LaneSideThreshold)
-                    {
-                        lane = current.lane - (++upCount);
-                    }
-                    else
-                    {
-                        // 门的纵坐标与主线门重合（例如门在房间正中），无从判断上下时退化为先下后上
-                        if (childIndex % 2 == 1)
-                        {
-                            lane = current.lane + (++downCount);
-                        }
-                        else
-                        {
-                            lane = current.lane - (++upCount);
-                        }
+                        validRooms.Add(room);
                     }
                 }
 
-                MapNode child = new(target, current.depth + 1, lane);
-                _nodes.Add(child);
-                _nodeOf[target] = child;
-                queue.Enqueue(child);
-                childIndex++;
+                for (int i = 0; i < validRooms.Count; i++)
+                {
+                    float lane = i - (validRooms.Count - 1) * 0.5f;
+                    MapNode node = new(validRooms[i], layerIndex, lane);
+                    _nodes.Add(node);
+                    _nodeOf[validRooms[i]] = node;
+                }
             }
         }
 
         UpdateBounds();
 
-        // 3. 兜底：从起始房间走不到的孤立房间放在最右侧的额外一列，避免被静默漏掉
-        int orphanLane = 0;
+        // 2. 兜底：没有登记在layers里的房间（例如手工摆放或旧数据）放在最右侧的额外一列
+        float orphanLane = 0f;
         foreach (Room room in currentMap.rooms)
         {
             if (!Game.IsAble(room) || _nodeOf.ContainsKey(room))
@@ -509,7 +447,8 @@ public partial class MapUI : Control
     {
         if (_nodes.Count == 0)
         {
-            _minDepth = _maxDepth = _minLane = _maxLane = 0;
+            _minDepth = _maxDepth = 0;
+            _minLane = _maxLane = 0f;
             return;
         }
 
@@ -575,9 +514,9 @@ public partial class MapUI : Control
             return false;
         }
 
-        // 横向是主线推进方向（depth），纵向是支路展开方向（lane）
+        // 横向是主线推进方向（depth），纵向是层内展开方向（lane）
         int depths = _maxDepth - _minDepth + 1;
-        int lanes = _maxLane - _minLane + 1;
+        float lanes = _maxLane - _minLane + 1;
 
         float contentWidth = (depths - 1) * spacingMain + blockSize;
         float contentHeight = (lanes - 1) * spacingBranch + blockSize;

@@ -91,7 +91,7 @@ public partial class Behavior : Resource // Behavior类继承自Resource，是�
                     string parameterNames ="";
                     foreach(ParameterInfo para in parameters)
                         parameterNames += para.Name + ", ";
-                    Log($"参数 {parameterNames} 传入 {string.Join(",",args)}");
+                    //Log($"参数 {parameterNames} 传入 {string.Join(",",args)}");
                 }
                 else
                 {

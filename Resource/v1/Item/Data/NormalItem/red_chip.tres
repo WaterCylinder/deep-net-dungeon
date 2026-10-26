@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bjahpcf0ss6dp"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_e4lns"]
+[ext_resource type="Resource" uid="uid://bxd82u6d0ryrb" path="res://Resource/v1/Item/Behavior/item_heal_per.tres" id="2_1nwfa"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_qfk24"]
+[ext_resource type="Resource" uid="uid://nmw7aodsnohf" path="res://Resource/v1/Item/Behavior/item_add_attack_normal.tres" id="3_8lm4j"]
+[ext_resource type="Texture2D" uid="uid://dfn117qjx5a8e" path="res://Resource/v1/Item/Sprite/red_.png" id="3_sedy2"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_xe24w"]
+
+[sub_resource type="Resource" id="Resource_6kwvd"]
+script = ExtResource("4_xe24w")
+behaviorArray = Array[Object]([ExtResource("2_1nwfa"), ExtResource("3_8lm4j")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[resource]
+script = ExtResource("2_qfk24")
+ItemName = "red_chip"
+showName = "红色芯片"
+intro = "回复10%生命值， 攻击力提升1"
+tags = Array[int]([2])
+args = Dictionary[String, Variant]({
+"value": 1.0,
+"value_per": 10.0
+})
+itemLevel = 1
+sprite = ExtResource("3_sedy2")
+onPick = SubResource("Resource_6kwvd")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

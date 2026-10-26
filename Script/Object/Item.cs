@@ -82,9 +82,11 @@ public partial class Item : Area2D
     /// <param name="pos"></param>
     /// <param name="parent"></param>
     /// <returns></returns>
-    public static Item CreateItem(ItemData data, Vector2 pos, Node parent = null)
+    public static Item CreateItem(ItemData data, Vector2 pos, Node parent = null, bool interactive = true)
     {
         Item item = ItemPrefab.Instantiate() as Item;
+
+        item.Interactive = interactive;
 
         if(parent == null)
         {
@@ -161,6 +163,10 @@ public partial class Item : Area2D
     [Export] public string intro;
     [Export] public Array<ItemTag> tags = new();
     [Export] public int itemLevel;
+    /// <summary>
+    /// 是否可交互（可以被拾取）
+    /// </summary>
+    [Export] public bool Interactive = true;
 
     /// <summary>
     /// 携带的Buff，value为挂载层数
@@ -308,6 +314,14 @@ public partial class Item : Area2D
         if (initImmediately)
         {
             Initialize(this.data);
+        }
+
+        //设为不可交互
+        if (!Interactive)
+        {
+            Monitoring = false;
+            Monitorable = false;
+            Visible = false;
         }
 
         float FloatHeight = 10f;   // 浮动幅度（像素）

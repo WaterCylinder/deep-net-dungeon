@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://cimpu8nsxdfng"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_pxr1j"]
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="1_ypy50"]
+[ext_resource type="Texture2D" uid="uid://df1oeiy8hps6i" path="res://Resource/v1/Item/Sprite/edition1/EmergencyManual.png" id="2_jo76l"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="2_wyhqe"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_3cyom"]
+
+[sub_resource type="Resource" id="Resource_ypy50"]
+script = ExtResource("1_ypy50")
+behaviorName = "RemoveEmergencyManual"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_wyhqe"]
+script = ExtResource("3_3cyom")
+condition = ExtResource("2_wyhqe")
+behavior = SubResource("Resource_ypy50")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_l0046"]
+script = ExtResource("1_ypy50")
+behaviorName = "EmergencyManual"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_ntoec"]
+script = ExtResource("3_3cyom")
+condition = ExtResource("2_wyhqe")
+behavior = SubResource("Resource_l0046")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_pxr1j")
+sprite = ExtResource("2_jo76l")
+id = "buff_emergency_manual"
+name = "紧急避险"
+intro = "失去护盾时获得高额护甲"
+maxStack = 1
+tags = null
+isUnique = true
+args = null
+onStart = SubResource("Resource_ntoec")
+onEnd = SubResource("Resource_wyhqe")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

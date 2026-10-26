@@ -17,6 +17,7 @@ public partial class BulletData : Resource
     /// 弹幕标签列表
     /// </summary>
     [Export] public Array<BulletTag> bulletTags = new();
+    [Export] public Dictionary<string, Variant> args = new();
 
     /// <summary>
     /// 弹幕存在时间（秒），0表示永久存在
@@ -66,12 +67,13 @@ public partial class BulletData : Resource
     /// <summary>
     /// 创建时的行为
     /// </summary>
-    [Export] public BulletBehavior onCreate;
+    [Export] public Behavior onCreate;
 
     /// <summary>
     /// 更新时的行为
     /// </summary>
-    [Export] public BulletBehavior onUpdate;
+    [Export] public Behavior onUpdate;
+    [Export] public Behavior onPhysicalUpdata;
 
     /// <summary>
     /// 击中实体时触发的效果（伤害结算后触发，未造成伤害时同样触发）。

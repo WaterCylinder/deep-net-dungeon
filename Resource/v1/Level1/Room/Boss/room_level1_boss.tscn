@@ -33,3 +33,8 @@ enemyData = ExtResource("5_dswlf")
 [node name="Return" parent="Doors" unique_id=1617042371 instance=ExtResource("6_hvqhd")]
 position = Vector2(-512, -256)
 doorType = 1
+
+[node name="Door" parent="Doors" unique_id=1902877401 instance=ExtResource("6_hvqhd")]
+position = Vector2(430, -32)
+scale = Vector2(2, 2)
+doorType = 3

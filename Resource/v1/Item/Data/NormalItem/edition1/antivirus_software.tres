@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://x4baltormevr"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_2hm3l"]
+[ext_resource type="Resource" uid="uid://cxqno3kantbjm" path="res://Resource/v1/Item/Buff/Data/buff_antivirus_software.tres" id="2_a82gq"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_sukyj"]
+[ext_resource type="Texture2D" uid="uid://b5krx7icm8yli" path="res://Resource/v1/Item/Sprite/edition1/AntivirusSoftware.png" id="3_sukyj"]
+
+[resource]
+script = ExtResource("2_sukyj")
+ItemName = "antivirus_software"
+showName = "杀毒软件"
+intro = "免疫病毒效果"
+tags = Array[int]([2])
+itemLevel = 2
+sprite = ExtResource("3_sukyj")
+maxCount = 1
+carryBuffs = Dictionary[ExtResource("1_2hm3l"), int]({
+ExtResource("2_a82gq"): 1
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

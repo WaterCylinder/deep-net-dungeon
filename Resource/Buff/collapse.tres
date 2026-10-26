@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://k0gcs10jamt5"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_2vdww"]
+[ext_resource type="Script" uid="uid://duq64550rqpbv" path="res://Script/Data/Effect/Behaviors/BuffBehavior.cs" id="1_eqcvj"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_egpkf"]
+[ext_resource type="Texture2D" uid="uid://bcqr0w7n1gtcf" path="res://Resource/Buff/collapse.png" id="2_gxlyu"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_ola40"]
+
+[sub_resource type="Resource" id="Resource_lwc0m"]
+script = ExtResource("1_eqcvj")
+behaviorName = "Collapse"
+metadata/_custom_type_script = "uid://duq64550rqpbv"
+
+[sub_resource type="Resource" id="Resource_b0b0s"]
+script = ExtResource("3_ola40")
+condition = ExtResource("2_egpkf")
+behavior = SubResource("Resource_lwc0m")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_2vdww")
+sprite = ExtResource("2_gxlyu")
+id = "collapse"
+name = "崩坏"
+intro = "每1秒受到崩坏层数2倍的崩坏伤害并且崩坏层数降低50%"
+maxStack = -1
+processTime = 1.0
+tags = Array[int]([1])
+isUnique = true
+isAdded = true
+args = null
+onTimer = SubResource("Resource_b0b0s")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

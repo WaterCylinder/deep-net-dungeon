@@ -22,6 +22,10 @@ public partial class BagUIPlayerInfo : Control
     /// 防御力
     /// </summary>
     [Export] public Label defense;
+    /// <summary>
+    /// 护盾
+    /// </summary>
+    [Export] public Label shield;
 
     /// <summary>
     /// 攻击速度，每秒多少次攻击
@@ -59,8 +63,8 @@ public partial class BagUIPlayerInfo : Control
             attack.Text = player.attack.Get().ToString("0.#");
             defense.Text = player.defense.Get().ToString("0.#");
             attackSpeed.Text = player.attackSpeed.Get().ToString("0.#");
-            critRate.Text = player.critRate.Get().ToString("0.#");
-            critDamage.Text = player.critDamage.Get().ToString("0.#");
+            critRate.Text = player.critRate.Get().ToString("0.##");
+            critDamage.Text = player.critDamage.Get().ToString("0.##");
             speed.Text = player.speed.Get().ToString("0.#");
         }
     }

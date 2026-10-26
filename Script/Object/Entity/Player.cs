@@ -13,6 +13,9 @@ public partial class Player : Entity
 
     [Export] public Node2D shotPoint;
     [Export] public AudioStream hitSound;
+    [Export] public AudioStream brokenSound;
+    [Export] public AudioStream pounchSound;
+    [Export] public AudioStream skillSound;
 
     [ExportCategory("局内属性")]
     [Export] public int score;
@@ -23,12 +26,15 @@ public partial class Player : Entity
     public float bulletSpeed = 10f;
 
     public Enemy targetEnemy = null;
+    public float usableItemCD = -1;
+    public float usableItemCDNow = 0;
+    public Item usableItem;
 
     public Vector2 targetShotToward = Vector2.Zero;
 
     #endregion 
 
-    Game game => GameManager.Instance.game;
+    [Signal]public delegate void OnUseItemEventHandler(Player player, Item item);
 
     protected override void OnEnterTree()
     {
@@ -135,6 +141,32 @@ public partial class Player : Entity
         //默认状态获取触发器的实例，自动攻击
         targetEnemy = enemyTrigger.latestEntity as Enemy;
         TargetAttack();
+
+        InputManager input = InputManager.Instance;
+        // 使用主动道具
+        if (input.IsActionJustPressedRaw(InputManager.Actions.OtherSkill))
+        {
+            if (Game.IsAble(usableItem))
+            {
+                if(usableItemCDNow <= 0)
+                {
+                    game.PlaySound(skillSound);
+                    usableItem.Use(this);
+                    EmitSignal(SignalName.OnUseItem, this, usableItem);
+                    usableItemCDNow  = usableItemCD;
+                }
+            }
+        }
+
+        //更新主动道具CD
+        if(usableItemCDNow > 0)
+        {
+            usableItemCDNow -= (float)delta;
+        }
+        else
+        {
+            usableItemCDNow = 0;
+        }
     }
 
     /// <summary>
@@ -142,7 +174,7 @@ public partial class Player : Entity
     /// </summary>
     void TargetAttack()
     {
-        if (targetEnemy == null)
+        if (!Game.IsAble(targetEnemy))
         {
             return;
         }
@@ -168,6 +200,14 @@ public partial class Player : Entity
         Attack();
     }
 
+    /// <summary>
+    /// 使用主动道具
+    /// </summary>
+    void UseItem()
+    {
+        
+    }
+
     protected override void OnAttack()
     {
         Shot(targetShotToward * bulletSpeed, shotPoint.GlobalPosition);
@@ -191,6 +231,18 @@ public partial class Player : Entity
             Callable.From((float v) => mat.SetShaderParameter("flash_modifier", v)),
             1.0f, 0.0f, 0.2f
         );
+    }
+
+    protected override void OnShieldHurt(Damage damage, float shieldDamage)
+    {
+        base.OnShieldHurt(damage, shieldDamage);
+        PlaySoundGlobal(pounchSound);
+    }
+
+    protected override void OnShieldBroken(Damage damage, float shieldDamage)
+    {
+        base.OnShieldHurt(damage, shieldDamage);
+        PlaySoundGlobal(brokenSound);
     }
 
     protected override void OnDeath(Damage damage, Entity other)

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ItemBehavior" format=3 uid="uid://bpsdjol6508a"]
+
+[ext_resource type="Script" uid="uid://cigb1f3wr7pp1" path="res://Script/Data/Item/ItemBehavior.cs" id="1_pbewr"]
+
+[resource]
+script = ExtResource("1_pbewr")
+behaviorName = "PushBullet"
+metadata/_custom_type_script = "uid://cigb1f3wr7pp1"

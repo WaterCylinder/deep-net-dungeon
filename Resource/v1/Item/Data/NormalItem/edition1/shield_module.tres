@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cxa7ko75a0en2"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_mhh0d"]
+[ext_resource type="Resource" uid="uid://byos4yblecesn" path="res://Resource/v1/Item/Behavior/item_add_shield.tres" id="2_676m1"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_sb010"]
+[ext_resource type="Texture2D" uid="uid://ce1bimhhjx37a" path="res://Resource/v1/Item/Sprite/edition1/ShieldModule.png" id="3_sb010"]
+
+[resource]
+script = ExtResource("2_sb010")
+ItemName = "shield_module"
+showName = "护盾模块"
+intro = "获得 20 护盾"
+args = Dictionary[String, Variant]({
+"value": 20.0
+})
+itemLevel = 1
+sprite = ExtResource("3_sb010")
+onPick = ExtResource("2_676m1")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

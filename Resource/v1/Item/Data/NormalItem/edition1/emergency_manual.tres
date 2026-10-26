@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://o1po5532qrdn"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_yghxx"]
+[ext_resource type="Resource" uid="uid://cimpu8nsxdfng" path="res://Resource/v1/Item/Buff/Data/buff_emergency_manual.tres" id="2_ajbvd"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_h32vq"]
+[ext_resource type="Texture2D" uid="uid://df1oeiy8hps6i" path="res://Resource/v1/Item/Sprite/edition1/EmergencyManual.png" id="3_h32vq"]
+
+[resource]
+script = ExtResource("2_h32vq")
+ItemName = "emergency_manual"
+showName = "紧急风险处理手册"
+intro = "失去护盾时，获得100点护甲，持续5秒。"
+tags = Array[int]([2])
+itemLevel = 3
+sprite = ExtResource("3_h32vq")
+maxCount = 1
+carryBuffs = Dictionary[ExtResource("1_yghxx"), int]({
+ExtResource("2_ajbvd"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

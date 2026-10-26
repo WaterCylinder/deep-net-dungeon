@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://byxah71vai3by"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_7n7np"]
+[ext_resource type="Resource" uid="uid://b66xql3nkyo3r" path="res://Resource/v1/Bullet/Data/bullet_doll.tres" id="1_8l7f7"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_lbcfl"]
+[ext_resource type="Resource" uid="uid://bpsdjol6508a" path="res://Resource/v1/Item/Behavior/item_push_bullet.tres" id="3_d2qeo"]
+[ext_resource type="Texture2D" uid="uid://ci3tkn4fvk24j" path="res://Resource/v1/Item/Sprite/edition1/Doll.png" id="3_lbcfl"]
+
+[resource]
+script = ExtResource("2_lbcfl")
+ItemName = "doll"
+showName = "玩偶"
+intro = "召唤玩偶"
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("1_8l7f7")
+})
+itemLevel = 2
+sprite = ExtResource("3_lbcfl")
+onPick = ExtResource("3_d2qeo")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

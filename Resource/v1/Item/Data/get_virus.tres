@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bp8gespawau8l"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_jkme0"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_6u4ls"]
+[ext_resource type="Resource" uid="uid://b5omcf0r1awkf" path="res://Resource/Buff/virus.tres" id="2_xfacj"]
+[ext_resource type="Texture2D" uid="uid://bq7ol8iduv2t6" path="res://Resource/Buff/virus.png" id="3_6u4ls"]
+
+[resource]
+script = ExtResource("2_6u4ls")
+ItemName = "get_virus"
+showName = "病毒"
+intro = "获得1层病毒效果"
+sprite = ExtResource("3_6u4ls")
+carryBuffs = Dictionary[ExtResource("1_jkme0"), int]({
+ExtResource("2_xfacj"): 1
+})
+addBuffOnPick = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

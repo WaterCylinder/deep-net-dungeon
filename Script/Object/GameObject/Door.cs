@@ -14,15 +14,47 @@ public enum DoorType
     /// <summary>
     /// 其他（将不会被自动赋值目标）
     /// </summary>
-    Other
+    Other,
+    /// <summary>
+    /// 前往下一层
+    /// </summary>
+    NextLevel,
 }
 
 public partial class Door : Area2D
 {
+    public static Dictionary<RoomTag, Color> RoomTagColorMapper = new Dictionary<RoomTag, Color>
+    {
+        {RoomTag.Shop, Colors.Yellow},
+        {RoomTag.Normal, Colors.Purple},
+        {RoomTag.Treasure, Colors.Gold},
+        {RoomTag.Start, Colors.Green},
+        {RoomTag.Boss, Colors.Red}
+    };
+    public static Color GetColorByRoomTag(Room room)
+    {
+        foreach(var tag in room.tags)
+        {
+            if (RoomTagColorMapper.ContainsKey(tag))
+            {
+                return RoomTagColorMapper[tag];
+            }
+        }
+        return Colors.White;
+    }
+
     /// <summary>
     /// 门的类型
     /// </summary>
     [Export] public DoorType doorType = DoorType.Next;
+    [Export] public ColorRect colorRect;
+    ShaderMaterial shader
+    {
+        get
+        {
+            return colorRect.Material as ShaderMaterial;
+        }
+    }
     [Export] public Room room;
     [Export] public bool isOpen = false;
     [Export] public bool isTrans = true;
@@ -33,6 +65,8 @@ public partial class Door : Area2D
         EntityTag.Bullet,
         EntityTag.Enemy
     };
+    
+    [Signal] public delegate void OnEnterEventHandler(Entity entity);
 
     /// <summary>
     /// 待重新武装的门 -> 到期物理帧号
@@ -69,6 +103,11 @@ public partial class Door : Area2D
         {
             if(body is Entity entity && CheckEntityTag(entity))
             {
+                if (isOpen)
+                {
+                    //开启状态处理碰撞事件
+                    EmitSignal(SignalName.OnEnter, entity);
+                }
                 if(CanTriggerTrans())
                 {
                     Trans(entity);
@@ -130,7 +169,7 @@ public partial class Door : Area2D
     /// </summary>
     private bool CanTriggerTrans()
     {
-        if(!isOpen || !isTrans)
+        if(!isOpen || !isTrans || doorType == DoorType.NextLevel)
         {
             return false;
         }
@@ -220,15 +259,58 @@ public partial class Door : Area2D
         targetDoor?.RearmAfterExitOrTeleport();
     }
 
+    /// <summary>
+    /// 与另一扇门双向配对：两扇门互相记录对方的门与房间。
+    ///
+    /// 地图生成时用它建立"这扇出口门 ↔ 那扇入口门"的明确连接。
+    /// 因为是门对门的独立配对，一个房间有多条入口/出口时各连各的，不会互相覆盖
+    /// （旧的Room.returnDoor方案只能让所有入口共用同一个落点门）
+    /// </summary>
+    /// <param name="other">对端的门</param>
+    public void PairWith(Door other)
+    {
+        if (other == null)
+        {
+            return;
+        }
+
+        targetDoor = other;
+        targetRoom = other.room;
+
+        other.targetDoor = this;
+        other.targetRoom = room;
+    }
+
     public void Open()
     {
         Visible = true;
         isOpen = true;
+        Tween tween = CreateTween();
+        tween.TweenMethod(Callable.From<int>(v =>
+        {
+            shader.SetShaderParameter("open_progress", (float)v / 10);
+        }), 0, 10, 0.5f);
+        if(targetRoom != null)
+        {
+            colorRect.SelfModulate = GetColorByRoomTag(targetRoom);
+        }
+        else
+        {
+            if(targetDoor != null && targetDoor.room != null)
+            {
+                colorRect.SelfModulate = GetColorByRoomTag(targetDoor.room);
+            }
+            else
+            {
+                colorRect.SelfModulate = Colors.Purple;
+            }
+        }
     }
 
     public void Close()
     {
         Visible = false;
         isOpen = false;
+        shader.SetShaderParameter("open_progress", 0);
     }
 }

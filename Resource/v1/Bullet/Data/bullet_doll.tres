@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://b66xql3nkyo3r"]
+
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_t1yjy"]
+[ext_resource type="Script" uid="uid://b71xk50lksw2m" path="res://Resource/v1/BulletBehaviorLevel1.cs" id="1_v2y1u"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_cq0t5"]
+[ext_resource type="Texture2D" uid="uid://ci3tkn4fvk24j" path="res://Resource/v1/Item/Sprite/edition1/Doll.png" id="2_gukq5"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_ee15g"]
+[ext_resource type="AudioStream" uid="uid://dkyglvanyv7vb" path="res://Asset/Sound/blood1.wav" id="5_ee15g"]
+
+[sub_resource type="Resource" id="Resource_48ldp"]
+script = ExtResource("1_v2y1u")
+behaviorName = "GiveVirus"
+metadata/_custom_type_script = "uid://b71xk50lksw2m"
+
+[sub_resource type="Resource" id="Resource_k5jl3"]
+script = ExtResource("3_ee15g")
+condition = ExtResource("2_cq0t5")
+behavior = SubResource("Resource_48ldp")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_fufkq"]
+script = ExtResource("1_v2y1u")
+behaviorName = "DollCircleMove"
+metadata/_custom_type_script = "uid://b71xk50lksw2m"
+
+[resource]
+script = ExtResource("1_t1yjy")
+bulletName = "Doll"
+bulletTags = Array[int]([3])
+args = Dictionary[String, Variant]({
+"value": 5
+})
+lifetime = 0.0
+damageMultiplier = 0.0
+sprite = ExtResource("2_gukq5")
+scale = Vector2(2, 2)
+isRotateWithToward = false
+onPhysicalUpdata = SubResource("Resource_fufkq")
+onHit = SubResource("Resource_k5jl3")
+soundOnHit = ExtResource("5_ee15g")
+metadata/_custom_type_script = "uid://draiigge0qptw"

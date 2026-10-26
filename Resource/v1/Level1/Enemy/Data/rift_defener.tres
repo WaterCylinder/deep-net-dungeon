@@ -13,7 +13,7 @@
 [ext_resource type="SpriteFrames" uid="uid://ccrmleow7f0km" path="res://Resource/Demo/DemoEnemy/Sprite/rift_defener_sprite_frames.tres" id="9_60aub"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f2l66"]
-radius = 16.0
+radius = 32.0
 
 [sub_resource type="Resource" id="Resource_qhfsu"]
 script = ExtResource("7_48mgu")
@@ -54,6 +54,9 @@ condition = ExtResource("4_t51dd")
 behavior = SubResource("Resource_pex1t")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_wuhic"]
+radius = 64.0
+
 [resource]
 script = ExtResource("8_3g5jn")
 enemyName = "RiftDefener"
@@ -65,7 +68,8 @@ attack = 20.0
 defense = 11.0
 speed = 60.0
 spriteFrames = ExtResource("9_60aub")
-layoutOffset = Vector2(0, -35)
+layoutOffset = Vector2(0, -16)
+physicShape = SubResource("CircleShape2D_wuhic")
 attackShape = SubResource("CircleShape2D_f2l66")
 meleeOffest = Vector2(0, 0)
 scale = Vector2(2, 2)

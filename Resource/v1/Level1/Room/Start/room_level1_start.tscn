@@ -4,8 +4,12 @@
 [ext_resource type="TileSet" uid="uid://rsfmy767lguj" path="res://Resource/Global/tile_set.tres" id="2_mknq8"]
 [ext_resource type="PackedScene" uid="uid://bsvmpnjd6qt5d" path="res://Asset/Object/Component/room_title.tscn" id="3_t3ym6"]
 [ext_resource type="PackedScene" uid="uid://cmnv5ygvfjkqt" path="res://Asset/Object/item_generator.tscn" id="4_282c1"]
-[ext_resource type="Resource" uid="uid://dmc3og15mia7f" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_arrow.tres" id="5_b1tkp"]
+[ext_resource type="PackedScene" uid="uid://ram0gxhmoss1" path="res://Asset/Object/enemy_generator.tscn" id="4_ag1q4"]
+[ext_resource type="Resource" uid="uid://cfsvk6irt6nhv" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_glod_bullet.tres" id="6_282c1"]
+[ext_resource type="Resource" uid="uid://cdmgsp5qpofo6" path="res://Resource/v1/Item/Data/NormalItem/edition1/ssd.tres" id="7_282c1"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="7_c4siu"]
+[ext_resource type="Resource" uid="uid://dhibw4p6r8pqn" path="res://Resource/v1/Item/Data/UsableItem/usable_item_grey_dove.tres" id="8_282c1"]
+[ext_resource type="Resource" uid="uid://bp8gespawau8l" path="res://Resource/v1/Item/Data/get_virus.tres" id="9_282c1"]
 
 [node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]
 script = ExtResource("1_ag1q4")
@@ -25,11 +29,27 @@ roomMap = NodePath("..")
 
 [node name="1" type="Node2D" parent="EnemyGenerator" unique_id=1306167031]
 
+[node name="EnemyGenerator" parent="EnemyGenerator/1" unique_id=463566022 instance=ExtResource("4_ag1q4")]
+position = Vector2(-352, -160)
+
 [node name="ItemGenerator" type="Node2D" parent="." unique_id=1370546880]
 
 [node name="ItemGenerator" parent="ItemGenerator" unique_id=1631980262 instance=ExtResource("4_282c1")]
 position = Vector2(0, -224)
-itemData = ExtResource("5_b1tkp")
+itemData = ExtResource("6_282c1")
+
+[node name="ItemGenerator2" parent="ItemGenerator" unique_id=508726707 instance=ExtResource("4_282c1")]
+position = Vector2(-192, -64)
+itemData = ExtResource("7_282c1")
+GenerateImmediately = true
+
+[node name="ItemGenerator3" parent="ItemGenerator" unique_id=785298603 instance=ExtResource("4_282c1")]
+position = Vector2(-256, 216)
+itemData = ExtResource("8_282c1")
+
+[node name="ItemGenerator4" parent="ItemGenerator" unique_id=929645414 instance=ExtResource("4_282c1")]
+position = Vector2(-64, 216)
+itemData = ExtResource("9_282c1")
 
 [node name="ShopNode" type="Node2D" parent="." unique_id=1260284010]
 

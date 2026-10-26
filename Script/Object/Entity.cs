@@ -70,6 +70,12 @@ public abstract partial class Entity : RigidBody2D
     [Export] public Value speed = new(100f);
 
     /// <summary>
+    /// 护甲值
+    /// </summary>
+    [Export] public float shield = 0;
+
+
+    /// <summary>
     /// 可变参数
     /// </summary>
     [Export] public Args args = new Args();
@@ -141,7 +147,7 @@ public abstract partial class Entity : RigidBody2D
     /// <summary>
     /// 当前弹幕
     /// </summary>
-    public BulletData bulletData;
+    [Export] public BulletData bulletData;
 
     /// <summary>
     /// 最新的弹幕
@@ -159,6 +165,8 @@ public abstract partial class Entity : RigidBody2D
     public bool isDead = false;
 
     #endregion
+    
+    public Game game => GameManager.Instance.game;
 
     #region 信号
 
@@ -181,6 +189,15 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     /// <param name="buff"></param>
     [Signal] public delegate void OnAttachBuffSignalEventHandler(Entity entity, Buff buff);
+
+    /// <summary>
+    /// Buff列表或层数发生变化时发出：
+    /// 挂载新Buff、唯一Buff叠加层数/刷新时间、层数增减、Buff被移除。
+    /// </summary>
+    /// <param name="entity">Buff所属实体</param>
+    /// <param name="buff">发生变化的那一个Buff</param>
+    [Signal] public delegate void OnBuffsChangedSignalEventHandler(Entity entity, Buff buff);
+
     /// <summary>
     /// 碰撞点信号
     /// </summary>
@@ -201,6 +218,11 @@ public abstract partial class Entity : RigidBody2D
     /// 拾取能量点时信号
     /// </summary>
     [Signal] public delegate void OnPickEnergyEventHandler(Entity entity, EnergyPoint energyPoint);
+
+    /// <summary>
+    /// 护盾消失时信号
+    /// </summary>
+    [Signal] public delegate void OnShieldBrokenSignalEventHandler(Entity entity);
 
     #endregion
     
@@ -388,26 +410,31 @@ public abstract partial class Entity : RigidBody2D
                 if (buff.isAdded)
                 {
                     // 叠层：在已有Buff上增加层数（上限由BuffData.level决定，达到上限时不再增加）
+                    // 层数真的变了的话AddStack内部已经通知过变化，这里不用再发
                     existingBuff.AddStack(finalStack.Value);
                 }
                 else
                 {
                     existingBuff.RefreshDuration();
+                    //只刷新了时间，列表没变但UI的剩余时间显示要更新
+                    NotifyBuffsChanged(existingBuff);
                 }
                 return existingBuff;
             }
         }
 
         // 设置owner并添加
+        //先入列表再设层数：SetStack可能触发层数变化通知，此时Buff应该已经属于本实体
         buff.owner = this;
-        buff.SetStack(finalStack.Value);
         buffs.Add(buff);
+        buff.SetStack(finalStack.Value);
         
         // 触发挂载事件
         buff.OnAttach();
 
         OnBuffAttached(buff);
         EmitSignal(nameof(OnAttachBuffSignal), this, buff);
+        NotifyBuffsChanged(buff);
         
         return buff;
     }
@@ -473,6 +500,7 @@ public abstract partial class Entity : RigidBody2D
             // 触发移除事件
             buff.OnRemove();
             OnBuffRemoved(buff);
+            NotifyBuffsChanged(buff);
             return true;
         }
         return false;
@@ -633,6 +661,19 @@ public abstract partial class Entity : RigidBody2D
     }
 
     /// <summary>
+    /// 广播"Buff发生变化"（挂载/叠层/层数增减/移除/刷新时间）。
+    ///
+    /// 通知入口统一放在Buff侧（Buff.OnStackChanged直接调用这里），
+    /// 因为层数可以被Buff自己改（例如行为里直接buff.RemoveStack(1)），
+    /// 只在Entity的接口里发信号会漏掉这种调用
+    /// </summary>
+    /// <param name="buff">发生变化的Buff</param>
+    public void NotifyBuffsChanged(Buff buff)
+    {
+        EmitSignal(SignalName.OnBuffsChangedSignal, this, buff);
+    }
+
+    /// <summary>
     /// 更新所有Buff
     /// </summary>
     /// <param name="delta">帧间隔时间</param>
@@ -687,14 +728,50 @@ public abstract partial class Entity : RigidBody2D
             buff.OnEntityHurt(damage);
         }
 
+        bool isCrit = false;
+
         // 计算实际伤害
         float rawDamage = damage.value.Get();
-        float def = defense.Get();
+        if (damage.critRate > 0 && game.randomSystem.Float(0, 1) < damage.critRate)
+        {
+            rawDamage *= damage.critDamage;
+            isCrit = true;
+        }
+
+        if (!damage.CheckTag(DamageTag.IgnoreShield))
+        {
+            // 伤害先计算到护盾上, 溢出的伤害减半应用到血量
+            if(shield > 0)
+            {
+                float shieldTemp = shield;
+                shield -= rawDamage;
+                OnShieldHurt(damage, rawDamage);
+                rawDamage -= shieldTemp;
+                if(shield < 0)
+                {
+                    shield = 0;
+                    rawDamage /= 2;
+                    OnShieldBroken(damage, rawDamage);
+                }
+            }
+            // 护盾后计算一次伤害如果为0则不进行下面计算
+            if(rawDamage <= 0)
+            {
+                return 0;
+            }
+        }
+
+        float finalDamage = rawDamage;
+
+        if (!damage.CheckTag(DamageTag.IgnoreDefense))
+        {
+            float def = defense.Get();
         
-        // 伤害公式：原始伤害 * (100 / (100 + 防御力)) - (防御力 / 10)
-        float damageReduction = 100f / (100f + def);
-        float finalDamage = rawDamage * damageReduction - (def * 0.1f);
-        
+            // 伤害公式：原始伤害 * (100 / (100 + 防御力)) - (防御力 / 10)
+            float damageReduction = 100f / (100f + def);
+            finalDamage = rawDamage * damageReduction - (def * 0.1f);
+        }    
+    
         // 确保伤害不为负
         finalDamage = Mathf.Max(0f, finalDamage);
 
@@ -709,8 +786,19 @@ public abstract partial class Entity : RigidBody2D
         {
             color = Colors.Orange;
         }
-        SmallText.CreateSmallText(SmallTextType.QuickShow, GlobalPosition, "" + finalDamage.ToString("0"), color);
-
+        else if (damage.CheckTag(DamageTag.Virus))
+        {
+            color = Colors.Red;
+        }
+        else if (damage.CheckTag(DamageTag.Collapse))
+        {
+            color = Colors.Purple;
+        }
+        SmallText st = SmallText.CreateSmallText(SmallTextType.QuickShow, GlobalPosition, "" + finalDamage.ToString("0"), color);
+        if (isCrit)
+        {
+            st.Scale = new Vector2(1.4f,1.4f);
+        }
         // 触发受伤抽象方法
         OnHurt(damage, finalDamage);
 
@@ -756,8 +844,28 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="finalDamage">最终伤害值</param>
     protected virtual void OnHurt(Damage damage, float finalDamage)
     {
-        
+        game.CreateParticles("blood", GlobalPosition);
     }
+
+    /// <summary>
+    /// 护盾受击时
+    /// </summary>
+    /// <param name="damage"></param>
+    /// <param name="finalDamage"></param>
+    protected virtual void OnShieldHurt(Damage damage, float shieldDamage)
+    {
+        game.CreateParticles("shield_hurt", GlobalPosition);
+    }
+
+    /// <summary>
+    /// 护盾破碎后
+    /// </summary>
+    protected virtual void OnShieldBroken(Damage damage, float shieldDamage)
+    {
+        EmitSignal(SignalName.OnShieldBrokenSignal, this);
+        game.CreateParticles("shield_broken", GlobalPosition, this.Scale.X);
+    }
+
 
     /// <summary>
     /// 死亡时触发
@@ -765,7 +873,7 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="damage">致死伤害数据</param>
     protected virtual void OnDeath(Damage damage, Entity other)
     {
-        
+        EmitSignal(SignalName.OnDeathSignal, this, damage);
     }
 
     /// <summary>
@@ -859,6 +967,7 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     protected virtual void OnAttack()
     {
+        EmitSignal(SignalName.OnAttackSignal, this);
     }
 
     #endregion
@@ -1049,8 +1158,25 @@ public abstract partial class Entity : RigidBody2D
     private void Dead(Damage damage, Entity other)
     {
         isDead = true;
+
+        // 先让每个Buff响应死亡（onEntityDeath），再统一移除所有Buff。
+        // 死亡后_Process会提前return，Buff不会再被推进，所以必须在这里清理：
+        // 否则onEnd（退订事件、移除数值乘区、取消订阅）不会执行，
+        // 尤其是复用实体（对象池/复活）时会把事件订阅和数值加成残留到下一次使用
+        // 用快照遍历：onEntityDeath的Effect里可能会反过来增删Buff，直接遍历buffs会破坏枚举
+        System.Collections.Generic.List<Buff> deathBuffs = new(buffs);
+        foreach (var buff in deathBuffs)
+        {
+            if (buff == null)
+            {
+                continue;
+            }
+            buff.OnEntityDeath();
+        }
+        ClearAllBuffs();
+
         OnDeath(damage, other);
-        EmitSignal(SignalName.OnDeathSignal, this, damage);
+        
         if(queueFreeOnDeath)
         {
             QueueFree();
@@ -1115,8 +1241,9 @@ public abstract partial class Entity : RigidBody2D
     /// <param name="newBulletData"></param>
     public void ChangeBullet(BulletData newBulletData)
     {
-        if(newBulletData == null)return;
-        bulletData ??= newBulletData.Duplicate(false) as BulletData;
+        if(newBulletData == null)
+            return;
+        bulletData = newBulletData;
     }
 
     /// <summary>
@@ -1132,6 +1259,7 @@ public abstract partial class Entity : RigidBody2D
         {
             pos = GlobalPosition;
         }
+        GD.Print($"{Name}射击弹幕{bulletData.bulletName}");
         Bullet but = Bullet.Create(
             this,
             pos,
@@ -1196,7 +1324,7 @@ public abstract partial class Entity : RigidBody2D
         if(attackTimer >= 1f)
         {
             OnAttack();
-            EmitSignal(nameof(OnAttackSignal), this);
+            
             attackTimer = 0;
         }
     }
@@ -1208,11 +1336,20 @@ public abstract partial class Entity : RigidBody2D
     public void ForceAttack(bool resetAttackTime = false)
     {
         OnAttack();
-        EmitSignal(nameof(OnAttackSignal), this);
         if (resetAttackTime)
         {
             attackTimer = 0;
         }
+    }
+
+    /// <summary>
+    /// 一般的添加护盾方法，此方法获得的护盾无法大于最大生命值
+    /// </summary>
+    /// <param name="num"></param>
+    public void AddShield(float num)
+    {
+        float diff = maxHealth.Get() - shield;
+        shield += Mathf.Min(diff, num);
     }
 
     public T GetComponent<T>() where T : EntityComponent

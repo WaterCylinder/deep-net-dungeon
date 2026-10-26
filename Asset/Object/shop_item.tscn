@@ -5,8 +5,8 @@
 [ext_resource type="Shader" uid="uid://cxwo728yiss1s" path="res://Resource/Shader/Spiral.gdshader" id="3_4qkw4"]
 [ext_resource type="Texture2D" uid="uid://dehyg53ma72au" path="res://Resource/Demo/Item/Sprite/Temp.png" id="3_ppxm7"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ai86v"]
-size = Vector2(20, 32)
+[sub_resource type="CircleShape2D" id="CircleShape2D_4qkw4"]
+radius = 24.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ppxm7"]
 shader = ExtResource("3_4qkw4")
@@ -24,15 +24,15 @@ priceLabel = NodePath("Label")
 colorRect = NodePath("ColorRect")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1865037196]
-shape = SubResource("RectangleShape2D_ai86v")
+shape = SubResource("CircleShape2D_4qkw4")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1941944619]
-self_modulate = Color(0.8666668, 0, 1, 1)
+self_modulate = Color(0.8666668, 0, 1, 0.78431374)
 material = SubResource("ShaderMaterial_ppxm7")
-offset_left = -49.0
-offset_top = -58.0
-offset_right = 47.0
-offset_bottom = 38.0
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1604427740]
 position = Vector2(0, -16)

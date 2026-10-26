@@ -40,12 +40,10 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
 
         float bulletSpeed = Arg("speed", 3);
         float angle = Arg("angle", 20);
-        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
 
         Vector2 toward1 = toward.Rotated(Mathf.DegToRad(angle));
         Vector2 toward2 = toward.Rotated(Mathf.DegToRad(-angle));
 
-        enemy.ChangeBullet(bulletData);
         enemy.Shot(toward.Normalized() * bulletSpeed);
         enemy.Shot(toward1.Normalized() * bulletSpeed);
         enemy.Shot(toward2.Normalized() * bulletSpeed);
@@ -58,9 +56,6 @@ public partial class EnemyBehaviorDemo : EnemyBehavior
         float bulletSpeed = Arg("speed", 4);
         int shotNum = Arg("shot_num", 8);
         if(shotNum == 0)shotNum = 1;
-
-        BulletData bulletData = Arg("bullet_data", Bullet.DefaultData);
-        enemy.ChangeBullet(bulletData);
 
         Array<Vector2> towards = new();
         float angle = 360 / shotNum;

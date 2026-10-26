@@ -24,5 +24,6 @@ id = "fire_arrow"
 name = "燃烧箭头"
 intro = "弹幕附带灼烧"
 tags = null
+args = null
 onStart = SubResource("Resource_xhdt4")
 metadata/_custom_type_script = "uid://bctrndevbmqqd"

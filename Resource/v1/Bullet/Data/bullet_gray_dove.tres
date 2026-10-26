@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://djhdi2koe4bef"]
+
+[ext_resource type="Script" uid="uid://b41675oscarsg" path="res://Script/Data/Entity/BulletBehavior.cs" id="1_erge8"]
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_fokw5"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_ine0e"]
+[ext_resource type="SpriteFrames" uid="uid://djscps8robp8b" path="res://Resource/v1/Bullet/Sprite/gray_dove_sprite_frames.tres" id="2_vmow7"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_honre"]
+[ext_resource type="AudioStream" uid="uid://dkyglvanyv7vb" path="res://Asset/Sound/blood1.wav" id="5_ine0e"]
+
+[sub_resource type="Resource" id="Resource_un1ov"]
+script = ExtResource("1_erge8")
+behaviorName = "SetVirus"
+metadata/_custom_type_script = "uid://b41675oscarsg"
+
+[sub_resource type="Resource" id="Resource_iqe1l"]
+script = ExtResource("3_honre")
+condition = ExtResource("2_ine0e")
+behavior = SubResource("Resource_un1ov")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_fokw5")
+bulletName = "GrayDove"
+bulletTags = Array[int]([3])
+args = Dictionary[String, Variant]({
+"virus_per": 0.3
+})
+lifetime = 3.0
+spriteFrames = ExtResource("2_vmow7")
+layoutOffset = Vector2(-32, 0)
+scale = Vector2(5, 5)
+onHit = SubResource("Resource_iqe1l")
+soundOnHit = ExtResource("5_ine0e")
+metadata/_custom_type_script = "uid://draiigge0qptw"

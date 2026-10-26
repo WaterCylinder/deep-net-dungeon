@@ -48,54 +48,49 @@ public partial class MapData : Resource
     /// </summary>
     [Export] public int maxNormalRoomCount = 7;
 
-    /// <summary>
-    /// 直线模式：资源房间的位置倾向（0~1）。
-    /// 0 = 在路径上完全随机，数值越大越集中在靠近起始房间的位置
-    /// （1 = 只会出现在离起始房间最近的那个槽位）
-    /// </summary>
-    [Export(PropertyHint.Range, "0,1,0.05")] public float treasureNearStartBias = 0.5f;
+    #endregion
+
+    #region 树状地图（纺锤形）
 
     /// <summary>
-    /// 直线模式：商店房间的位置倾向（0~1）。
-    /// 0 = 在路径上完全随机，数值越大越集中在靠近Boss房间的位置
-    /// （1 = 只会出现在离Boss最近的那个槽位）
+    /// 纺锤形：普通房间数量（不含起始房间与Boss房间）
     /// </summary>
-    [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
+    [ExportCategory("树状地图（纺锤形）")]
+    [Export] public int normalRoomCount = 6;
+
+    /// <summary>
+    /// 纺锤形：资源房间数量（越靠近起始房间概率越高，强度见"房间位置倾向"）
+    /// </summary>
+    [Export] public int treasureRoomCount = 1;
+
+    /// <summary>
+    /// 纺锤形：商店房间数量（越靠近Boss房间概率越高，强度见"房间位置倾向"）
+    /// </summary>
+    [Export] public int shopRoomCount = 1;
+
+    /// <summary>
+    /// 纺锤形：最宽一层的房间数（峰值上限）。
+    /// 层宽从"起始房间可用出口数"开始，每层+1扩散到峰值，再每层-1收拢到1；
+    /// 房间总数不是标准阶梯形状时，多出来的房间会加宽峰值层（此时峰值层可能比这个值宽一点）
+    /// </summary>
+    [Export] public int maxLayerRooms = 3;
 
     #endregion
 
-    #region 树状地图
+    #region 房间位置倾向
 
     /// <summary>
-    /// 树状模式：主干的层数（层0是起始房间；主干每层1个房间，单向连接到下一层）。
-    /// Boss房间接在主干的最末端，因此主干就是整张地图里最长的那条枝干
+    /// 资源房间的位置倾向（0~1）：0 = 完全随机，越大越集中在靠近起始房间的位置
+    /// （1 = 只会出现在离起始房间最近的槽位/层）。直线与树状模式共用
     /// </summary>
-    [ExportCategory("树状地图")]
-    [Export] public int treeDepth = 3;
+    [ExportCategory("房间位置倾向")]
+    [Export(PropertyHint.Range, "0,1,0.05")] public float treasureNearStartBias = 0.5f;
 
     /// <summary>
-    /// 树状模式：分叉概率（0~1）：
-    /// - 主干节点：以该概率额外长出一条支路（0 = 纯线性地图；1 = 每个主干节点都分叉）
-    /// - 支路节点：以该概率继续向下一层延伸，否则在此结束并汇回主干
+    /// 商店房间的位置倾向（0~1）：0 = 完全随机，越大越集中在靠近Boss房间的位置
+    /// （1 = 只会出现在离Boss最近的槽位/层）。直线与树状模式共用
     /// </summary>
-    [Export(PropertyHint.Range, "0,1,0.05")] public float branchChance = 0.5f;
-
-    /// <summary>
-    /// 树状模式：单层房间数软上限，达到上限后本层不再新增支路，防止分叉逐层累积导致房间爆炸
-    /// </summary>
-    [Export] public int maxLayerRooms = 8;
-
-    /// <summary>
-    /// 树状模式：资源房间出现的层（从1开始计数，表示"该层及之后的第一条支路"放资源房间）；≤0 表示不生成。
-    /// 直线模式下不使用该参数（直线模式下资源房间按"越靠近起始房间概率越高"随机插在路径上）
-    /// </summary>
-    [Export] public int treasureLayer = 1;
-
-    /// <summary>
-    /// 树状模式：商店房间出现的层（从1开始计数）；≤0 表示放在最后一层。
-    /// 直线模式下不使用该参数（直线模式下商店房间按"越靠近Boss房间概率越高"随机插在路径上）
-    /// </summary>
-    [Export] public int shopLayer = 0;
+    [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
 
     #endregion
 

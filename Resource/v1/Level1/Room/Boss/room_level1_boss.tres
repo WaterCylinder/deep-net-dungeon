@@ -15,7 +15,7 @@ metadata/_custom_type_script = "uid://bext0m7l2otpv"
 [resource]
 script = ExtResource("4_c53kr")
 roomId = "BOSS"
-roomTags = Array[int]([1])
+roomTags = Array[int]([2])
 tileMap = ExtResource("5_rfqin")
 args = null
 onGenerateEnemy = SubResource("Resource_5ujhu")

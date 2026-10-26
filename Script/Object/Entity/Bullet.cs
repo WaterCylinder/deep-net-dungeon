@@ -6,10 +6,9 @@ using Godot.Collections;
 /// </summary>
 public enum BulletTag
 {
-    #region 穿透类
 
     /// <summary>
-    /// 可穿透障碍物 - 弹幕碰到障碍物不会消失，继续飞行
+    /// 可穿透障碍物（包括Wall） - 弹幕碰到障碍物不会消失，继续飞行
     /// </summary>
     PenetrateObstacle,
 
@@ -28,12 +27,8 @@ public enum BulletTag
     /// </summary>
     PenetrateAll,
 
-    #endregion
-
-    #region 忽视类
-
     /// <summary>
-    /// 忽略障碍物 - 弹幕不会和障碍物发生碰撞事件
+    /// 忽略障碍物 - 弹幕不会和障碍物实体发生碰撞事件
     /// </summary>
     IgnoreObstacle,
 
@@ -51,98 +46,6 @@ public enum BulletTag
     /// 忽略所有实体 - 弹幕不会和任何实体发生碰撞事件
     /// </summary>
     IgnoreAll,
-
-    #endregion
-
-    #region 运动行为类
-
-    /// <summary>
-    /// 追踪弹幕 - 会自动追踪目标
-    /// </summary>
-    Homing,
-
-    /// <summary>
-    /// 反弹弹幕 - 碰到障碍物会反弹
-    /// </summary>
-    Bounce,
-
-    /// <summary>
-    /// 受重力影响 - 弹幕会受重力作用下坠
-    /// </summary>
-    Gravity,
-
-    /// <summary>
-    /// 螺旋运动 - 弹幕沿螺旋轨迹飞行
-    /// </summary>
-    Spiral,
-
-    /// <summary>
-    /// 波浪运动 - 弹幕沿正弦波轨迹飞行
-    /// </summary>
-    Wave,
-
-    /// <summary>
-    /// 加速运动 - 弹幕会随时间加速
-    /// </summary>
-    Accelerate,
-
-    /// <summary>
-    /// 减速运动 - 弹幕会随时间减速
-    /// </summary>
-    Decelerate,
-
-    /// <summary>
-    /// 随机方向 - 弹幕随机改变方向
-    /// </summary>
-    RandomDirection,
-
-    #endregion
-
-    #region 伤害效果类
-
-    /// <summary>
-    /// 爆炸效果 - 命中时产生范围爆炸伤害
-    /// </summary>
-    Explosive,
-
-    /// <summary>
-    /// 连锁伤害 - 命中后在附近敌人间跳跃
-    /// </summary>
-    Chain,
-
-    /// <summary>
-    /// 灼烧效果 - 命中后附加持续灼烧伤害
-    /// </summary>
-    Burn,
-
-    /// <summary>
-    /// 冰冻效果 - 命中后降低目标移动速度或冻结
-    /// </summary>
-    Freeze,
-
-    /// <summary>
-    /// 中毒效果 - 命中后附加持续中毒伤害
-    /// </summary>
-    Poison,
-
-    /// <summary>
-    /// 眩晕效果 - 命中后使目标短暂眩晕
-    /// </summary>
-    Stun,
-
-    /// <summary>
-    /// 击退效果 - 命中后击退目标
-    /// </summary>
-    Knockback,
-
-    /// <summary>
-    /// 吸血效果 - 命中后回复发射者生命值
-    /// </summary>
-    Lifesteal,
-
-    #endregion
-
-    #region 归属与判定类
 
     /// <summary>
     /// 玩家弹幕 - 由玩家发射，可对敌人造成伤害
@@ -164,70 +67,6 @@ public enum BulletTag
     /// </summary>
     FriendlyFireImmune,
 
-    #endregion
-
-    #region 特殊效果类
-
-    /// <summary>
-    /// 护盾破碎 - 命中时优先破坏护盾
-    /// </summary>
-    ShieldBreak,
-
-    /// <summary>
-    /// 护甲穿透 - 命中时忽略部分或全部护甲
-    /// </summary>
-    ArmorPiercing,
-
-    /// <summary>
-    /// 暴击弹幕 - 有额外暴击几率
-    /// </summary>
-    Critical,
-
-    /// <summary>
-    /// 分裂弹幕 - 命中或消失时分裂成多个小弹幕
-    /// </summary>
-    Split,
-
-    /// <summary>
-    /// 滞留区域 - 命中后在地面创建持续伤害区域
-    /// </summary>
-    Lingering,
-
-    /// <summary>
-    /// 传送弹幕 - 可穿过传送门
-    /// </summary>
-    Portalable,
-
-    /// <summary>
-    /// 定时引爆 - 发射后固定时间爆炸
-    /// </summary>
-    TimedExplosion,
-
-    /// <summary>
-    /// 触发型 - 需要特定条件触发效果（如按键、再次射击等）
-    /// </summary>
-    Triggered,
-
-    #endregion
-
-    #region 视觉与音效类
-
-    /// <summary>
-    /// 闪光效果 - 命中时产生闪光
-    /// </summary>
-    Flash,
-
-    /// <summary>
-    /// 屏幕震动 - 命中时触发屏幕震动
-    /// </summary>
-    ScreenShake,
-
-    /// <summary>
-    /// 拖尾效果 - 弹幕带有拖尾特效
-    /// </summary>
-    Trail,
-
-    #endregion
 }
 
 /// <summary>
@@ -346,9 +185,15 @@ public partial class Bullet : Entity
         // 初始化数据
         bullet.Initialize(data);
 
-        // 转移伤害基础值到弹幕上
-        if(Game.IsAble(owner))
+        
+        if (Game.IsAble(owner))
+        {
+            // 转移伤害基础值到弹幕上
             bullet.attack = owner.attack.Get();
+            // 转移暴击率和暴击伤害到弹幕上
+            bullet.critRate = owner.critRate.Get();
+            bullet.critDamage = owner.critDamage.Get();
+        }
 
         // 设置位置和速度
         bullet.Position = pos;
@@ -376,7 +221,7 @@ public partial class Bullet : Entity
         {
             parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
         }
-        parent?.AddChild(bullet);
+        parent?.CallDeferred("add_child", bullet);
 
         //如果生成不可见弹幕，则清除弹幕的精灵图像。
         if (bullet.spriteNode != null && !isVisible)
@@ -384,7 +229,7 @@ public partial class Bullet : Entity
             bullet.spriteNode.Texture = null;
         }
 
-        bullet._onCreate?.Run(bullet, owner, null);
+        bullet.onCreate?.Run(bullet, owner, null);
         bullet.EmitSignal(nameof(bullet.OnCreate));
 
         return bullet;
@@ -431,21 +276,22 @@ public partial class Bullet : Entity
     /// <summary>
     /// 创建时的行为
     /// </summary>
-    private BulletBehavior _onCreate;
+    private Behavior onCreate;
     /// <summary>
     /// 更新时的行为
     /// </summary>
-    private BulletBehavior _onUpdate;
+    private Behavior onUpdate;
+    private Behavior onPhysicalUpdate;
 
     /// <summary>
     /// 击中实体时触发的效果（伤害结算后触发）
     /// </summary>
-    private Effect _onHit;
+    private Effect onHit;
 
     /// <summary>
     /// 生命周期结束时触发的效果
     /// </summary>
-    private Effect _onLifetimeEnd;
+    private Effect onLifetimeEnd;
 
     public AudioStream soundOnShot;
     public AudioStream soundOnHit;
@@ -597,6 +443,10 @@ public partial class Bullet : Entity
         // 设置标签
         bulletTags = [.. data.bulletTags];
 
+        //设置参数
+        args = new();
+        args.Init(data.args);
+
         // 设置生命周期
         lifetime = data.lifetime;
 
@@ -607,10 +457,11 @@ public partial class Bullet : Entity
         isRotateWithToward = data.isRotateWithToward;
 
         // 设置行为和效果
-        _onCreate = data.onCreate;
-        _onUpdate = data.onUpdate;
-        _onHit = data.onHit;
-        _onLifetimeEnd = data.onLifetimeEnd;
+        onCreate = data.onCreate?.Duplicate(false) as Behavior;
+        onUpdate = data.onUpdate?.Duplicate(false) as Behavior;
+        onPhysicalUpdate = data.onPhysicalUpdata?.Duplicate(false) as Behavior;
+        onHit = data.onHit?.Duplicate(false) as Effect;
+        onLifetimeEnd = data.onLifetimeEnd?.Duplicate(false) as Effect;
 
         spriteNode = layout.GetNodeOrNull<Sprite2D>("Sprite");
         animNode = layout.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
@@ -642,6 +493,10 @@ public partial class Bullet : Entity
 
         layout.Scale = data.scale;
         layout.Position = data.layoutOffset;
+        var areaShape = area.GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+        var shape = areaShape.Shape as CircleShape2D;
+        shape.Radius = data.collisionRadius;
+        area.Scale = data.scale;
     }
 
     #endregion
@@ -694,7 +549,7 @@ public partial class Bullet : Entity
     /// </summary>
     protected virtual void OnLifetimeEnd()
     {   
-        _onLifetimeEnd?.Run(this, owner, null);
+        onLifetimeEnd?.Run(this, owner, null);
 
         Kill();
     }
@@ -705,7 +560,15 @@ public partial class Bullet : Entity
         base.OnStart();
         aliveTime = 0f;
         // 障碍物碰撞
-        BodyEntered += OnWallEnter;
+        if (CheckTag(BulletTag.PenetrateObstacle) || CheckTag(BulletTag.PenetrateAll)
+        || CheckTag(BulletTag.IgnoreObstacle) || CheckTag(BulletTag.IgnoreAll))
+        {
+            SetCollisionMaskValue(8, false);
+        }
+        else
+        {
+            BodyEntered += OnWallEnter;
+        }
         owner?.PlaySound(soundOnShot, owner.bulletAudioPlayer);
     }
 
@@ -720,7 +583,13 @@ public partial class Bullet : Entity
         }
 
         // 执行更新行为
-        _onUpdate?.Run(this, delta);
+        onUpdate?.Run(this, (float)delta);
+    }
+
+    protected override void OnPhysicsUpdate(double delta)
+    {
+        base.OnPhysicsUpdate(delta);
+        onPhysicalUpdate?.Run(this, (float)delta);
     }
 
     protected override void OnDeath(Damage damage, Entity other)
@@ -749,7 +618,6 @@ public partial class Bullet : Entity
         {
             HandleCollision(other);
         }
-
         // 检查是否可穿透
         if (! CanPenetrate(other))
         {
@@ -771,9 +639,6 @@ public partial class Bullet : Entity
 
         // 命中实体：触发命中效果与命中信号（伤害已结算）
         OnHitEntity(other);
-
-        // 默认行为：销毁弹幕
-        QueueFree();
     }
 
     /// <summary>
@@ -784,7 +649,7 @@ public partial class Bullet : Entity
     protected virtual void OnHitEntity(Entity target)
     {
         // 参数顺序与 onCreate 保持一致：(弹幕, 发射者, 被击中者)
-        _onHit?.Run(this, owner, target);
+        onHit?.Run(this, owner, target);
         PlaySoundGlobal(soundOnHit);
         EmitSignal(nameof(OnHit), target);
     }
@@ -798,11 +663,16 @@ public partial class Bullet : Entity
         // 计算最终伤害
         float finalDamage = attack.Get() * damageMultiplier;
 
+        if(finalDamage < 0)return;
+
         Damage damage = new Damage
         {
             source = this,
             value = new Value(finalDamage)
         };
+
+        damage.critDamage = critDamage;
+        damage.critRate = critRate;
 
         target.Hurt(damage);
     }
@@ -810,7 +680,8 @@ public partial class Bullet : Entity
     protected void OnWallEnter(Node other)
     {
         //对于非实体碰撞如果子弹没有穿过障碍物标签则直接消失
-        if (!CheckTag(BulletTag.PenetrateObstacle))
+        if (!CheckTag(BulletTag.PenetrateObstacle) && !CheckTag(BulletTag.PenetrateAll)
+        && !CheckTag(BulletTag.IgnoreObstacle) && !CheckTag(BulletTag.IgnoreAll))
         {
             Kill();
         }

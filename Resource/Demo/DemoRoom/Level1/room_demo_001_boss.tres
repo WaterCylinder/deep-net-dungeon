@@ -22,5 +22,6 @@ script = ExtResource("1_gfo3s")
 roomId = "Level1Normal1"
 roomTags = Array[int]([2])
 tileMap = ExtResource("2_gfo3s")
+args = null
 onGenerateEnemy = SubResource("Resource_m3upk")
 metadata/_custom_type_script = "uid://bodfjcgco84dp"

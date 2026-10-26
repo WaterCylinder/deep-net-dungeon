@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://i3huyhkcnpgr"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_qnixd"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_fm3cx"]
+[ext_resource type="Texture2D" uid="uid://ecaxnh0tpvdh" path="res://Resource/v1/Item/Sprite/edition1/RiftArmor.png" id="3_fm3cx"]
+
+[resource]
+script = ExtResource("2_fm3cx")
+ItemName = "rift_armor"
+sprite = ExtResource("3_fm3cx")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cdmgsp5qpofo6"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_tgryw"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_fiho3"]
+[ext_resource type="Script" uid="uid://cigb1f3wr7pp1" path="res://Script/Data/Item/ItemBehavior.cs" id="2_iuu1s"]
+[ext_resource type="Texture2D" uid="uid://dmvxdtonh5vk" path="res://Resource/v1/Item/Sprite/edition1/SSD.png" id="3_fiho3"]
+
+[sub_resource type="Resource" id="Resource_1yryo"]
+script = ExtResource("2_iuu1s")
+behaviorName = "ChangeMaxHealthMutiNormal"
+metadata/_custom_type_script = "uid://cigb1f3wr7pp1"
+
+[resource]
+script = ExtResource("2_fiho3")
+ItemName = "ssd"
+showName = "SSD"
+intro = "最大生命值提升10%"
+tags = Array[int]([2])
+args = Dictionary[String, Variant]({
+"value_per": 0.1
+})
+itemLevel = 2
+sprite = ExtResource("3_fiho3")
+onPick = SubResource("Resource_1yryo")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"
