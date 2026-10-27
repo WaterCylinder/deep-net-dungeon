@@ -10,6 +10,7 @@ script = ExtResource("2_nnwv2")
 ItemName = "attack_module"
 showName = "攻击模块"
 intro = "攻击力提升 5"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 5.0
 })

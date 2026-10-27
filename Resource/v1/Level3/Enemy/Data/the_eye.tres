@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://vgsj7371dsji"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_6mmha"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="2_88fyy"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_gb6dd"]
+[ext_resource type="Resource" path="res://Resource/Global/EnemyBehavior/shot_player_four_direction.tres" id="2_kwe1g"]
+[ext_resource type="SpriteFrames" uid="uid://dnsppn6ihh67p" path="res://Resource/v1/Level3/Enemy/Sprite/the_eye_sprite_frames.tres" id="3_gb6dd"]
+[ext_resource type="Resource" uid="uid://b82exrtkrb411" path="res://Resource/Global/EnemyBehavior/move_target_player.tres" id="3_kwe1g"]
+[ext_resource type="Resource" uid="uid://os0nvoivt45p" path="res://Resource/Global/EnemyBehavior/attack.tres" id="4_qq0hh"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="5_ubk83"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="6_h3jnu"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="7_t04j4"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_88fyy"]
+radius = 25.0
+
+[sub_resource type="Resource" id="Resource_qq0hh"]
+script = ExtResource("7_t04j4")
+condition = ExtResource("6_h3jnu")
+behavior = ExtResource("2_kwe1g")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_mj4sl"]
+script = ExtResource("5_ubk83")
+behaviorArray = Array[Object]([ExtResource("2_88fyy"), ExtResource("3_kwe1g"), ExtResource("4_qq0hh")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_afp81"]
+script = ExtResource("7_t04j4")
+condition = ExtResource("6_h3jnu")
+behavior = SubResource("Resource_mj4sl")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_gb6dd")
+enemyName = "the_eye"
+displayName = "眼"
+description = "无"
+maxHealth = 230.0
+attack = 20.0
+defense = 10.0
+attackSpeed = 0.2
+shield = 100.0
+spriteFrames = ExtResource("3_gb6dd")
+attackShape = SubResource("CircleShape2D_88fyy")
+onUpdate = SubResource("Resource_afp81")
+onAttack = SubResource("Resource_qq0hh")
+metadata/_custom_type_script = "uid://mqed4halsexx"

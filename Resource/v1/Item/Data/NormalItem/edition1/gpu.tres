@@ -15,6 +15,7 @@ script = ExtResource("2_7ymgh")
 ItemName = "gpu"
 showName = "GPU"
 intro = "暴击伤害提升20%"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 0.2
 })

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://lfmc4ubjc5vx"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_gjgv4"]
+[ext_resource type="Script" uid="uid://b8u5u88o0k163" path="res://Resource/v1/Item/ItemBehaviorLevel1.cs" id="2_6e8ul"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="3_0ffs6"]
+[ext_resource type="Texture2D" uid="uid://caybsvavv8fir" path="res://Resource/v1/Item/Sprite/edition1/TheEnd.png" id="4_mi2td"]
+
+[sub_resource type="Resource" id="Resource_the_end_behav"]
+script = ExtResource("2_6e8ul")
+behaviorName = "TheEnd"
+metadata/_custom_type_script = "uid://b8u5u88o0k163"
+
+[resource]
+script = ExtResource("3_0ffs6")
+ItemName = "usable_item_the_end"
+showName = "终结"
+intro = "【主动】使房间内所有敌怪获得22层灼烧，随后立刻造成等同于其灼烧层数2倍的伤害，冷却时间22s"
+tags = Array[int]([6])
+args = Dictionary[String, Variant]({
+"cd": 22.0,
+"fire_stack": 22
+})
+itemLevel = 3
+sprite = ExtResource("4_mi2td")
+maxCount = 1
+onUse = SubResource("Resource_the_end_behav")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

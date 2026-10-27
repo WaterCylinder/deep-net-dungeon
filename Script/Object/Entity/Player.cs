@@ -178,8 +178,8 @@ public partial class Player : Entity
         {
             return;
         }
-        //简单预判
-        if(!Tools.TryGetInterceptDirection(shotPoint.GlobalPosition, bulletSpeed * Bullet.BASE_SHOT_SPEED_FECTOR, targetEnemy.GlobalPosition, targetEnemy.GetVelocity(), out targetShotToward, out _))
+        //简单预判（用真实速度：目标贴着墙走不动时不会按velocity预判到墙里）
+        if(!Tools.TryGetInterceptDirection(shotPoint.GlobalPosition, bulletSpeed * Bullet.BASE_SHOT_SPEED_FECTOR, targetEnemy.GlobalPosition, targetEnemy.GetRealVelocity(), out targetShotToward, out _))
         {
             targetShotToward = targetEnemy.GlobalPosition - GlobalPosition;
         }

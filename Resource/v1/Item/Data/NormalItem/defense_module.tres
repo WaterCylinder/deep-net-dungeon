@@ -10,6 +10,7 @@ script = ExtResource("2_dlnqd")
 ItemName = "defense_module"
 showName = "防御模块"
 intro = "护甲值提升 5"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 5.0
 })

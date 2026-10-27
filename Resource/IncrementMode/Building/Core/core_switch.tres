@@ -27,7 +27,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_lcue2"]
 script = ExtResource("3_d38ja")
-baseValue = 2.0
+baseValue = 1.0
 _multipliers = Dictionary[String, ExtResource("2_4ln11")]({
 "Base": SubResource("Resource_gu83i")
 })
@@ -42,7 +42,7 @@ tags = Array[int]([1])
 defaultArgs = Dictionary[String, Variant]({})
 value = SubResource("Resource_lcue2")
 sprite = ExtResource("2_d38ja")
-buyPrice = 10
+buyPrice = 20
 onLevelUp = ExtResource("1_lcue2")
 onSomeBuildingBeSell = SubResource("Resource_42kmj")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

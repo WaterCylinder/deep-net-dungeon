@@ -101,6 +101,7 @@ public partial class Game : Node
     [Export] public Node2D particlesNode;
 
     [Export] public IncrementWorld incrementWorld;
+    [Export] public BGAutoRotateZoom bg;
 
     # endregion
 
@@ -300,6 +301,188 @@ public partial class Game : Node
         currentMode?.OnEnd(isVictory);
     }
 
+    #region 音乐（渐变切换）
+
+    /// <summary>
+    /// 淡入淡出时用的静音音量
+    /// </summary>
+    public const float MusicSilentDb = -80f;
+
+    /// <summary>
+    /// 第二个音乐播放器：和 musicPlayer 轮流使用，切歌时一个淡出、另一个淡入。
+    /// 没在检查器里指定时会自动创建（挂在和 musicPlayer 同一个父节点下）
+    /// </summary>
+    [Export] public AudioStreamPlayer2D musicPlayer2;
+
+    /// <summary>
+    /// 当前正在使用的音乐播放器（两个播放器轮换，记录它才能知道另一个是"空闲"的）
+    /// </summary>
+    public AudioStreamPlayer2D currentMusicPlayer => musicUsing;
+
+    AudioStreamPlayer2D musicUsing;
+    Tween musicTween;
+
+    /// <summary>
+    /// 音乐的目标音量（dB），淡入淡出都往这个值走
+    /// </summary>
+    [Export] public float musicVolumeDb = 0f;
+
+    /// <summary>
+    /// 默认渐变时长（秒）
+    /// </summary>
+    [Export] public float musicFadeTime = 1f;
+
+    /// <summary>
+    /// 渐变切换到指定音乐：当前播放器音量降低、另一个播放器音量升高，切换完成后停掉旧的。
+    /// 传 null 等同于 StopMusic
+    /// </summary>
+    /// <param name="stream">要播放的音乐</param>
+    /// <param name="fadeTime">渐变时长（秒），传负数用 musicFadeTime，传0立即切换</param>
+    public void PlayMusic(AudioStream stream, float fadeTime = -1f)
+    {
+        if (stream == null)
+        {
+            StopMusic(fadeTime);
+            return;
+        }
+
+        InitMusicPlayers();
+        if (musicUsing == null)
+        {
+            return;
+        }
+
+        if (fadeTime < 0f)
+        {
+            fadeTime = musicFadeTime;
+        }
+
+        //同一首还在放：只把音量渐变到目标值，不重新开始
+        if (musicUsing.Stream == stream && musicUsing.Playing)
+        {
+            musicTween?.Kill();
+            if (fadeTime <= 0f)
+            {
+                musicUsing.VolumeDb = musicVolumeDb;
+                return;
+            }
+            musicTween = CreateTween();
+            musicTween.TweenProperty(musicUsing, "volume_db", musicVolumeDb, fadeTime);
+            return;
+        }
+
+        AudioStreamPlayer2D from = musicUsing;
+        AudioStreamPlayer2D to = (musicUsing == musicPlayer) ? musicPlayer2 : musicPlayer;
+
+        //切换使用的播放器
+        musicUsing = to;
+
+        to.Stream = stream;
+        to.VolumeDb = MusicSilentDb;
+        to.Play();
+
+        musicTween?.Kill();
+
+        if (fadeTime <= 0f)
+        {
+            to.VolumeDb = musicVolumeDb;
+            from.Stop();
+            from.Stream = null;
+            return;
+        }
+
+        musicTween = CreateTween().SetParallel();
+        if (from.Playing)
+        {
+            musicTween.TweenProperty(from, "volume_db", MusicSilentDb, fadeTime);
+        }
+        musicTween.TweenProperty(to, "volume_db", musicVolumeDb, fadeTime);
+        musicTween.Chain().TweenCallback(Callable.From(() =>
+        {
+            if (GodotObject.IsInstanceValid(from))
+            {
+                from.Stop();
+                from.Stream = null;
+            }
+        }));
+    }
+
+    /// <summary>
+    /// 渐变停止当前音乐
+    /// </summary>
+    /// <param name="fadeTime">渐变时长（秒），传负数用 musicFadeTime，传0立即停止</param>
+    public void StopMusic(float fadeTime = -1f)
+    {
+        InitMusicPlayers();
+        if (musicUsing == null || !musicUsing.Playing)
+        {
+            return;
+        }
+
+        if (fadeTime < 0f)
+        {
+            fadeTime = musicFadeTime;
+        }
+
+        AudioStreamPlayer2D from = musicUsing;
+
+        musicTween?.Kill();
+
+        if (fadeTime <= 0f)
+        {
+            from.Stop();
+            from.VolumeDb = MusicSilentDb;
+            return;
+        }
+
+        musicTween = CreateTween();
+        musicTween.TweenProperty(from, "volume_db", MusicSilentDb, fadeTime);
+        musicTween.TweenCallback(Callable.From(() =>
+        {
+            if (GodotObject.IsInstanceValid(from))
+            {
+                from.Stop();
+                from.Stream = null;
+            }
+        }));
+    }
+
+    /// <summary>
+    /// 确保两个音乐播放器都存在，并把场景里的 musicPlayer 记为当前播放器
+    /// </summary>
+    void InitMusicPlayers()
+    {
+        if (musicPlayer == null)
+        {
+            return;
+        }
+
+        if (musicPlayer2 == null)
+        {
+            musicPlayer2 = new AudioStreamPlayer2D
+            {
+                Name = "MusicPlayer2",
+                Bus = musicPlayer.Bus,
+                Position = musicPlayer.Position,
+                VolumeDb = MusicSilentDb,
+            };
+
+            //和 musicPlayer 放同一个父节点下，2D定位保持一致
+            musicPlayer.GetParent()?.AddChild(musicPlayer2);
+        }
+
+        if (musicUsing == null)
+        {
+            musicUsing = musicPlayer;
+            if (musicPlayer.VolumeDb <= MusicSilentDb)
+            {
+                musicPlayer.VolumeDb = musicVolumeDb;
+            }
+        }
+    }
+
+    #endregion
+
     #region 音效池
 
     public Array<AudioStreamPlayer> soundPlayerPool = new();
@@ -361,8 +544,11 @@ public partial class Game : Node
         {
             GpuParticles2D p = particlesPrefab.Instantiate<GpuParticles2D>();
             p.Scale = new Vector2(scale, scale);
-            p.GlobalPosition = pos;
-            particlesNode?.CallDeferred("add_child", p);
+            Callable.From(() =>
+            {
+                particlesNode.AddChild(p);
+                p.GlobalPosition = pos;
+            }).CallDeferred();
             p.Emitting = true;
             particlesPool.Add(p);
             return p;

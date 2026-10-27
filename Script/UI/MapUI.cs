@@ -90,21 +90,27 @@ public partial class MapUI : Control
 
     #region 颜色参数
 
-    [Export] public Color startColor = new(0.36f, 0.83f, 0.60f);
-    [Export] public Color normalColor = new(0.42f, 0.55f, 0.78f);
-    [Export] public Color bossColor = new(0.86f, 0.30f, 0.33f);
-    [Export] public Color shopColor = new(0.91f, 0.75f, 0.31f);
-    [Export] public Color treasureColor = new(0.67f, 0.47f, 0.91f);
-    [Export] public Color eventColor = new(0.40f, 0.79f, 0.86f);
-    [Export] public Color hiddenColor = new(0.50f, 0.36f, 0.58f);
+    /// <summary>
+    /// 隐藏房间的颜色（洋红紫，和Door.RoomTagColorMapper的色相区分开，避免和普通房间的紫色撞色）
+    /// </summary>
+    [Export] public Color hiddenColor = new("9e4890");
 
     /// <summary>
-    /// 未进入过的房间色块颜色（ShowAll = false 时使用）
+    /// 房间标签在Door.RoomTagColorMapper里查不到时使用的兜底色（同普通房间的紫）
     /// </summary>
-    [Export] public Color unvisitedColor = new(0.35f, 0.35f, 0.38f, 0.85f);
+    [Export] public Color fallbackColor = new("8252b2");
 
-    [Export] public Color blockBorderColor = new(0.08f, 0.09f, 0.12f, 0.90f);
-    [Export] public Color unvisitedBorderColor = new(0.25f, 0.25f, 0.28f, 0.90f);
+    /// <summary>
+    /// 未进入过的房间色块颜色（ShowAll = false 时使用）。
+    /// 房间底色偏深，所以这里也更暗一档，保证"已探索"永远比"未探索"更显眼
+    /// </summary>
+    [Export] public Color unvisitedColor = new(0.19f, 0.20f, 0.23f, 0.92f);
+
+    /// <summary>
+    /// 房间色块描边：底色偏深，描边用浅一档的灰，让暗色块也能看清边界
+    /// </summary>
+    [Export] public Color blockBorderColor = new(0.58f, 0.62f, 0.70f, 0.55f);
+    [Export] public Color unvisitedBorderColor = new(0.34f, 0.36f, 0.40f, 0.70f);
 
     /// <summary>
     /// 通向已知房间的连线颜色
@@ -178,6 +184,10 @@ public partial class MapUI : Control
     // 刷新检测用的缓存
     private Map _cachedMap;
     private int _cachedRoomCount = -1;
+    /// <summary>
+    /// 缓存的起始房间实例：地图重新生成后起始房间会被重建，实例不同就说明换图了
+    /// </summary>
+    private Room _cachedStartRoom;
     private Room _cachedCurrentRoom;
     private bool _cachedShowAll;
     private bool _cachedHideUnvisited;
@@ -212,9 +222,8 @@ public partial class MapUI : Control
 
         Map currentMap = GetMap();
 
-        // 地图实例或房间数量变化：重新布局
-        if (currentMap != _cachedMap
-            || (currentMap != null && currentMap.rooms.Count != _cachedRoomCount))
+        // 地图实例变化、房间数量变化、或者地图被重新生成过：重新布局
+        if (currentMap != _cachedMap || IsMapRegenerated(currentMap))
         {
             RebuildLayout();
             return;
@@ -234,6 +243,43 @@ public partial class MapUI : Control
         {
             QueueRedraw();
         }
+    }
+
+    /// <summary>
+    /// 地图是否已经被重新生成（换层、重新开局等）。
+    ///
+    /// 只比较房间数量是不够的：不同关卡可能生成同样数量的房间
+    /// （例如 level2 与 level3 配置相同，都是22间），这时候数量没变，
+    /// MapUI 却还持有上一关那批已经被 QueueFree 的房间，
+    /// Game.IsAble 全部为 false → 整张图都会被画成"未进入"的灰色。
+    /// 所以这里额外比较起始房间实例，并检查缓存的房间是否还有效
+    /// </summary>
+    private bool IsMapRegenerated(Map currentMap)
+    {
+        if (currentMap == null)
+        {
+            return false;
+        }
+
+        if (currentMap.startRoom != _cachedStartRoom)
+        {
+            return true;
+        }
+
+        if (currentMap.rooms.Count != _cachedRoomCount)
+        {
+            return true;
+        }
+
+        foreach (MapNode node in _nodes)
+        {
+            if (!Game.IsAble(node.room))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion
@@ -342,6 +388,7 @@ public partial class MapUI : Control
         Map currentMap = GetMap();
         _cachedMap = currentMap;
         _cachedRoomCount = currentMap?.rooms.Count ?? 0;
+        _cachedStartRoom = currentMap?.startRoom;
         _cachedShowAll = ShowAll;
         _cachedHideUnvisited = hideUnvisited;
         _cachedCurrentRoom = GetCurrentRoom();
@@ -560,8 +607,9 @@ public partial class MapUI : Control
 
     /// <summary>
     /// 按房间角色取色块颜色。
-    /// 优先使用 Map 的角色引用（startRoom / bossRoom / shopRoom / treasureRoom），
-    /// 其次按房间标签（RoomTag）判断，最后回退为普通房间色。
+    /// 颜色统一取自Door.RoomTagColorMapper（门和小地图共用同一张表，改一处两边同步），
+    /// 优先用 Map 的角色引用（startRoom / bossRoom / shopRoom / treasureRoom），
+    /// 其次按房间标签（RoomTag）判断，最后回退为兜底色。
     /// 之所以优先用 Map 引用，是因为房间数据里的 roomTags 可能未配置（例如起始房间），
     /// 而 Map 的角色引用在地图生成时一定被赋值。
     /// </summary>
@@ -570,19 +618,48 @@ public partial class MapUI : Control
         Map currentMap = GetMap();
         if (currentMap != null)
         {
-            if (room == currentMap.bossRoom) return bossColor;
-            if (room == currentMap.shopRoom) return shopColor;
-            if (room == currentMap.treasureRoom) return treasureColor;
-            if (room == currentMap.startRoom) return startColor;
+            if (room == currentMap.bossRoom && TryGetTagColor(RoomTag.Boss, out Color boss)) return boss;
+            if (room == currentMap.shopRoom && TryGetTagColor(RoomTag.Shop, out Color shop)) return shop;
+            if (room == currentMap.treasureRoom && TryGetTagColor(RoomTag.Treasure, out Color treasure)) return treasure;
+            if (room == currentMap.startRoom && TryGetTagColor(RoomTag.Start, out Color start)) return start;
         }
 
-        if (room.CheckTag(RoomTag.Boss)) return bossColor;
-        if (room.CheckTag(RoomTag.Shop)) return shopColor;
-        if (room.CheckTag(RoomTag.Treasure)) return treasureColor;
-        if (room.CheckTag(RoomTag.Start)) return startColor;
-        if (room.CheckTag(RoomTag.Event)) return eventColor;
-        if (room.CheckTag(RoomTag.Hidden)) return hiddenColor;
-        return normalColor;
+        foreach (RoomTag tag in room.tags)
+        {
+            //隐藏房间在门颜色表里没有对应项，单独用本脚本的颜色
+            if (tag == RoomTag.Hidden)
+            {
+                continue;
+            }
+
+            if (TryGetTagColor(tag, out Color color))
+            {
+                return color;
+            }
+        }
+
+        if (room.CheckTag(RoomTag.Hidden))
+        {
+            return hiddenColor;
+        }
+
+        return fallbackColor;
+    }
+
+    /// <summary>
+    /// 从门的房间标签颜色表里取颜色（Door.RoomTagColorMapper），
+    /// 保证小地图和门的配色永远是同一套
+    /// </summary>
+    private static bool TryGetTagColor(RoomTag tag, out Color color)
+    {
+        if (Door.RoomTagColorMapper != null && Door.RoomTagColorMapper.ContainsKey(tag))
+        {
+            color = Door.RoomTagColorMapper[tag];
+            return true;
+        }
+
+        color = Colors.White;
+        return false;
     }
 
     #endregion

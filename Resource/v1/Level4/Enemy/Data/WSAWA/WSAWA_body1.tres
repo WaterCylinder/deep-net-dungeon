@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://dflxtwemgr8wp"]
+
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_3scq8"]
+[ext_resource type="Texture2D" uid="uid://diy5lmfagl0oj" path="res://Resource/v1/Level4/Enemy/Sprite/WSAWA_hands1.tres" id="2_uxwic"]
+
+[resource]
+script = ExtResource("1_3scq8")
+bulletTags = Array[int]([3])
+lifetime = 0.0
+damageMultiplier = 5.0
+sprite = ExtResource("2_uxwic")
+collisionRadius = 32.0
+metadata/_custom_type_script = "uid://draiigge0qptw"

@@ -40,12 +40,12 @@ rarity = 1
 intro = "{{turn}}回合后，【核心】的资源量增加{{value}}"
 tags = Array[int]([1])
 defaultArgs = Dictionary[String, Variant]({
-"turn": 2,
-"turn_max": 2
+"turn": 1,
+"turn_max": 1
 })
 value = SubResource("Resource_4ddnb")
 sprite = ExtResource("2_5epjo")
-buyPrice = 10
+buyPrice = 20
 onTurnEnd = SubResource("Resource_tes2d")
 onLevelUp = ExtResource("1_4ddnb")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

@@ -13,13 +13,21 @@ public enum EnemyTag
     /// </summary>
     IgnoreBullet,
     /// <summary>
-    /// 忽略物理效果(不会推开玩家和被玩家推开)
+    /// 忽略物理效果(不会处理与玩家、墙壁以及其他敌怪的物理效果)
     /// </summary>
     IgnorePhysical,
     /// <summary>
     /// BOSS怪物
     /// </summary>
     BOSS,
+    /// <summary>
+    /// 不可被选为攻击目标，在玩家的攻击检测中不会被设为TargetEnemy
+    /// </summary>
+    TargetDisable,
+    /// <summary>
+    /// 仅忽略与其他敌怪的物理效果
+    /// </summary>
+    IgnoreEnemyPhysical,
 }
 
 /// <summary>
@@ -245,14 +253,15 @@ public partial class Enemy : Entity
         animNode = layoutNode?.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
 
         // 设置基础属性
-        maxHealth = data.maxHealth;
-        attack = data.attack;
-        defense = data.defense;
-        attackSpeed = data.attackSpeed;
-        attackRange = data.attackRange;
-        critRate = data.critRate;
-        critDamage = data.critDamage;
-        speed = data.speed;
+        maxHealth = new(data.maxHealth);
+        attack = new(data.attack);
+        defense = new(data.defense);
+        attackSpeed = new(data.attackSpeed);
+        attackRange = new(data.attackRange);
+        critRate = new(data.critRate);
+        critDamage = new(data.critDamage);
+        speed = new(data.speed);
+        shield = data.shield;
 
         onGenerate = data.onGenerate;
         onUpdate = data.onUpdate;
@@ -332,11 +341,19 @@ public partial class Enemy : Entity
         currentHealth = maxHealth.Get();
 
         // 根据tags设置性能
+        if (CheckTag(EnemyTag.IgnoreEnemyPhysical))
+        {
+            SetCollisionMaskValue(3, false);
+        }
         if (CheckTag(EnemyTag.IgnorePhysical))
         {
-            //移除该物体的碰撞层
-            SetCollisionLayerValue(1, false);
+            //移除该物体对玩家、敌怪和墙壁的碰撞层
+            SetCollisionMaskValue(1, false);
+            SetCollisionMaskValue(3, false);
+            SetCollisionMaskValue(8, false);
         }
+        
+        ScaleLayout(Vector2.One);
     }
 
     #endregion
@@ -413,7 +430,7 @@ public partial class Enemy : Entity
         int dvalue = game.randomSystem.Int(dropValue.X, dropValue.Y);
         if(dvalue > 0)
         {
-            EnergyPoint.CreateEnergyPoint(EnergyType.Coin, GlobalPosition, dvalue);
+            EnergyPoint.CreateEnergyPoint(EnergyType.Coin, GlobalPosition, dvalue, parent: room ?? null);
         }
         //如果有死亡动画，则在死亡时播放死亡动画。
         if(animNode.SpriteFrames != null && animNode.SpriteFrames.HasAnimation("death"))

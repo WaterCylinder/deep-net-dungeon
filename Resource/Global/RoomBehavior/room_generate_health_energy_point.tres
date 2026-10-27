@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="RoomBehavior" format=3 uid="uid://t8bt2prv3p3u"]
+
+[ext_resource type="Script" uid="uid://bgedsli326p5q" path="res://Script/Data/Map/RoomBehavior.cs" id="1_qwmk6"]
+
+[resource]
+script = ExtResource("1_qwmk6")
+behaviorName = "GenerateHealthEnergy"
+metadata/_custom_type_script = "uid://bgedsli326p5q"

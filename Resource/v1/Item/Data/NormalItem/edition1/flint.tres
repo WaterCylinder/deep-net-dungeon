@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bg5w4ea0bu3cg"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_flint_buffscript"]
+[ext_resource type="Resource" uid="uid://bqi2qfdxaxexu" path="res://Resource/v1/Item/Buff/Data/buff_flint.tres" id="2_flint_buff"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="3_flint_data"]
+[ext_resource type="Texture2D" uid="uid://7gv1oybfw4u1" path="res://Resource/v1/Item/Sprite/edition1/flint.png" id="4_flint_sprite"]
+
+[resource]
+script = ExtResource("3_flint_data")
+ItemName = "flint"
+showName = "燧石"
+intro = "弹幕附带燧石效果：命中时附加流血，并迸射2~3个燧石碎片"
+tags = Array[int]([2])
+itemLevel = 2
+sprite = ExtResource("4_flint_sprite")
+maxCount = 1
+carryBuffs = Dictionary[ExtResource("1_flint_buffscript"), int]({
+ExtResource("2_flint_buff"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

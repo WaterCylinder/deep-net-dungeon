@@ -14,14 +14,14 @@
 [resource]
 script = ExtResource("1_wgv3c")
 pool = Dictionary[Object, int]({
-ExtResource("1_g5nil"): 8,
-ExtResource("2_pdu02"): 8,
-ExtResource("3_ws7y5"): 8,
-ExtResource("4_xl238"): 8,
-ExtResource("5_pdu02"): 8,
-ExtResource("6_ws7y5"): 4,
-ExtResource("7_xl238"): 4,
-ExtResource("8_jwiyl"): 4,
-ExtResource("9_f81qf"): 4
+ExtResource("1_g5nil"): 4,
+ExtResource("2_pdu02"): 4,
+ExtResource("3_ws7y5"): 4,
+ExtResource("4_xl238"): 4,
+ExtResource("5_pdu02"): 4,
+ExtResource("6_ws7y5"): 2,
+ExtResource("7_xl238"): 2,
+ExtResource("8_jwiyl"): 2,
+ExtResource("9_f81qf"): 2
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

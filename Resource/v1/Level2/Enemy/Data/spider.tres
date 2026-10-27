@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://dkj2p2qeflkvg"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_ohl0b"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_dphkf"]
+[ext_resource type="Script" uid="uid://sk4l54vyi4h8" path="res://Resource/v1/Level2/EnemyBehaviorLevel2.cs" id="2_ojv52"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="2_sg5mi"]
+[ext_resource type="SpriteFrames" uid="uid://b1xjqqcgedqq1" path="res://Resource/v1/Level2/Enemy/Sprite/spider_sprite_frames.tres" id="3_dphkf"]
+[ext_resource type="Resource" uid="uid://b82exrtkrb411" path="res://Resource/Global/EnemyBehavior/move_target_player.tres" id="3_fcvox"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_ojv52"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_eeol7"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="5_fcvox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dphkf"]
+size = Vector2(40, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5mljp"]
+size = Vector2(32, 32)
+
+[sub_resource type="Resource" id="Resource_eeol7"]
+script = ExtResource("2_ojv52")
+behaviorName = "SpiderDeath"
+metadata/_custom_type_script = "uid://sk4l54vyi4h8"
+
+[sub_resource type="Resource" id="Resource_ey8rh"]
+script = ExtResource("5_eeol7")
+condition = ExtResource("5_fcvox")
+behavior = SubResource("Resource_eeol7")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_1aymt"]
+script = ExtResource("4_ojv52")
+behaviorArray = Array[Object]([ExtResource("2_sg5mi"), ExtResource("3_fcvox")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_3jhv6"]
+script = ExtResource("5_eeol7")
+condition = ExtResource("5_fcvox")
+behavior = SubResource("Resource_1aymt")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_dphkf")
+enemyName = "spider"
+displayName = "蜘蛛"
+description = "蜘蛛"
+tags = Array[int]([6])
+speed = 150.0
+spriteFrames = ExtResource("3_dphkf")
+layoutOffset = Vector2(0, -10)
+physicShape = SubResource("RectangleShape2D_dphkf")
+areaShape = SubResource("RectangleShape2D_dphkf")
+areaOffset = Vector2(0, 0)
+attackShape = SubResource("RectangleShape2D_5mljp")
+meleeOffest = Vector2(0, 0)
+onUpdate = SubResource("Resource_3jhv6")
+onDeath = SubResource("Resource_ey8rh")
+dropValue = Vector2i(3, 4)
+metadata/_custom_type_script = "uid://mqed4halsexx"

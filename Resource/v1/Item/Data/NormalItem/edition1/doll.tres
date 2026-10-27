@@ -11,6 +11,7 @@ script = ExtResource("2_lbcfl")
 ItemName = "doll"
 showName = "玩偶"
 intro = "召唤玩偶"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "bullet_data": ExtResource("1_8l7f7")
 })

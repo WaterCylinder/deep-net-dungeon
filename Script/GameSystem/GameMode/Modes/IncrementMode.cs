@@ -74,8 +74,9 @@ public partial class IncrementMode : GameModeBase
             world.shopItemPool.Extend(world.rarityPools[0]);
             world.OnTurnEnd += () =>
             {
-                if(world.turn == 10) game.A = 200;
-                if(world.turn == 50) game.A = 1000;
+                //阶段推进：二阶段9回合、三阶段32回合（r3要早一点出场，否则后半段没有新东西可买）
+                if(world.turn == 9) game.A = 200;
+                if(world.turn == 32) game.A = 1000;
             };
             BuildingData testData = AssetManager.Instance.GetData<BuildingData>(
                 "Resource/IncrementMode/Building/Machine/standard_machinery", null
@@ -95,8 +96,8 @@ public partial class IncrementMode : GameModeBase
 
             case 1000:
             world.shopItemPool.Extend(world.rarityPools[2]);
-            world.shopRefreshCostBase = 50;
-            world.shopRefreshCostPromoteBase = 50;
+            world.shopRefreshCostBase = 20;
+            world.shopRefreshCostPromoteBase = 20;
             game.Next();
             break;
         }

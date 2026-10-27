@@ -42,4 +42,38 @@ public partial class ItemBehaviorLevel1 : ItemBehavior
         }
     }
 
+    /// <summary>
+    /// 终结：让使用者所在房间的所有敌怪获得 fire_stack 层灼烧（默认10层），
+    /// 随后立刻按"当前灼烧层数 × 2"结算一次伤害（算上敌怪原本已有的灼烧层数）。
+    /// </summary>
+    public void TheEnd(Item item, Entity user)
+    {
+        if (!Game.IsAble(user) || user.room == null) return;
+
+        Room room = user.room;
+        if (room.enemyNode == null) return;
+
+        int stack = item.args.Get<int>("fire_stack", 10);
+
+        foreach (Node node in room.enemyNode.GetChildren())
+        {
+            if (node is not Enemy enemy || !Game.IsAble(enemy)) continue;
+
+            //先上灼烧
+            enemy.AttachBuff(Buff.Fire, stack);
+
+            //再按灼烧层数结算一次伤害
+            Buff fire = enemy.GetBuff("fire");
+            float damageValue = (fire != null ? fire.currentStack : stack) * 2f;
+            if (damageValue < 1f) continue;
+
+            Damage damage = new Damage
+            {
+                source = user,
+                value = damageValue
+            };
+            enemy.Hurt(damage);
+        }
+    }
+
 }

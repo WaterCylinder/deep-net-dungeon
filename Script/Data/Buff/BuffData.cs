@@ -49,7 +49,7 @@ public partial class BuffData : Resource
     /// <summary>
     /// Buff标签列表
     /// </summary>
-    [Export] public Array<BuffTag> tags;
+    [Export] public Array<BuffTag> tags = new();
 
     /// <summary>
     /// Buff是否显示（UI上）

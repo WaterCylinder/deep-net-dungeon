@@ -21,7 +21,7 @@ public partial class Args : Resource
     {
         if (!args.ContainsKey(key))
         {
-            GD.Print($"DEBUG: 添加参数{key}");
+            //GD.Print($"DEBUG: 添加参数{key}");
             args.Add(key, Variant.From(_default));
         }
     }
@@ -40,7 +40,17 @@ public partial class Args : Resource
         }
         else
         {
-            args.Add(key, default);
+            //注意：这里必须存 _default，不能存 default。
+            //以前存的是 default（数值类型就是0），导致"第一次返回默认值、之后每次都返回0"——
+            //像弹幕发射间隔这种 Get("interval", 1f) 的参数，第二帧就变成0，于是每帧都发射
+            if (_default is null)
+            {
+                args.Add(key, default);
+            }
+            else
+            {
+                args.Add(key, Variant.From(_default));
+            }
             return _default;
         }
     }

@@ -1,0 +1,72 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://txky2xdbuog1"]
+
+[ext_resource type="Texture2D" uid="uid://b8555pt0jujjj" path="res://Resource/v1/Level4/Enemy/Sprite/Panic.png" id="1_6if5g"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5oldb"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gmdyw"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hs8hf"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(128, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vkeqa"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(192, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vkhwp"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_urwvm"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mreqp"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e0tyr"]
+atlas = ExtResource("1_6if5g")
+region = Rect2(192, 0, 64, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5oldb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gmdyw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hs8hf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vkeqa")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vkhwp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_urwvm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mreqp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e0tyr")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

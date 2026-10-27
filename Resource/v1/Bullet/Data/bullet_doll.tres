@@ -28,7 +28,7 @@ script = ExtResource("1_t1yjy")
 bulletName = "Doll"
 bulletTags = Array[int]([3])
 args = Dictionary[String, Variant]({
-"value": 5
+"value": 66
 })
 lifetime = 0.0
 damageMultiplier = 0.0

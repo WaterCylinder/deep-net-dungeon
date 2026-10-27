@@ -10,6 +10,7 @@ script = ExtResource("2_6u4ls")
 ItemName = "get_virus"
 showName = "病毒"
 intro = "获得1层病毒效果"
+tags = Array[int]([2])
 sprite = ExtResource("3_6u4ls")
 carryBuffs = Dictionary[ExtResource("1_jkme0"), int]({
 ExtResource("2_xfacj"): 1

@@ -27,7 +27,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_8p0kc"]
 script = ExtResource("3_oif66")
-baseValue = 50.0
+baseValue = 10.0
 _multipliers = Dictionary[String, ExtResource("2_vkve5")]({
 "Base": SubResource("Resource_j5esb")
 })
@@ -41,7 +41,7 @@ intro = "出售时场上所有的【化工储液罐】的资源点增加{{value}
 defaultArgs = null
 value = SubResource("Resource_8p0kc")
 sprite = ExtResource("2_oif66")
-buyPrice = 50
+buyPrice = 240
 onSell = SubResource("Resource_3bago")
 onLevelUp = ExtResource("1_g84hi")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

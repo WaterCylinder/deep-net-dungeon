@@ -264,6 +264,13 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     [Export] protected Vector2 velocity = Vector2.Zero;
     /// <summary>
+    /// 真实速度：按物理帧之间的实际位移算出来的速度
+    /// （velocity是"想往哪走"，贴着墙走不动时它仍是非零，而真实速度会接近0）
+    /// </summary>
+    protected Vector2 realVelocity = Vector2.Zero;
+    Vector2 lastRealVelocityPosition = Vector2.Zero;
+    bool hasLastRealVelocityPosition = false;
+    /// <summary>
     /// 当前环境速度
     /// </summary>
     protected Vector2 environmentVelocity = Vector2.Zero;
@@ -333,6 +340,16 @@ public abstract partial class Entity : RigidBody2D
     }
 
     /// <summary>
+    /// 获取真实速度：按物理帧之间的位移计算。
+    /// 敌怪对着墙走、被挡住时 velocity 仍是 moveTowards*speed，但真实速度接近0，
+    /// 弹幕预判用这个才不会对着墙打歪
+    /// </summary>
+    public Vector2 GetRealVelocity()
+    {
+        return realVelocity;
+    }
+
+    /// <summary>
     /// 实体传送到指定位置
     /// </summary>
     /// <param name="pos"></param>
@@ -340,6 +357,9 @@ public abstract partial class Entity : RigidBody2D
     {
         transPos = pos;
         hasPendingTrans = true;
+        //传送是瞬移，别把这段位移算进真实速度
+        hasLastRealVelocityPosition = false;
+        realVelocity = Vector2.Zero;
         EmitSignal(nameof(OnTrans), pos);
     }
 
@@ -681,9 +701,20 @@ public abstract partial class Entity : RigidBody2D
     {
         System.Collections.Generic.List<Buff> toRemove = new();
 
-        foreach (var buff in buffs)
+        //用快照遍历：Buff的计时器/更新行为里可能会挂上或摘掉Buff，
+        //最典型的是灼烧、病毒这类"自己把自己打死"的dot——死亡时Dead()会调用ClearAllBuffs()把buffs清空，
+        //这时候如果还在foreach live数组，枚举器的索引就会越界（ArgumentOutOfRangeException）
+        System.Collections.Generic.List<Buff> snapshot = new(buffs);
+
+        foreach (var buff in snapshot)
         {
             if (buff == null)
+            {
+                continue;
+            }
+
+            //遍历过程中已经被移除的Buff（层数归零、死亡清空等）不再更新
+            if (!buffs.Contains(buff))
             {
                 continue;
             }
@@ -731,7 +762,7 @@ public abstract partial class Entity : RigidBody2D
         bool isCrit = false;
 
         // 计算实际伤害
-        float rawDamage = damage.value.Get();
+        float rawDamage = damage.value;
         if (damage.critRate > 0 && game.randomSystem.Float(0, 1) < damage.critRate)
         {
             rawDamage *= damage.critDamage;
@@ -793,6 +824,10 @@ public abstract partial class Entity : RigidBody2D
         else if (damage.CheckTag(DamageTag.Collapse))
         {
             color = Colors.Purple;
+        }
+        else if (damage.CheckTag(DamageTag.Blood))
+        {
+            color = new Color(0.75f, 0.12f, 0.18f);
         }
         SmallText st = SmallText.CreateSmallText(SmallTextType.QuickShow, GlobalPosition, "" + finalDamage.ToString("0"), color);
         if (isCrit)
@@ -1078,6 +1113,14 @@ public abstract partial class Entity : RigidBody2D
         
         // 子类物理更新
         OnPhysicsUpdate(delta);
+
+        // 真实速度：用物理帧之间的位移计算（贴墙时velocity非零但位移≈0）
+        if (hasLastRealVelocityPosition && delta > 0.0)
+        {
+            realVelocity = (GlobalPosition - lastRealVelocityPosition) / (float)delta;
+        }
+        lastRealVelocityPosition = GlobalPosition;
+        hasLastRealVelocityPosition = true;
     }
 
     /// <summary>
@@ -1251,20 +1294,22 @@ public abstract partial class Entity : RigidBody2D
     /// </summary>
     /// <param name="toward"></param>
     /// <param name="pos"></param>
-    public void Shot(Vector2 toward, Vector2 pos = default)
+    public void Shot(Vector2 toward, Vector2 pos = default, BulletData _data = null)
     {
-        if(bulletData == null)
+        if(_data == null)
+            _data = bulletData;
+        if(_data == null)
             return;
         if(pos == default)
         {
             pos = GlobalPosition;
         }
-        GD.Print($"{Name}射击弹幕{bulletData.bulletName}");
+        //GD.Print($"{Name}射击弹幕{_data.bulletName}");
         Bullet but = Bullet.Create(
             this,
             pos,
             toward,
-            bulletData
+            _data
         );
         EmitSignal(SignalName.OnShot, this, but);
         latestBullet = but;
@@ -1279,9 +1324,19 @@ public abstract partial class Entity : RigidBody2D
     {
         if(sound == null)return;
         if(player == null)player = audioPlayer;
-        player.Stream = sound;
-        player.Bus = bus;
-        player.Play();
+
+        //播放器可能已经跟着它的实体一起被释放了：子弹挂在场景根上、比发射者活得久，
+        //切房间/发射者死亡后子弹的 OnStart 仍会来播射击音效，这时访问 disposed 的
+        //GodotObject 会抛 ObjectDisposedException。这里跳过这次播放即可，不该让整帧报错
+        try
+        {
+            player.Stream = sound;
+            player.Bus = bus;
+            player.Play();
+        }
+        catch(ObjectDisposedException)
+        {
+        }
     }
 
     public void PlaySoundGlobal(AudioStream sound)

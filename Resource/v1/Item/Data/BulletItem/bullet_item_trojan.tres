@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://oc5i16ag0267"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_2auow"]
+[ext_resource type="Resource" uid="uid://strt6poys00v" path="res://Resource/v1/Bullet/Data/bullet_virus.tres" id="1_y6jci"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_y6jci"]
+[ext_resource type="Resource" uid="uid://c7vcj8erb3qhf" path="res://Resource/v1/Item/Behavior/item_set_bullet.tres" id="3_npbo7"]
+[ext_resource type="Texture2D" uid="uid://c1rep30vyabwp" path="res://Resource/v1/Item/Sprite/edition1/TrojanVirus.png" id="5_pr30h"]
+
+[resource]
+script = ExtResource("2_y6jci")
+ItemName = "bullet_item_trojan"
+showName = "木马病毒"
+intro = "【弹幕】发射红色弹幕，造成1倍伤害，对目标造成1%伤害的病毒效果"
+tags = Array[int]([4])
+args = Dictionary[String, Variant]({
+"bullet": ExtResource("1_y6jci")
+})
+itemLevel = 3
+sprite = ExtResource("5_pr30h")
+maxCount = 1
+onPick = ExtResource("3_npbo7")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

@@ -51,7 +51,8 @@ public partial class ClassicMode : GameModeBase
             case 0:
                 //初始化生成地图
                 Init();
-                map.Initialize(GetMapData(1), game.randomSystem);
+                map.Initialize(GetMapData(4), game.randomSystem);
+                UpdateBackground();   //回到第1层时把bg2/bg3收起来
                 if(map.bossRoom != null)
                 {
                     foreach(Door door in map.bossRoom.otherDoors)
@@ -113,17 +114,9 @@ public partial class ClassicMode : GameModeBase
                 }
             break;
             case 1800:
-                mapData = GetMapData(level);
-                map.Initialize(mapData, game.randomSystem);
-                if(map.bossRoom != null)
-                {
-                    foreach(Door door in map.bossRoom.otherDoors)
-                    {
-                        door.OnEnter += (e) => NextLevel();
-                    }
-                }
-                player.TransTo(map.startRoom.GlobalPosition);
-                map.startRoom.Enter(player);
+                //换层统一走ChangeLevel：地图重建、门绑定、玩家传送、背景切换都在里面，
+                //以前这里是内联复制的一份，漏掉了背景切换，导致后面几层背景不变
+                ChangeLevel();
                 game.hud.BlackOpen();
                 game.Next();
             break;
@@ -156,30 +149,37 @@ public partial class ClassicMode : GameModeBase
         CameraFollowPlayer();
     }
 
+    //非事件房间清理完之后自动吸取房间内所有资源点
     public override void OnRoomCleared(Room room)
     {
         base.OnRoomCleared(room);
-        foreach(var point in game.energyNode.GetChildren())
+        if (!room.CheckTag(RoomTag.Event))
         {
-            if(point is EnergyPoint ep)
+            foreach(var point in room.GetChildren())
             {
-                if(ep.energyType == EnergyType.Coin)
+                if(point is EnergyPoint ep)
                 {
-                    ep.target = player;
+                    if(ep.energyType == EnergyType.Coin)
+                    {
+                        ep.target = player;
+                    }
                 }
             }
         }
+        
     }
 
     public override void OnEnemySpawned(Enemy enemy)
     {
         base.OnEnemySpawned(enemy);
         //根据level提升敌怪属性，提升为当前等级 - 1乘以30%
-        enemy.attack.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
-        enemy.maxHealth.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
-        enemy.maxHealth.Add((level - 1) * 50f, "LEVEL", 80);
+        enemy.attack.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
+        enemy.maxHealth.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
+        enemy.maxHealth.Add((level - 1) * 30f, "LEVEL", 80);
         enemy.Heal(enemy.maxHealth);
-        enemy.defense.Multi(1 + (level - 1) * 0.5f, "LEVEL", 80);
+        enemy.defense.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
+        enemy.shield *= 1 + (level - 1) * 0.3f;
+        enemy.shield += (level - 1) * 10f;
     }
 
     public void NextLevel()
@@ -188,9 +188,25 @@ public partial class ClassicMode : GameModeBase
         game.GoTo(1600);
     }
 
+    /// <summary>
+    /// 按当前层数切换背景：第3层起显示bg2、第5层起显示bg3。
+    /// 这里用"赋值"而不是"只置为可见"：重开一局回到第1层时才能把bg2/bg3正确隐藏
+    /// </summary>
+    void UpdateBackground()
+    {
+        if(game.bg == null)
+        {
+            return;
+        }
+
+        game.bg.bg2.Visible = level > 2;
+        game.bg.bg3.Visible = level > 4;
+    }
+
     public void ChangeLevel()
     {
         mapData = GetMapData(level);
+        UpdateBackground();
         map.Initialize(mapData, game.randomSystem);
         if(map.bossRoom != null)
         {
@@ -199,8 +215,62 @@ public partial class ClassicMode : GameModeBase
                 door.OnEnter += (e) => NextLevel();
             }
         }
-        GD.Print(map.startRoom);
         player.TransTo(map.startRoom.GlobalPosition);
         map.startRoom.Enter(player);
+    }
+
+    public override void OnEnd(bool isVictory)
+    {
+        GD.Print("游戏结束");
+        SceneManager.Instance.GoNextScene("GameEnd");
+    }
+
+    /// <summary>
+    /// 当前层对应的关卡音乐（1~2层 / 3~4层 / 5层起）
+    /// </summary>
+    string GetLevelMusicName()
+    {
+        if(level <= 2)
+        {
+            return "Level12";
+        }
+
+        if(level <= 4)
+        {
+            return "Level34";
+        }
+
+        return "Level5";
+    }
+
+    /// <summary>
+    /// 按房间切换音乐：第4层Boss房用专属Boss曲，其余按层数用关卡曲，都走渐变切换
+    /// </summary>
+    void UpdateMusic(Room room)
+    {
+        if(game == null)
+        {
+            return;
+        }
+
+        string musicName = GetLevelMusicName();
+        if(level == 4 && room != null && room.CheckTag(RoomTag.Boss))
+        {
+            musicName = "Level4Boss";
+        }
+
+        AudioStream music = AssetManager.Instance?.GetMusic(musicName);
+        if(music == null)
+        {
+            return;
+        }
+
+        game.PlayMusic(music, 1.5f);
+    }
+
+    public override void OnRoomEnter(Room room)
+    {
+        base.OnRoomEnter(room);
+        UpdateMusic(room);
     }
 }

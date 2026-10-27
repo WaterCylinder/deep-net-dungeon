@@ -31,6 +31,34 @@ public partial class Setting : Control
         SetupSlider(masterSlider, masterValueLabel, AudioUtil.BUS_MASTER);
         SetupSlider(soundSlider, soundValueLabel, AudioUtil.BUS_SOUND);
         SetupSlider(musicSlider, musicValueLabel, AudioUtil.BUS_MUSIC);
+
+        PlaySettingMusic();
+    }
+
+    /// <summary>
+    /// 设置界面的背景音乐：用主菜单的曲子，方便边拖音乐音量条边听效果
+    /// </summary>
+    private void PlaySettingMusic()
+    {
+        AudioStreamPlayer musicPlayer = new AudioStreamPlayer
+        {
+            Name = "SettingMusic",
+            Bus = AudioUtil.BUS_MUSIC,
+            VolumeDb = -80f,
+        };
+        AddChild(musicPlayer);
+
+        AudioStream menuMusic = AssetManager.Instance?.GetMusic("Menu");
+        if (menuMusic == null)
+        {
+            return;
+        }
+
+        musicPlayer.Stream = menuMusic;
+        musicPlayer.Play();
+
+        //淡入
+        CreateTween().TweenProperty(musicPlayer, "volume_db", 0f, 1f);
     }
 
     public override void _ExitTree()

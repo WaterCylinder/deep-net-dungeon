@@ -1,0 +1,72 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://2fuglulnx4mf"]
+
+[ext_resource type="Texture2D" uid="uid://jy6ld7kqc4cj" path="res://Resource/v1/Level1/Enemy/Sprite/Ghost.png" id="1_ghlxk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghlxk"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f7bgu"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvp3o"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(128, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lx66t"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(192, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mscp3"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7u2pq"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rhmc5"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vjgco"]
+atlas = ExtResource("1_ghlxk")
+region = Rect2(192, 0, 64, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghlxk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f7bgu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fvp3o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lx66t")
+}],
+"loop": false,
+"name": &"death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mscp3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7u2pq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rhmc5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vjgco")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

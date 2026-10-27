@@ -1,10 +1,18 @@
 [gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://d1yhxir7jj81j"]
 
+[ext_resource type="Resource" uid="uid://cy3kd058us37v" path="res://Resource/v1/Item/ItemPool/boss_pool.tres" id="1_uad28"]
 [ext_resource type="Resource" uid="uid://b5wkkx5gj5xxt" path="res://Resource/Global/RoomBehavior/set_boss.tres" id="1_vwgkr"]
 [ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_ryf8o"]
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_uad28"]
 [ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="4_c53kr"]
+[ext_resource type="Resource" uid="uid://swcs77ge3y4t" path="res://Resource/v1/Level1/Room/Behavior/room_generate_item_from_pool.tres" id="4_ryf8o"]
 [ext_resource type="PackedScene" uid="uid://cep72a8iqraw0" path="res://Resource/v1/Level1/Room/Boss/room_level1_boss.tscn" id="5_rfqin"]
+
+[sub_resource type="Resource" id="Resource_uad28"]
+script = ExtResource("3_uad28")
+condition = ExtResource("2_ryf8o")
+behavior = ExtResource("4_ryf8o")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [sub_resource type="Resource" id="Resource_5ujhu"]
 script = ExtResource("3_uad28")
@@ -17,6 +25,9 @@ script = ExtResource("4_c53kr")
 roomId = "BOSS"
 roomTags = Array[int]([2])
 tileMap = ExtResource("5_rfqin")
-args = null
+args = Dictionary[String, Variant]({
+"item_pool": ExtResource("1_uad28")
+})
 onGenerateEnemy = SubResource("Resource_5ujhu")
+onClear = SubResource("Resource_uad28")
 metadata/_custom_type_script = "uid://bodfjcgco84dp"

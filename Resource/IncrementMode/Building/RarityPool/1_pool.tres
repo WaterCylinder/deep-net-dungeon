@@ -12,12 +12,12 @@
 [resource]
 script = ExtResource("1_mdc0t")
 pool = Dictionary[Object, int]({
-ExtResource("1_lcimg"): 28,
-ExtResource("2_2oxtg"): 28,
-ExtResource("3_yyn15"): 28,
-ExtResource("4_v6lvv"): 28,
-ExtResource("5_2oxtg"): 8,
-ExtResource("6_yyn15"): 28,
-ExtResource("7_v6lvv"): 20
+ExtResource("1_lcimg"): 15,
+ExtResource("2_2oxtg"): 5,
+ExtResource("3_yyn15"): 30,
+ExtResource("4_v6lvv"): 5,
+ExtResource("5_2oxtg"): 12,
+ExtResource("6_yyn15"): 25,
+ExtResource("7_v6lvv"): 8
 })
 metadata/_custom_type_script = "uid://jetqew8yttgm"

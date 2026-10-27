@@ -10,7 +10,11 @@ public enum EnergyType
     /// <summary>
     /// 回血
     /// </summary>
-    Health
+    Health,
+    /// <summary>
+    /// 护盾
+    /// </summary>
+    Shield
 }
 
 public partial class EnergyPoint : Entity
@@ -48,7 +52,7 @@ public partial class EnergyPoint : Entity
     /// <param name="count"></param>
     /// <param name="parent"></param>
     /// <returns></returns>
-    public static Array<EnergyPoint> CreateEnergyPoint(EnergyType type, Vector2 pos, int count = 1, float value = 1, Node parent = null)
+    public static Array<EnergyPoint> CreateEnergyPoint(EnergyType type, Vector2 pos, int count = 1, float value = 1, float radius = 0, Node parent = null)
     {
 
         if(parent == null)
@@ -63,7 +67,8 @@ public partial class EnergyPoint : Entity
 
             float radiusMin = 32f;
             float radiusMax = 128f;
-            float radius = Mathf.Clamp(dropRadius * Mathf.Sqrt(count) * 2.5f, radiusMin, radiusMax);
+            if(radius == 0)
+                radius = Mathf.Clamp(dropRadius * Mathf.Sqrt(count) * 2.5f, radiusMin, radiusMax);
 
             for (int i = 0; i < count; i++)
             {
@@ -85,10 +90,14 @@ public partial class EnergyPoint : Entity
         {
             EnergyPoint ep = EnergyPrefab.Instantiate() as EnergyPoint;
             var dropPos = points[i];
-            ep.GlobalPosition = dropPos;
-            ep.Init(type);
+            Callable.From(() =>
+            {
+                parent.AddChild(ep);
+                ep.GlobalPosition = dropPos;
+            }).CallDeferred();
+            
             ep.value = value;
-            parent.CallDeferred("add_child", ep);
+            ep.Init(type);
         }
 
         return result;
@@ -103,8 +112,6 @@ public partial class EnergyPoint : Entity
     [Export] public AudioStream pickSound;
     
     [Signal] public delegate void CloseToTargetEventHandler();
-
-    Game game => GameManager.Instance.game;
 
     public override void _Ready()
     {
@@ -125,6 +132,10 @@ public partial class EnergyPoint : Entity
             case EnergyType.Health:
                 entity.Heal(value);
             break;
+            case EnergyType.Shield:
+                //护盾点：拾取获得 value × 2 点护盾（AddShield内部会封顶到最大生命）
+                entity.AddShield(value * 2);
+            break;
         }
         entity.EmitSignal(Entity.SignalName.OnPickEnergy, entity, this);
     }
@@ -140,6 +151,26 @@ public partial class EnergyPoint : Entity
             case EnergyType.Health:
                 spriteNode.SelfModulate = Colors.Green;
             break;
+            case EnergyType.Shield:
+                spriteNode.SelfModulate = Colors.Gold;
+            break;
+        }
+
+        if(value < 5)
+        {
+            spriteNode.Scale = new(1,1);
+        }else if(value < 10)
+        {
+            spriteNode.Scale = new(1.2f, 1.2f);
+        }else if(value < 30)
+        {
+            spriteNode.Scale = new(1.5f, 1.5f);
+        }else if(value < 100)
+        {
+            spriteNode.Scale = new(2f, 2f);
+        }else
+        {
+            spriteNode.Scale = new(3f, 3f);
         }
     }
 

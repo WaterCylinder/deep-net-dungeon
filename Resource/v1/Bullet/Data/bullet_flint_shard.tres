@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://dkoskt0jyvlvx"]
+
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_shard_data"]
+[ext_resource type="Script" uid="uid://b41675oscarsg" path="res://Script/Data/Entity/BulletBehavior.cs" id="2_shard_behav"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_shard_cond"]
+[ext_resource type="Texture2D" uid="uid://chl42e645i81j" path="res://Resource/v1/Bullet/Sprite/flint.png" id="4_shard_sprite"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_shard_effect"]
+
+[sub_resource type="Resource" id="Resource_shard_behav"]
+script = ExtResource("2_shard_behav")
+behaviorName = "AddBlood"
+metadata/_custom_type_script = "uid://b41675oscarsg"
+
+[sub_resource type="Resource" id="Resource_shard_effect"]
+script = ExtResource("5_shard_effect")
+condition = ExtResource("3_shard_cond")
+behavior = SubResource("Resource_shard_behav")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_shard_data")
+bulletName = "FlintShard"
+bulletTags = Array[int]([1])
+args = Dictionary[String, Variant]({
+"blood_stack": 1
+})
+lifetime = 0.5
+damageMultiplier = 0.1
+sprite = ExtResource("4_shard_sprite")
+collisionRadius = 2.0
+onHit = SubResource("Resource_shard_effect")
+metadata/_custom_type_script = "uid://draiigge0qptw"

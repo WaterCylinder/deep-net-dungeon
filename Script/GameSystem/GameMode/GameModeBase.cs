@@ -74,6 +74,14 @@ public abstract partial class GameModeBase : RefCounted
     }
 
     /// <summary>
+    /// 玩家进入房间时调用（各模式自行处理，例如经典模式在这里切BGM）
+    /// </summary>
+    /// <param name="room">玩家进入的房间</param>
+    public virtual void OnRoomEnter(Room room)
+    {
+    }
+
+    /// <summary>
     /// 进入下一层时调用
     /// </summary>
     /// <param name="levelIndex">层索引</param>

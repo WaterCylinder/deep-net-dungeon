@@ -69,6 +69,13 @@ public partial class MapData : Resource
     [Export] public int shopRoomCount = 1;
 
     /// <summary>
+    /// 纺锤形：事件房间数量。
+    /// 事件房间会尽量生成在"道路中央"——离起始房间和Boss房间都尽量远
+    /// （集中程度见"房间位置倾向"里的eventMiddleBias）
+    /// </summary>
+    [Export] public int eventRoomCount = 1;
+
+    /// <summary>
     /// 纺锤形：最宽一层的房间数（峰值上限）。
     /// 层宽从"起始房间可用出口数"开始，每层+1扩散到峰值，再每层-1收拢到1；
     /// 房间总数不是标准阶梯形状时，多出来的房间会加宽峰值层（此时峰值层可能比这个值宽一点）
@@ -92,6 +99,12 @@ public partial class MapData : Resource
     /// </summary>
     [Export(PropertyHint.Range, "0,1,0.05")] public float shopNearBossBias = 0.5f;
 
+    /// <summary>
+    /// 事件房间的位置倾向（0~1）：0 = 完全随机，越大越集中在路径中央
+    /// （1 = 只会出现在离起始房间与Boss房间都最远的那一层）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,1,0.05")] public float eventMiddleBias = 0.5f;
+
     #endregion
 
     #region 房间数据池
@@ -105,7 +118,8 @@ public partial class MapData : Resource
         {RoomTag.Normal, new()},
         {RoomTag.Shop, new()},
         {RoomTag.Treasure, new()},
-        {RoomTag.Boss, new()}
+        {RoomTag.Boss, new()},
+        {RoomTag.Event, new()},
     };
 
     /// <summary>

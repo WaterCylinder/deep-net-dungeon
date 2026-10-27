@@ -46,7 +46,7 @@ defaultArgs = Dictionary[String, Variant]({
 })
 value = SubResource("Resource_g4roe")
 sprite = ExtResource("2_6fiug")
-buyPrice = 1200
+buyPrice = 3500
 onTurnEnd = ExtResource("5_xwk1a")
 onLevelUp = ExtResource("5_8krdj")
 onSomeBuildingBeSell = SubResource("Resource_rar8a")

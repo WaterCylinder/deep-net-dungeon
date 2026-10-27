@@ -17,6 +17,7 @@ script = ExtResource("3_ta6r1")
 ItemName = "health_module"
 showName = "生命模块"
 intro = "最大生命值提升 10，恢复等量生命值"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 10.0
 })

@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://fda3crtpnulb"]
+
+[ext_resource type="Script" uid="uid://dywqu0xq2xtsw" path="res://Plugin/AutoSizedText/addons/AutoSizeText/ui/AutoSizeLabel.gd" id="1_7aife"]
+[ext_resource type="Script" uid="uid://omh87db6wafg" path="res://Script/Core/End.cs" id="1_r5fce"]
+[ext_resource type="PackedScene" uid="uid://x0i8y7e1evd0" path="res://Asset/ListOfProducers.tscn" id="3_b56yn"]
+
+[node name="GameEnd" type="Node" unique_id=591083317]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1602745245]
+script = ExtResource("1_r5fce")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1725547744]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="AutoSizeLabel" type="Label" parent="CanvasLayer" unique_id=2031116760]
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.9
+anchor_right = 0.6
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "按任意键返回主菜单"
+horizontal_alignment = 1
+autowrap_mode = 3
+clip_text = true
+text_overrun_behavior = 3
+script = ExtResource("1_7aife")
+max_font_size = 16
+metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
+
+[node name="ListOfProducers" parent="CanvasLayer" unique_id=941333334 instance=ExtResource("3_b56yn")]

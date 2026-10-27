@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://cm7ec4dxdh78v"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_data"]
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="2_behav"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="3_cond"]
+[ext_resource type="Texture2D" uid="uid://c3affqo3d72ut" path="res://Resource/v1/Item/Sprite/edition1/RiftTotems.png" id="4_sprite"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_effect"]
+
+[sub_resource type="Resource" id="Resource_totem_behav"]
+script = ExtResource("2_behav")
+behaviorName = "RiftTotemOnTimer"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_totem_effect"]
+script = ExtResource("5_effect")
+condition = ExtResource("3_cond")
+behavior = SubResource("Resource_totem_behav")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_data")
+sprite = ExtResource("4_sprite")
+id = "buff_rift_totem"
+name = "裂罅图腾"
+intro = "每秒使房间内所有敌怪获得4层灼烧"
+maxStack = 1
+processTime = 1.0
+tags = Array[int]([2])
+isUnique = true
+args = Dictionary[String, Variant]({
+"fire_stack": 4
+})
+onTimer = SubResource("Resource_totem_effect")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

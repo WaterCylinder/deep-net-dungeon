@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://daeu71oofghja"]
+
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_18vlo"]
+[ext_resource type="Resource" uid="uid://8cooq6nvtre5" path="res://Resource/Global/RoomBehavior/room_generate_coin_energy_point.tres" id="4_jbndq"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_vjrvt"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="5_lxfe0"]
+[ext_resource type="Resource" uid="uid://t8bt2prv3p3u" path="res://Resource/Global/RoomBehavior/room_generate_health_energy_point.tres" id="5_uo0hx"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="6_e1q2c"]
+[ext_resource type="PackedScene" uid="uid://bt74pa8eb2y5u" path="res://Resource/v1/Level2/Room/Event/room_level2_event001.tscn" id="6_jbndq"]
+
+[sub_resource type="Resource" id="Resource_juhlu"]
+script = ExtResource("6_e1q2c")
+behaviorArray = Array[Object]([ExtResource("4_jbndq"), ExtResource("5_uo0hx")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_uo0hx"]
+script = ExtResource("4_vjrvt")
+condition = ExtResource("3_18vlo")
+behavior = SubResource("Resource_juhlu")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("5_lxfe0")
+roomId = "Event_1"
+roomTags = Array[int]([5])
+tileMap = ExtResource("6_jbndq")
+args = Dictionary[String, Variant]({
+"coin_count": Vector2i(5, 10),
+"coin_value": Vector2i(1, 5),
+"health_count": Vector2i(5, 10),
+"health_value": Vector2i(4, 8)
+})
+onFirstEnter = SubResource("Resource_uo0hx")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

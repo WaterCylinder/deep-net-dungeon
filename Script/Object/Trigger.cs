@@ -17,10 +17,27 @@ public partial class Trigger : Area2D
         {
             if(_triggerPrefab == null)
             {
+                string path = "Asset.Object.Component.trigger";
                 _triggerPrefab = AssetManager.Instance.GetPrefab("Asset.Object.Component.trigger", null);
+                if(_triggerPrefab == null)
+                {
+                    GD.Print($"在{path}找不到默认Trigger预制体");
+                }
             }
             return _triggerPrefab;
         }
+    }
+    public static Trigger CreateTrigger(float radius, Node parent)
+    {
+        Trigger trigger = TriggerPrefab.Instantiate<Trigger>();
+        trigger.radius = radius;
+        if (!Game.IsAble(parent))
+        {
+            parent = Engine.GetMainLoop() is SceneTree sceneTree ? sceneTree.CurrentScene : null;
+        }
+        GD.Print($"创建Trigger在{parent}下");
+        parent?.CallDeferred("add_child", trigger);
+        return trigger;
     }
 
     #endregion
@@ -54,21 +71,41 @@ public partial class Trigger : Area2D
     /// <summary>
     /// 当前在碰撞箱内的实体列表
     /// </summary>
-    [Export] public Array<Entity> entityList { get; private set; } = new ();
+    [Export] public Array<Entity> entityList = new ();
 
     /// <summary>
     /// 历史记录列表（固定大小256，记录进入过的实体）
     /// </summary>
-    public LinkedList<Entity> historyList { get; private set; } = new();
+    public LinkedList<Entity> historyList = new();
 
     #endregion
 
     #region 属性
 
     /// <summary>
-    /// 获取最新的实体
+    /// 获取最新的实体,会跳过标记为TargetDisable的敌怪
     /// </summary>
-    public Entity latestEntity => entityList.Count > 0 ? entityList[0] : null;
+    public Entity latestEntity
+    {
+        get
+        {
+            if(entityList.Count > 0)
+            {
+                for(int index = 0; index < entityList.Count; index += 1)
+                {
+                    if(entityList[index] is Enemy enemy)
+                    {
+                        if (enemy.CheckTag(EnemyTag.TargetDisable))
+                        {
+                            continue;
+                        }
+                    }
+                    return entityList[index];
+                }
+            }
+            return null;
+        }
+    }
 
     #endregion
 
@@ -93,6 +130,12 @@ public partial class Trigger : Area2D
     /// </summary>
     [Signal]
     public delegate void OnEntityExitedEventHandler(Entity entity);
+
+    /// <summary>
+    /// 更新时触发
+    /// </summary>
+    [Signal]
+    public delegate void OnUpdateEventHandler(Entity entity);
 
     #endregion
 
@@ -157,6 +200,7 @@ public partial class Trigger : Area2D
 
             // 触发信号
             EmitSignal(SignalName.OnEntityEntered, entity);
+            EmitSignal(SignalName.OnUpdate, entity);
         }
     }
 
@@ -184,6 +228,7 @@ public partial class Trigger : Area2D
 
             // 触发信号
             EmitSignal(SignalName.OnEntityExited, entity);
+            EmitSignal(SignalName.OnUpdate, entity);
         }
     }
 
@@ -251,11 +296,13 @@ public partial class Trigger : Area2D
     /// </summary>
     private void SortEntityList()
     {
+        bool _dirty = false;
         for (int i = entityList.Count - 1; i >= 0; i--)
         {
             if (entityList[i] == null || entityList[i].isDead)
             {
                 entityList.RemoveAt(i);
+                _dirty = true;
             }
         }
         // 使用冒泡排序，因为列表通常较小且需要频繁更新
@@ -268,9 +315,13 @@ public partial class Trigger : Area2D
                     Entity temp = entityList[j];
                     entityList[j] = entityList[j + 1];
                     entityList[j + 1] = temp;
+                    _dirty = true;
                 }
             }
         }
+
+        if(_dirty)
+            EmitSignal(SignalName.OnUpdate, null);
     }
 
     #endregion
@@ -357,7 +408,7 @@ public partial class Trigger : Area2D
         {
             var next = node.Next;
             // 如果实体已被销毁或不合法，移除
-            if (node.Value == null || node.Value.IsQueuedForDeletion() || !IsInstanceValid(node.Value))
+            if (!Game.IsAble(node.Value))
             {
                 historyList.Remove(node);
             }

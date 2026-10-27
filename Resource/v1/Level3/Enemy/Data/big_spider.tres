@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://xbndty5vs5lj"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buff"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_big_spider"]
+[ext_resource type="Resource" uid="uid://bjhwdph8hwsh6" path="res://Resource/v1/Bullet/Data/bullet_elect.tres" id="3_elect_bullet"]
+[ext_resource type="SpriteFrames" uid="uid://c3e0w33xqfd7b" path="res://Resource/v1/Level3/Enemy/Sprite/big_spider_sprite_frames.tres" id="4_frames"]
+[ext_resource type="Script" uid="uid://jmjjbqo80sf5" path="res://Resource/v1/Level3/EnemyBehaviorLevel3.cs" id="5_level3_behav"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="6_effect"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="7_player_able"]
+[ext_resource type="Resource" uid="uid://bik0utnsprxti" path="res://Resource/v1/Level3/Enemy/Data/elect_spider.tres" id="8_elect_spider"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="9_bind"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_area"]
+radius = 55.0
+
+[sub_resource type="Resource" id="Resource_update_behav"]
+script = ExtResource("5_level3_behav")
+behaviorName = "UpdateBigSpider"
+metadata/_custom_type_script = "uid://jmjjbqo80sf5"
+
+[sub_resource type="Resource" id="Resource_summon_behav"]
+script = ExtResource("5_level3_behav")
+behaviorName = "SummonElectSpider"
+metadata/_custom_type_script = "uid://jmjjbqo80sf5"
+
+[sub_resource type="Resource" id="Resource_update_bind"]
+script = ExtResource("9_bind")
+behaviorArray = Array[Object]([SubResource("Resource_update_behav"), SubResource("Resource_summon_behav")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_update_effect"]
+script = ExtResource("6_effect")
+condition = ExtResource("7_player_able")
+behavior = SubResource("Resource_update_bind")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 46.0
+
+[resource]
+script = ExtResource("2_big_spider")
+enemyName = "big_spider"
+displayName = "巨蛛"
+description = "朝玩家突进2秒，三波环形电浆弹幕，停顿2秒后朝玩家连发三轮并排电浆弹幕，并每5秒召唤一只电浆蜘蛛"
+tags = Array[int]([4, 6])
+maxHealth = 10000.0
+attack = 30.0
+defense = 30.0
+speed = 200.0
+shield = 2000.0
+spriteFrames = ExtResource("4_frames")
+layoutOffset = Vector2(0, -64)
+physicShape = SubResource("CircleShape2D_body")
+areaShape = SubResource("CircleShape2D_area")
+areaOffset = Vector2(0, 0)
+scale = Vector2(3, 3)
+args = Dictionary[String, Variant]({
+"burst_gap": 0.15,
+"burst_speed": 4.0,
+"burst_spread": 70.0,
+"elect_bullet": ExtResource("3_elect_bullet"),
+"elect_spider_data": ExtResource("8_elect_spider"),
+"move_time": 2.0,
+"ring_fast_speed": 5.0,
+"ring_medium_speed": 3.0,
+"ring_slow_speed": 1.5,
+"summon_count": 3,
+"summon_interval": 5.0,
+"summon_max": 30,
+"wait_time_max": 1.0,
+"wait_time_min": 0.5
+})
+onUpdate = SubResource("Resource_update_effect")
+dropValue = Vector2i(30, 40)
+metadata/_custom_type_script = "uid://mqed4halsexx"

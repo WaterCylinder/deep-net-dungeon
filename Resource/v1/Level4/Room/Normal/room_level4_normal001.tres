@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://bx3bokm4rk2mq"]
+
+[ext_resource type="Resource" uid="uid://bumml015o5fib" path="res://Resource/v1/Item/ItemPool/room_pool.tres" id="1_ivoeq"]
+[ext_resource type="Resource" uid="uid://swcs77ge3y4t" path="res://Resource/v1/Level1/Room/Behavior/room_generate_item_from_pool.tres" id="2_n4m5s"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_0aj1e"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_ld5ko"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="5_iue8e"]
+[ext_resource type="PackedScene" uid="uid://b8p0eya4qob41" path="res://Resource/v1/Level4/Room/Normal/room_level4_normal001.tscn" id="6_xujom"]
+
+[sub_resource type="Resource" id="Resource_mg7dd"]
+script = ExtResource("4_ld5ko")
+condition = ExtResource("3_0aj1e")
+behavior = ExtResource("2_n4m5s")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("5_iue8e")
+roomId = "Normal"
+roomTags = Array[int]([1])
+tileMap = ExtResource("6_xujom")
+args = Dictionary[String, Variant]({
+"item_pool": ExtResource("1_ivoeq")
+})
+onClear = SubResource("Resource_mg7dd")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using Godot.Collections;
 
 [GlobalClass]
 public partial class BulletBehaviorLevel1 : BulletBehavior
@@ -30,12 +30,25 @@ public partial class BulletBehaviorLevel1 : BulletBehavior
     public void GoldBulletOnHit(Bullet bullet, Entity owner, Entity target)
     {
         if(!Game.IsAble(owner) || !Game.IsAble(target))return;
-        float value = owner.shield * 0.1f;
+        float value = owner.shield * 0.3f;
         Damage damage = new Damage
         {
             source = owner,
-            value = new(value)
+            value = value
         };
         target.Hurt(damage);
+    }
+
+    //大火球死亡后发射小火球
+    public void BigRiftFireDeath(Bullet bullet)
+    {
+        BulletData bulletData = bullet.args.Get<BulletData>("child_bullet");
+        Vector2 toward = Vector2.Right;
+        float angle = 360 / 5;
+        for(int i = 1; i<=5; i++)
+        {
+            toward = toward.Rotated(Mathf.DegToRad(angle));
+            Bullet.Create(bullet.owner, bullet.GlobalPosition, toward.Normalized() * 2, bulletData);
+        }
     }
 }

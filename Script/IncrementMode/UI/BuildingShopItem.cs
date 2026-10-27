@@ -24,7 +24,9 @@ public partial class BuildingShopItem : Control
 
         name.Text = data.buildingName;
         textureRect.Texture = data.sprite;
-        priceLabel.Text = data.buyPrice.ToString();
+        //实际价格含阶段通胀：后期收益膨胀后，便宜建筑不会变成白菜价
+        price = world.GetPrice(data);
+        priceLabel.Text = price.ToString();
         rarity.SelfModulate = Building.rarityMapper[data.rarity];
         tag.Text = "";
         foreach(var t in data.tags)
@@ -34,7 +36,6 @@ public partial class BuildingShopItem : Control
                 tag.Text += value + " ";
             }
         }
-        price = data.buyPrice;
         introLabel.Text = data.GetDefaultIntro();
 
         button.SelfModulate = new Color("ffffff00");

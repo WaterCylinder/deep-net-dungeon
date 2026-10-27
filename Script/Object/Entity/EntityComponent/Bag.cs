@@ -112,6 +112,12 @@ public partial class Bag : EntityComponent
         if(!canPick)return;
         if(other is Item item)
         {
+            //不可交互的道具（例如挂在玩家身上的手持道具）永远不参与拾取
+            if(!item.Interactive)
+            {
+                return;
+            }
+
             //如果在刚才丢弃物品列表里，则不拾取
             if(dropList.Contains(item))
             {

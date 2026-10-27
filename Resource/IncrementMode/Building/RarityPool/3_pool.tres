@@ -8,8 +8,8 @@
 [resource]
 script = ExtResource("1_iqy7g")
 pool = Dictionary[Object, int]({
-ExtResource("1_0dkmy"): 2,
-ExtResource("2_u0502"): 4,
-ExtResource("3_37pnf"): 3
+ExtResource("1_0dkmy"): 100,
+ExtResource("2_u0502"): 110,
+ExtResource("3_37pnf"): 90
 })
 metadata/_custom_type_script = "uid://jetqew8yttgm"

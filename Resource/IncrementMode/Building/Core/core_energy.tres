@@ -44,7 +44,7 @@ defaultArgs = Dictionary[String, Variant]({
 "turn_max": 2
 })
 sprite = ExtResource("2_niefd")
-buyPrice = 200
+buyPrice = 600
 onTurnEnd = SubResource("Resource_ftvhj")
 onLevelUp = ExtResource("1_gx6k7")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

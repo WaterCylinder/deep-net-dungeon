@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://dcn84umpt31rt"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buff"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_emoji"]
+[ext_resource type="SpriteFrames" uid="uid://cpag2g5lgjros" path="res://Resource/v1/Level3/Enemy/Sprite/emoji_sprite_sheet.tres" id="3_emoji_frames"]
+[ext_resource type="Script" uid="uid://jmjjbqo80sf5" path="res://Resource/v1/Level3/EnemyBehaviorLevel3.cs" id="4_level3_behav"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="5_a8fdu"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_effect"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="6_player_able"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="6_xp8c3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_area"]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_melee"]
+radius = 26.0
+
+[sub_resource type="Resource" id="Resource_attack_behav"]
+script = ExtResource("4_level3_behav")
+behaviorName = "EmojiAttack"
+metadata/_custom_type_script = "uid://jmjjbqo80sf5"
+
+[sub_resource type="Resource" id="Resource_attack_effect"]
+script = ExtResource("5_effect")
+condition = ExtResource("6_player_able")
+behavior = SubResource("Resource_attack_behav")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_c1f7j"]
+script = ExtResource("4_level3_behav")
+behaviorName = "UpdateEmoji"
+metadata/_custom_type_script = "uid://jmjjbqo80sf5"
+
+[sub_resource type="Resource" id="Resource_fqbe1"]
+script = ExtResource("6_xp8c3")
+behaviorArray = Array[Object]([SubResource("Resource_c1f7j"), ExtResource("5_a8fdu")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_update_effect"]
+script = ExtResource("5_effect")
+condition = ExtResource("6_player_able")
+behavior = SubResource("Resource_fqbe1")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 20.0
+
+[resource]
+script = ExtResource("2_emoji")
+enemyName = "emoji"
+displayName = "表情"
+description = "与玩家保持距离、三连发弹幕；护盾破碎后放弃远程，进入狂暴近战形态"
+tags = Array[int]([3])
+maxHealth = 200.0
+attack = 15.0
+defense = 32.0
+attackSpeed = 0.2
+shield = 200.0
+spriteFrames = ExtResource("3_emoji_frames")
+physicShape = SubResource("CircleShape2D_body")
+areaShape = SubResource("CircleShape2D_area")
+areaOffset = Vector2(0, 0)
+attackShape = SubResource("CircleShape2D_melee")
+meleeOffest = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+args = Dictionary[String, Variant]({
+"burst_gap": 0.12,
+"keep_distance": 260.0
+})
+onUpdate = SubResource("Resource_update_effect")
+onAttack = SubResource("Resource_attack_effect")
+dropValue = Vector2i(5, 7)
+metadata/_custom_type_script = "uid://mqed4halsexx"

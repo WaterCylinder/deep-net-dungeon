@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://cguxsd2inudk2"]
+
+[ext_resource type="Resource" uid="uid://lqqhhqedghqc" path="res://Resource/v1/Bullet/Data/bullet_rift_fire.tres" id="1_4tiri"]
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_84k2p"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="2_ho4de"]
+[ext_resource type="Resource" uid="uid://b0qrjh8cbpyqk" path="res://Resource/Global/EnemyBehavior/change_bullet.tres" id="2_htv4q"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_xctul"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_4tiri"]
+[ext_resource type="SpriteFrames" uid="uid://n8q07ocmkcca" path="res://Resource/v1/Level2/Enemy/Sprite/rift_wander_sprite_frames.tres" id="3_aq8oa"]
+[ext_resource type="Script" uid="uid://sk4l54vyi4h8" path="res://Resource/v1/Level2/EnemyBehaviorLevel2.cs" id="3_ho4de"]
+[ext_resource type="Script" uid="uid://dh6u0gbckh2vx" path="res://Resource/v1/Level1/EnemyBehaviorLevel1.cs" id="3_s7ia1"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_htv4q"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="5_4tiri"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="6_s7ia1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_84k2p"]
+radius = 25.0
+
+[sub_resource type="Resource" id="Resource_qeylq"]
+script = ExtResource("3_s7ia1")
+behaviorName = "AttackShotPlayerThree"
+metadata/_custom_type_script = "uid://dh6u0gbckh2vx"
+
+[sub_resource type="Resource" id="Resource_btkew"]
+script = ExtResource("6_s7ia1")
+condition = ExtResource("5_4tiri")
+behavior = SubResource("Resource_qeylq")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_s7ia1"]
+script = ExtResource("6_s7ia1")
+condition = ExtResource("3_4tiri")
+behavior = ExtResource("2_htv4q")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_a1t0f"]
+script = ExtResource("3_ho4de")
+behaviorName = "UpdateRiftWanderAsync"
+metadata/_custom_type_script = "uid://sk4l54vyi4h8"
+
+[sub_resource type="Resource" id="Resource_ygxq6"]
+script = ExtResource("4_htv4q")
+behaviorArray = Array[Object]([ExtResource("2_ho4de"), SubResource("Resource_a1t0f")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_77xck"]
+script = ExtResource("6_s7ia1")
+condition = ExtResource("5_4tiri")
+behavior = SubResource("Resource_ygxq6")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_xctul")
+enemyName = "rift_wander"
+displayName = "裂罅徘徊者"
+description = "无"
+maxHealth = 230.0
+attack = 20.0
+defense = 15.0
+speed = 30.0
+spriteFrames = ExtResource("3_aq8oa")
+layoutOffset = Vector2(0, -32)
+attackShape = SubResource("CircleShape2D_84k2p")
+meleeOffest = Vector2(0, -10)
+scale = Vector2(1.2, 1.2)
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("1_4tiri")
+})
+onGenerate = SubResource("Resource_s7ia1")
+onUpdate = SubResource("Resource_77xck")
+onAttack = SubResource("Resource_btkew")
+dropValue = Vector2i(10, 12)
+metadata/_custom_type_script = "uid://mqed4halsexx"

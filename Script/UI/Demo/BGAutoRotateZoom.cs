@@ -7,7 +7,9 @@ using System;
 public partial class BGAutoRotateZoom : Node2D
 {
     [Export] public CameraController camera;
-    [Export] public Sprite2D bg;
+    [Export] public ColorRect bg1;
+    [Export] public ColorRect bg2;
+    [Export] public ColorRect bg3;
 
     /// <summary>
     /// 1倍大小是背景贴图对应的视窗尺寸

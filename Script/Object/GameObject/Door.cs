@@ -21,15 +21,28 @@ public enum DoorType
     NextLevel,
 }
 
+/// <summary>
+/// 房间标签 → 颜色。
+/// 门和小地图（MapUI）共用这张表，改这里两边一起生效。
+/// 取色原则：统一饱和度 54.3%、明度 62%~72%——比高饱和的"积木色"柔和，
+/// 又比低明度的暗色更容易看清；普通房间保持紫色系
+/// </summary>
 public partial class Door : Area2D
 {
     public static Dictionary<RoomTag, Color> RoomTagColorMapper = new Dictionary<RoomTag, Color>
     {
-        {RoomTag.Shop, Colors.Yellow},
-        {RoomTag.Normal, Colors.Purple},
-        {RoomTag.Treasure, Colors.Gold},
-        {RoomTag.Start, Colors.Green},
-        {RoomTag.Boss, Colors.Red}
+        // 商店：琥珀橙
+        {RoomTag.Shop, new Color("b87f54")},
+        // 普通：紫（数量最多，饱和度统一后不会糊成一片）
+        {RoomTag.Normal, new Color("8252b2")},
+        // 资源：金
+        {RoomTag.Treasure, new Color("b89a54")},
+        // 起始：翡翠绿
+        {RoomTag.Start, new Color("4da86b")},
+        // BOSS：绯红
+        {RoomTag.Boss, new Color("b85459")},
+        // 事件：青
+        {RoomTag.Event, new Color("52a7b2")},
     };
     public static Color GetColorByRoomTag(Room room)
     {
@@ -205,7 +218,8 @@ public partial class Door : Area2D
 
     /// <summary>
     /// 传送：落点只由targetDoor与targetRoom决定
-    /// 1.targetDoor有对应房间：普通房间且尚未清理则落房间坐标，否则落targetDoor
+    /// 1.targetDoor有对应房间：普通房间/Boss房间且尚未清理则落房间坐标（首次进入的非清理房间统一从房间位置开始），
+    ///   否则落targetDoor
     /// 2.targetDoor没有对应房间：落targetDoor
     /// 3.没有targetDoor：落targetRoom坐标
     /// </summary>
@@ -224,9 +238,9 @@ public partial class Door : Area2D
             if(targetDoor.room != null)
             {
                 Room targetRoom  = targetDoor.room;
-                if (targetRoom.CheckTag(RoomTag.Normal) && !targetRoom.isCleared)
+                if ((targetRoom.CheckTag(RoomTag.Normal) || targetRoom.CheckTag(RoomTag.Boss)) && !targetRoom.isCleared)
                 {
-                    GD.Print($"目标门处于普通房间且房间未清理，传送实体{entity}到目标房间坐标{targetRoom.Name}");
+                    GD.Print($"目标门处于未清理的普通/Boss房间，传送实体{entity}到目标房间坐标{targetRoom.Name}");
                     entity.TransTo(targetRoom.GlobalPosition);
                 }
                 else

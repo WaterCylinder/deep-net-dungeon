@@ -1,26 +1,34 @@
 [gd_resource type="Resource" script_class="MapData" format=3 uid="uid://c23add18md4ki"]
 
 [ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_11rdc"]
-[ext_resource type="Resource" uid="uid://dcdspsyktvji8" path="res://Resource/v1/Level2/Start/room_level2_start.tres" id="2_tekky"]
-[ext_resource type="Resource" uid="uid://d1ww25xyh2tca" path="res://Resource/v1/Level2/Normal/room_level2_normal001.tres" id="3_q8bgi"]
-[ext_resource type="Resource" uid="uid://df4cjghcygoys" path="res://Resource/v1/Level2/Boss/room_level2_boss.tres" id="4_tekky"]
-[ext_resource type="Resource" uid="uid://iethhph8e5xt" path="res://Resource/v1/Level2/Shop/room_level2_shop.tres" id="5_tekky"]
-[ext_resource type="Resource" uid="uid://dinbk16sajv37" path="res://Resource/v1/Level2/Resource/room_level2_resource.tres" id="6_tekky"]
+[ext_resource type="Resource" uid="uid://dcdspsyktvji8" path="res://Resource/v1/Level2/Room/Start/room_level2_start.tres" id="2_tekky"]
+[ext_resource type="Resource" uid="uid://d1ww25xyh2tca" path="res://Resource/v1/Level2/Room/Normal/room_level2_normal001.tres" id="3_q8bgi"]
+[ext_resource type="Resource" uid="uid://cad5bu5uql7hq" path="res://Resource/v1/Level2/Room/Normal/room_level2_normal002.tres" id="4_ipajg"]
+[ext_resource type="Resource" uid="uid://df4cjghcygoys" path="res://Resource/v1/Level2/Room/Boss/room_level2_boss.tres" id="4_tekky"]
+[ext_resource type="Resource" uid="uid://cj4nr8bhg3ky" path="res://Resource/v1/Level2/Room/Normal/room_level2_normal003.tres" id="5_igpig"]
+[ext_resource type="Resource" uid="uid://iethhph8e5xt" path="res://Resource/v1/Level2/Room/Shop/room_level2_shop.tres" id="5_tekky"]
+[ext_resource type="Resource" uid="uid://c7sl10jcgo5ab" path="res://Resource/v1/Level2/Room/Normal/room_level2_normal004.tres" id="6_rakk1"]
+[ext_resource type="Resource" uid="uid://dinbk16sajv37" path="res://Resource/v1/Level2/Room/Resource/room_level2_resource.tres" id="6_tekky"]
+[ext_resource type="Resource" uid="uid://db8klg3bqb7sc" path="res://Resource/v1/Level2/Room/Normal/room_level2_normal005.tres" id="7_rakk1"]
 [ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="9_a1ovh"]
+[ext_resource type="Resource" uid="uid://daeu71oofghja" path="res://Resource/v1/Level2/Room/Event/room_level2_event001.tres" id="10_igpig"]
+[ext_resource type="Resource" uid="uid://cb8l4tlrogq63" path="res://Resource/v1/Level2/Room/Event/room_level2_event002.tres" id="12_y8hl2"]
 
 [resource]
 script = ExtResource("9_a1ovh")
-mapMode = 1
-maxNormalRoomCount = 4
-normalRoomCount = 16
+minNormalRoomCount = 1
+maxNormalRoomCount = 1
+normalRoomCount = 12
 treasureRoomCount = 2
 shopRoomCount = 2
+eventRoomCount = 4
 maxLayerRooms = 8
 roomDatas = Dictionary[int, Array]({
 0: Array[ExtResource("1_11rdc")]([ExtResource("2_tekky")]),
-1: Array[ExtResource("1_11rdc")]([ExtResource("3_q8bgi")]),
+1: Array[ExtResource("1_11rdc")]([ExtResource("3_q8bgi"), ExtResource("4_ipajg"), ExtResource("5_igpig"), ExtResource("6_rakk1"), ExtResource("7_rakk1")]),
 2: Array[ExtResource("1_11rdc")]([ExtResource("4_tekky")]),
 3: Array[ExtResource("1_11rdc")]([ExtResource("5_tekky")]),
-4: Array[ExtResource("1_11rdc")]([ExtResource("6_tekky")])
+4: Array[ExtResource("1_11rdc")]([ExtResource("6_tekky")]),
+5: Array[ExtResource("1_11rdc")]([ExtResource("10_igpig"), ExtResource("12_y8hl2")])
 })
 metadata/_custom_type_script = "uid://cdikju4kdlymr"

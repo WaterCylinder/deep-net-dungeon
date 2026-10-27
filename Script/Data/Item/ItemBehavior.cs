@@ -90,7 +90,7 @@ public partial class ItemBehavior : Behavior
         if (Game.IsAble(target))
         {
             float num = target.maxHealth.Get() * (value / 100);
-            target.Heal(value);
+            target.Heal(num);
         }
     }
 

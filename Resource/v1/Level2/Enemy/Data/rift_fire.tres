@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bwj2507qengi5"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_54ip3"]
+[ext_resource type="Resource" uid="uid://lqqhhqedghqc" path="res://Resource/v1/Bullet/Data/bullet_rift_fire.tres" id="1_376nn"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="2_lqp0a"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_pixxb"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="2_wbxer"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_c6fq8"]
+[ext_resource type="Resource" uid="uid://b82exrtkrb411" path="res://Resource/Global/EnemyBehavior/move_target_player.tres" id="3_p4awc"]
+[ext_resource type="SpriteFrames" uid="uid://dlufmmi7h075f" path="res://Resource/v1/Level2/Enemy/Sprite/rift_fire_sprite_frames.tres" id="3_pixxb"]
+[ext_resource type="Resource" uid="uid://crbp4lnv6ch3u" path="res://Resource/Global/EnemyBehavior/shot_target_player.tres" id="4_fae8v"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="5_376nn"]
+[ext_resource type="Resource" uid="uid://b0qrjh8cbpyqk" path="res://Resource/Global/EnemyBehavior/change_bullet.tres" id="5_fae8v"]
+[ext_resource type="Resource" uid="uid://os0nvoivt45p" path="res://Resource/Global/EnemyBehavior/attack.tres" id="7_p4awc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_376nn"]
+radius = 25.0
+
+[sub_resource type="Resource" id="Resource_fae8v"]
+script = ExtResource("3_c6fq8")
+condition = ExtResource("2_lqp0a")
+behavior = ExtResource("4_fae8v")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_376nn"]
+script = ExtResource("3_c6fq8")
+condition = ExtResource("2_lqp0a")
+behavior = ExtResource("5_fae8v")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_g00ra"]
+script = ExtResource("5_376nn")
+behaviorArray = Array[Object]([ExtResource("2_wbxer"), ExtResource("3_p4awc"), ExtResource("7_p4awc")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_dkmgo"]
+script = ExtResource("3_c6fq8")
+condition = ExtResource("2_lqp0a")
+behavior = SubResource("Resource_g00ra")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("2_pixxb")
+enemyName = "rift_fire"
+displayName = "裂罅烈焰"
+description = "燃烧"
+maxHealth = 140.0
+attack = 15.0
+defense = 0.0
+attackSpeed = 0.2
+speed = 50.0
+spriteFrames = ExtResource("3_pixxb")
+attackShape = SubResource("CircleShape2D_376nn")
+meleeOffest = Vector2(1, -20)
+args = Dictionary[String, Variant]({
+"bullet_data": ExtResource("1_376nn")
+})
+onGenerate = SubResource("Resource_376nn")
+onUpdate = SubResource("Resource_dkmgo")
+onAttack = SubResource("Resource_fae8v")
+dropValue = Vector2i(2, 3)
+metadata/_custom_type_script = "uid://mqed4halsexx"

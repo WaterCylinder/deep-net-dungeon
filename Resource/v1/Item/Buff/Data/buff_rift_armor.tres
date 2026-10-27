@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://dfm3o7mtsxkq8"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_fonq6"]
+[ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="1_ydy4m"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="2_an0my"]
+[ext_resource type="Texture2D" uid="uid://ecaxnh0tpvdh" path="res://Resource/v1/Item/Sprite/edition1/RiftArmor.png" id="2_m4vyq"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_1uth4"]
+
+[sub_resource type="Resource" id="Resource_ydy4m"]
+script = ExtResource("1_ydy4m")
+behaviorName = "RemoveRiftArmor"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_an0my"]
+script = ExtResource("3_1uth4")
+condition = ExtResource("2_an0my")
+behavior = SubResource("Resource_ydy4m")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_n4k8r"]
+script = ExtResource("1_ydy4m")
+behaviorName = "RiftArmorOnTimer"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_xj3sn"]
+script = ExtResource("3_1uth4")
+condition = ExtResource("2_an0my")
+behavior = SubResource("Resource_n4k8r")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("1_fonq6")
+sprite = ExtResource("2_m4vyq")
+id = "buff_rift_armor"
+name = "裂罅护甲"
+intro = "根据房间内带有灼烧效果的敌怪数量获得护甲，每只提供10点，每0.1秒刷新一次"
+maxStack = 1
+processTime = 0.1
+tags = Array[int]([2])
+isUnique = true
+args = Dictionary[String, Variant]({})
+onTimer = SubResource("Resource_xj3sn")
+onEnd = SubResource("Resource_an0my")
+metadata/_custom_type_script = "uid://bctrndevbmqqd"

@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://cb8l4tlrogq63"]
+
+[ext_resource type="Resource" uid="uid://8cooq6nvtre5" path="res://Resource/Global/RoomBehavior/room_generate_coin_energy_point.tres" id="1_qvpo7"]
+[ext_resource type="Resource" path="res://Resource/Global/RoomBehavior/room_generate_shield_energy.tres" id="2_3c0sj"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_c8ksk"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="4_dxhp3"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_fx105"]
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="6_uqx4g"]
+[ext_resource type="PackedScene" uid="uid://tc3wb68w4sn" path="res://Resource/v1/Level2/Room/Event/room_level2_event002.tscn" id="7_3c0sj"]
+
+[sub_resource type="Resource" id="Resource_juhlu"]
+script = ExtResource("3_c8ksk")
+behaviorArray = Array[Object]([ExtResource("1_qvpo7"), ExtResource("2_3c0sj")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_uo0hx"]
+script = ExtResource("5_fx105")
+condition = ExtResource("4_dxhp3")
+behavior = SubResource("Resource_juhlu")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[resource]
+script = ExtResource("6_uqx4g")
+roomId = "Event_1"
+roomTags = Array[int]([5])
+tileMap = ExtResource("7_3c0sj")
+args = Dictionary[String, Variant]({
+"coin_count": Vector2i(5, 10),
+"coin_value": Vector2i(1, 5),
+"shield_count": Vector2i(5, 10),
+"shield_value": Vector2i(1, 5)
+})
+onFirstEnter = SubResource("Resource_uo0hx")
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

@@ -202,10 +202,17 @@ public partial class Building : Node2D
         rarity = data.rarity;
         intro = data.intro;
 
+        //卖出返还按"实际买入价"的一半算（含阶段通胀）：
+        //这样后期把旧建筑拆掉换新构筑不吃亏，但"买了再卖"永远亏一半，反复买卖赚不到钱
+        int paidPrice = data.buyPrice;
+        if (world != null)
+        {
+            paidPrice = world.GetPrice(data);
+        }
         sellPrice = data.sellPrice;
         if(sellPrice < 0)
         {
-           sellPrice = data.buyPrice / 2; 
+           sellPrice = Mathf.FloorToInt(paidPrice * 0.5f);
         }
 
         onBuy = data.onBuy?.Duplicate() as Effect;
@@ -268,9 +275,16 @@ public partial class Building : Node2D
         EmitSignal(SignalName.OnPressSignal, this);
     }
 
-    public void OnSell()
+    /// <summary>
+    /// 出售时触发
+    /// </summary>
+    /// <param name="allowEffect">是否触发本建筑的出售效果（联动限次时传false，建筑仍会被移除）</param>
+    public void OnSell(bool allowEffect = true)
     {
-        onSell?.Run(this);
+        if (allowEffect)
+        {
+            onSell?.Run(this);
+        }
         EmitSignal(SignalName.OnSellSignal, this);
         if(point != null)
         {

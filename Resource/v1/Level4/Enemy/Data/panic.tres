@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://cibibko3844lf"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buff"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_panic"]
+[ext_resource type="SpriteFrames" uid="uid://txky2xdbuog1" path="res://Resource/v1/Level4/Enemy/Sprite/panic_sprite_frames.tres" id="3_frames"]
+[ext_resource type="Resource" uid="uid://uyh2fun404kh" path="res://Resource/Global/EnemyBehavior/face2move.tres" id="3_nd4ti"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="4_4rqi7"]
+[ext_resource type="Script" path="res://Resource/v1/Level4/EnemyBehaviorLevel4.cs" id="4_level4_behav"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_effect"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="6_player_able"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_area"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dd2rd"]
+radius = 20.0
+
+[sub_resource type="Resource" id="Resource_hm24j"]
+script = ExtResource("4_level4_behav")
+behaviorName = "UpdatePanic"
+metadata/_custom_type_script = "uid://cy03vtw837xg0"
+
+[sub_resource type="Resource" id="Resource_pdasx"]
+script = ExtResource("4_4rqi7")
+behaviorArray = Array[Object]([SubResource("Resource_hm24j"), ExtResource("3_nd4ti")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
+
+[sub_resource type="Resource" id="Resource_update_effect"]
+script = ExtResource("5_effect")
+condition = ExtResource("6_player_able")
+behavior = SubResource("Resource_pdasx")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 20.0
+
+[resource]
+script = ExtResource("2_panic")
+enemyName = "panic"
+displayName = "恐慌"
+description = "一直跟随玩家；护盾低于最大生命一半时每秒恢复10%最大生命的护盾，受击会重置回盾等待"
+tags = Array[int]([3])
+maxHealth = 200.0
+attack = 20.0
+defense = 10.0
+speed = 120.0
+shield = 100.0
+spriteFrames = ExtResource("3_frames")
+layoutOffset = Vector2(0, -5)
+physicShape = SubResource("CircleShape2D_body")
+areaShape = SubResource("CircleShape2D_area")
+areaOffset = Vector2(0, 0)
+attackShape = SubResource("CircleShape2D_dd2rd")
+meleeOffest = Vector2(0, 0)
+onUpdate = SubResource("Resource_update_effect")
+dropValue = Vector2i(4, 6)
+metadata/_custom_type_script = "uid://mqed4halsexx"

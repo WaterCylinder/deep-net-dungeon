@@ -13,7 +13,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_h0h2o"]
 script = ExtResource("7_ongqo")
-baseValue = 5.0
+baseValue = 8.0
 _multipliers = Dictionary[String, ExtResource("6_f7ppj")]({
 "Base": SubResource("Resource_ongqo")
 })

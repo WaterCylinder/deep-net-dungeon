@@ -293,6 +293,16 @@ public partial class Bullet : Entity
     /// </summary>
     private Effect onLifetimeEnd;
 
+    /// <summary>
+    /// 弹幕消失时
+    /// </summary>
+    private Effect onDead;
+
+    /// <summary>
+    /// 保证弹幕在生成后不会立刻被墙卡住
+    /// </summary>
+    private bool generateProtection = true;
+
     public AudioStream soundOnShot;
     public AudioStream soundOnHit;
 
@@ -462,6 +472,7 @@ public partial class Bullet : Entity
         onPhysicalUpdate = data.onPhysicalUpdata?.Duplicate(false) as Behavior;
         onHit = data.onHit?.Duplicate(false) as Effect;
         onLifetimeEnd = data.onLifetimeEnd?.Duplicate(false) as Effect;
+        onDead = data.onDead?.Duplicate(false) as Effect;
 
         spriteNode = layout.GetNodeOrNull<Sprite2D>("Sprite");
         animNode = layout.GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite");
@@ -493,9 +504,18 @@ public partial class Bullet : Entity
 
         layout.Scale = data.scale;
         layout.Position = data.layoutOffset;
+
+        //注意：弹幕预制体里的CircleShape2D是SubResource，所有实例默认共享同一个形状资源。
+        //直接改Radius会让"最后生成的那发弹幕"决定全场弹幕的碰撞半径——
+        //例如WSAWA的body弹幕把半径设成64，之后boss随手打出一发普通弹(默认半径)就会把它改回去。
+        //所以这里每个实例复制一份自己的形状
         var areaShape = area.GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        var shape = areaShape.Shape as CircleShape2D;
-        shape.Radius = data.collisionRadius;
+        if (areaShape != null && areaShape.Shape is CircleShape2D)
+        {
+            CircleShape2D shape = (CircleShape2D)areaShape.Shape.Duplicate();
+            shape.Radius = data.collisionRadius;
+            areaShape.Shape = shape;
+        }
         area.Scale = data.scale;
     }
 
@@ -559,9 +579,9 @@ public partial class Bullet : Entity
     {
         base.OnStart();
         aliveTime = 0f;
-        // 障碍物碰撞
+        // 取消与障碍物的碰撞
         if (CheckTag(BulletTag.PenetrateObstacle) || CheckTag(BulletTag.PenetrateAll)
-        || CheckTag(BulletTag.IgnoreObstacle) || CheckTag(BulletTag.IgnoreAll))
+            || CheckTag(BulletTag.IgnoreObstacle) || CheckTag(BulletTag.IgnoreAll))
         {
             SetCollisionMaskValue(8, false);
         }
@@ -569,6 +589,7 @@ public partial class Bullet : Entity
         {
             BodyEntered += OnWallEnter;
         }
+        
         owner?.PlaySound(soundOnShot, owner.bulletAudioPlayer);
     }
 
@@ -594,6 +615,8 @@ public partial class Bullet : Entity
 
     protected override void OnDeath(Damage damage, Entity other)
     {
+        base.OnDeath(damage, other);
+        onDead?.Run(this);
     }
 
     #endregion
@@ -679,6 +702,11 @@ public partial class Bullet : Entity
 
     protected void OnWallEnter(Node other)
     {
+        if (generateProtection)
+        {
+            GlobalPosition -= GetVelocity().Normalized() * 1;
+            generateProtection = false;
+        }
         //对于非实体碰撞如果子弹没有穿过障碍物标签则直接消失
         if (!CheckTag(BulletTag.PenetrateObstacle) && !CheckTag(BulletTag.PenetrateAll)
         && !CheckTag(BulletTag.IgnoreObstacle) && !CheckTag(BulletTag.IgnoreAll))

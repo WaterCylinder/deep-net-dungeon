@@ -10,6 +10,7 @@ script = ExtResource("2_fdlg5")
 ItemName = "get_collapse"
 showName = "崩坏"
 intro = "获得10层崩坏效果"
+tags = Array[int]([2])
 sprite = ExtResource("4_d36yq")
 carryBuffs = Dictionary[ExtResource("1_mp8bd"), int]({
 ExtResource("2_d36yq"): 10

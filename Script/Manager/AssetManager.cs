@@ -76,6 +76,28 @@ public partial class AssetManager : ManagerBase
 	}
 
 	/// <summary>
+	/// 加载 Resource/Music 下的音乐（传文件名，不带后缀），如 "Level12"
+	/// </summary>
+	/// <param name="name">音乐文件名，如 "MainMenu"、"Level12"、"Level4Boss"</param>
+	/// <returns>加载失败返回null</returns>
+	public AudioStream GetMusic(string name)
+	{
+		if (string.IsNullOrEmpty(name))
+		{
+			Log("GetMusic: 名称为空");
+			return null;
+		}
+
+		string fullPath = $"res://Resource/Music/{name}.wav";
+		AudioStream stream = ResourceLoader.Load<AudioStream>(fullPath);
+		if (stream == null)
+		{
+			Log($"音乐加载失败: {fullPath}");
+		}
+		return stream;
+	}
+
+	/// <summary>
 	/// 根据path获取.tres后缀的资源文件
 	/// path支持itemA.itemB.itemC的点分隔格式，自动转换为res://itemA/itemB/itemC.tres
 	/// </summary>

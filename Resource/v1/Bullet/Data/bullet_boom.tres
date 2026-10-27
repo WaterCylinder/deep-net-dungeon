@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BulletData" format=3 uid="uid://co25nqt84atod"]
+
+[ext_resource type="Script" uid="uid://draiigge0qptw" path="res://Script/Data/Entity/BulletData.cs" id="1_f2svh"]
+[ext_resource type="Texture2D" uid="uid://b4lfk8crafjx" path="res://Resource/v1/Bullet/Sprite/boom.png" id="2_0ktjs"]
+
+[resource]
+script = ExtResource("1_f2svh")
+bulletTags = Array[int]([3])
+lifetime = 0.05
+sprite = ExtResource("2_0ktjs")
+scale = Vector2(2, 2)
+collisionRadius = 15.0
+isRotateWithToward = false
+metadata/_custom_type_script = "uid://draiigge0qptw"

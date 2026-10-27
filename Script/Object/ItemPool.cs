@@ -26,7 +26,15 @@ public partial class ItemPool : Resource
 
 	public ItemData Pick()
 	{
-		ItemData data = Tools.PickWeighted(pool.ToDictionary(), 1, Random)[0];
-		return data;
+		//池子为空、或所有条目权重都<=0时，PickWeighted会返回空列表，
+		//直接取[0]会抛异常；这里统一返回null，由调用方决定要不要生成东西
+		if(pool == null || pool.Count == 0)
+			return null;
+
+		System.Collections.Generic.List<ItemData> datas = Tools.PickWeighted(pool.ToDictionary(), 1, Random);
+		if(datas == null || datas.Count == 0)
+			return null;
+
+		return datas[0];
 	}
 }

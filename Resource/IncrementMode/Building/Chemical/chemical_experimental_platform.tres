@@ -31,7 +31,7 @@ defaultArgs = Dictionary[String, Variant]({
 "building": ExtResource("1_i1x3m")
 })
 sprite = ExtResource("3_b051s")
-buyPrice = 100
+buyPrice = 300
 onTurnStart = ExtResource("3_gxfs4")
 onLevelUp = ExtResource("2_gxfs4")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

@@ -20,6 +20,10 @@ public enum DamageTag
     /// </summary>
     Collapse,
     /// <summary>
+    /// 流血伤害
+    /// </summary>
+    Blood,
+    /// <summary>
     /// 暴击伤害
     /// </summary>
     Crit,
@@ -36,7 +40,7 @@ public enum DamageTag
 public partial class Damage : Node
 {
     [Export]public Entity source;
-    [Export]public Value value;
+    [Export]public float value;
     [Export]public float critRate = 0;
     [Export]public float critDamage = 1;
     [Export]public Array<DamageTag> tags = new();

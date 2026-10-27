@@ -20,7 +20,7 @@ metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [resource]
 script = ExtResource("1_ckjwd")
-bulletName = "GlodBullet"
+bulletName = "GoldBullet"
 lifetime = 8.0
 damageMultiplier = 0.5
 sprite = ExtResource("2_ley7s")

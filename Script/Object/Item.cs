@@ -93,10 +93,13 @@ public partial class Item : Area2D
             parent = GameManager.Instance.game.dropItemNode;
         }
 
-        item.GlobalPosition = pos;
-        parent.CallDeferred("add_child", item);
+        Callable.From(() =>
+        {
+            parent.AddChild(item);
+            item.GlobalPosition = pos;
+        }).CallDeferred();
+        
         item.Initialize(data);
-
         return item;
     }
 
@@ -128,12 +131,24 @@ public partial class Item : Area2D
         {ItemTag.UsableItem, "主动道具"},
     };
 
+    /// <summary>
+    /// 道具等级 → 稀有度颜色。
+    /// 不是"把纯色降低饱和度"，而是按设计色取相：1 级天青、2 级淡紫、3 级琥珀金、4 级珊瑚红，
+    /// 色相 187°→263°→40°→359°，饱和度 40%~55%、明度统一在 95% 的高亮粉彩区间。
+    /// 明度已经顶到 95%（再高就往纯白走了，颜色会互相分不开），
+    /// 因为色块还要被 Spiral 着色器乘一次 0.72，留这一档余量后游戏内观感才够亮、又不至于糊成霓虹。
+    /// 4 级红的饱和度单独给到 55%：高亮下红色的彩色感掉得最快，不加会变粉。
+    /// </summary>
     public static Dictionary<int, Color> ItemLevelColorMapping = new Dictionary<int, Color>()
     {
-        {1, Colors.Blue},
-        {2, Colors.Purple},
-        {3, Colors.Gold},
-        {4, Colors.Red},
+        // 1 级：天青
+        {1, new Color("79e4f2")},
+        // 2 级：淡紫
+        {2, new Color("b691f2")},
+        // 3 级：琥珀金
+        {3, new Color("f2ca7b")},
+        // 4 级：珊瑚红
+        {4, new Color("f26d6f")},
     };
 
     public static Color GetLevelColor(int level)
@@ -271,6 +286,7 @@ public partial class Item : Area2D
         addBuffOnPick = data.addBuffOnPick;
         removeBuffOnDrop = data.removeBuffOnDrop;
 
+        onInit = data.onInit;
         onPick = data.onPick;
         onUse = data.onUse;
         onDrop = data.onDrop;
@@ -322,6 +338,16 @@ public partial class Item : Area2D
             Monitoring = false;
             Monitorable = false;
             Visible = false;
+            //只关 monitorable 不够：道具是"加入场景树时就和拾取范围重叠"的（例如挂在玩家身上的手持道具），
+            //这一帧引擎仍可能让拾取范围收到一次 area_entered，进而被当成第二次拾取。
+            //这里连碰撞层和形状一起关掉，保证它永远不会被任何 Area2D 检测到
+            CollisionLayer = 0;
+            CollisionMask = 0;
+            CollisionShape2D shape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+            if (shape != null)
+            {
+                shape.Disabled = true;
+            }
         }
 
         float FloatHeight = 10f;   // 浮动幅度（像素）

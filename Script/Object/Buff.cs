@@ -71,6 +71,60 @@ public partial class Buff : RefCounted
         }
     }
 
+    public static BuffData _blood;
+    public static string _bloodDataPath = "Resource.Buff.blood";
+    public static BuffData Blood
+    {
+        get
+        {
+            if(_blood == null)
+            {
+                _blood = AssetManager.Instance.GetData<BuffData>(_bloodDataPath, null);
+                if(_blood == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_bloodDataPath}找不到BUFF数据");
+                }
+            }
+            return _blood;
+        }
+    }
+
+    public static BuffData _flintBullet;
+    public static string _flintBulletDataPath = "Resource.v1.Item.Buff.Data.buff_flint_bullet";
+    public static BuffData FlintBullet
+    {
+        get
+        {
+            if(_flintBullet == null)
+            {
+                _flintBullet = AssetManager.Instance.GetData<BuffData>(_flintBulletDataPath, null);
+                if(_flintBullet == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_flintBulletDataPath}找不到BUFF数据");
+                }
+            }
+            return _flintBullet;
+        }
+    }
+
+    public static BuffData _springboardBullet;
+    public static string _springboardBulletDataPath = "Resource.v1.Item.Buff.Data.buff_springboard_bullet";
+    public static BuffData SpringboardBullet
+    {
+        get
+        {
+            if(_springboardBullet == null)
+            {
+                _springboardBullet = AssetManager.Instance.GetData<BuffData>(_springboardBulletDataPath, null);
+                if(_springboardBullet == null)
+                {
+                    GD.Print($"[BUFF] 在路径{_springboardBulletDataPath}找不到BUFF数据");
+                }
+            }
+            return _springboardBullet;
+        }
+    }
+
     #endregion
 
     #region 属性

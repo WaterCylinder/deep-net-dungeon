@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://x0i8y7e1evd0"]
+
+[ext_resource type="Script" uid="uid://cg84qj76oabfj" path="res://Asset/ListOfProducers.cs" id="1_uy3sf"]
+
+[node name="ListOfProducers" type="Control" unique_id=941333334]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uy3sf")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1015948250]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_right = 0.7
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "制作人[indent]漏了的水缸[/indent]
+
+开发[indent]漏了的水缸[/indent]
+
+策划[indent]漏了的水缸[/indent]
+
+美工[indent]漏了的水缸[/indent]
+
+测试人员[indent]……[/indent]
+
+制作工具[indent]Godot .Net 4.6.1
+AI助手[/indent]
+
+音乐由[乌鸦Producer]提供
+
+特别鸣谢[indent]……[/indent]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+And You"
+fit_content = true
+tab_size = 1
+horizontal_alignment = 1

@@ -86,6 +86,8 @@ public partial class RoomTileMap : Node2D
             generator.AfterGenerate += enemiesNow.Add;
             generator.AfterGenerate += e =>
             {
+                //给敌怪设置room
+                e.room = room;
                 room.onGenerateEnemy?.Run(room, e);
             };
             generator.GenerateEnemy(room.enemyNode);

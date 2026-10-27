@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_wwlif"]
 [ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_8qayp"]
 [ext_resource type="Resource" uid="uid://b82exrtkrb411" path="res://Resource/Global/EnemyBehavior/move_target_player.tres" id="3_gjog0"]
-[ext_resource type="SpriteFrames" uid="uid://drlm8iqrn35dy" path="res://Resource/v1/Level1/Enemy/SpriteFrames/the_fear_sprite_frames.tres" id="3_wwlif"]
+[ext_resource type="SpriteFrames" uid="uid://drlm8iqrn35dy" path="res://Resource/v1/Level1/Enemy/Sprite/the_fear_sprite_frames.tres" id="3_wwlif"]
 [ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="4_gjog0"]
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_366mx"]
 

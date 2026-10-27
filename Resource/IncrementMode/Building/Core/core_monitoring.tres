@@ -28,11 +28,11 @@ rarity = 2
 intro = "{{turn}}回合开始时，获得{{value}}个【核心服务器】。"
 defaultArgs = Dictionary[String, Variant]({
 "building": ExtResource("1_50wc4"),
-"turn": 3,
-"turn_max": 3
+"turn": 2,
+"turn_max": 2
 })
 sprite = ExtResource("2_50wc4")
-buyPrice = 100
+buyPrice = 260
 onTurnStart = ExtResource("3_3q7wq")
 onLevelUp = ExtResource("2_n803y")
 metadata/_custom_type_script = "uid://bqs0bejx0ndin"

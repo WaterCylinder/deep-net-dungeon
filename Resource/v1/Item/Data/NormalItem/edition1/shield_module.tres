@@ -10,6 +10,7 @@ script = ExtResource("2_sb010")
 ItemName = "shield_module"
 showName = "护盾模块"
 intro = "获得 20 护盾"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 20.0
 })

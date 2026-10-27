@@ -32,6 +32,81 @@ public partial class IncrementWorld : Node
     [Export] public int shopRefreshCostPromoteBase = 5;
     [Export] public bool shoping = false;
 
+    #region 交易阻尼参数
+
+    /// <summary>
+    /// 同一回合内每多卖一件建筑，卖出返还额外打多少折（0.1 = 每件 -10%）
+    /// </summary>
+    [Export(PropertyHint.Range, "0,0.5,0.01")] public float sellDecayPerItem = 0.1f;
+
+    /// <summary>
+    /// 卖出返还的最低折扣（防止折到0，也保留"清仓回血"的手感）
+    /// </summary>
+    [Export(PropertyHint.Range, "0.1,1,0.05")] public float sellDecayMinFactor = 0.3f;
+
+    /// <summary>
+    /// 刷新成本随"本回合买入额"上涨的系数：买入额每达到该值，刷新成本 +100%
+    /// </summary>
+    [Export] public int buyVolumeForDoubleRefresh = 1000;
+
+    /// <summary>
+    /// 同一建筑类型的"购买/出售联动"每回合最多触发几次
+    /// </summary>
+    [Export] public int oncePerTurnLinkageLimit = 1;
+
+    /// <summary>
+    /// 每次商店显示的商品数量
+    /// </summary>
+    [Export] public int shopItemCount = 5;
+
+    #endregion
+
+    #region 交易状态
+
+    /// <summary>
+    /// 本回合（本次商店）已卖出的建筑数量，用于卖出返还递减
+    /// </summary>
+    private int _soldThisTurn = 0;
+
+    /// <summary>
+    /// 本回合（本次商店）买入花费总额，用于刷新成本上涨
+    /// </summary>
+    private long _buyVolumeThisTurn = 0;
+
+    /// <summary>
+    /// 本次商店已刷新次数
+    /// </summary>
+    private int _refreshCountThisShop = 0;
+
+    /// <summary>
+    /// "每回合最多触发N次"的联动效果使用记录（key = 建筑id + 钩子）
+    /// </summary>
+    private readonly System.Collections.Generic.Dictionary<string, int> _oncePerTurnUse = new();
+
+    /// <summary>
+    /// 是否正在处理买卖产生的效果。
+    /// 期间产生的资源变动一律算作交易收入（不计入任务累计），
+    /// 这样"出售时给资源"的效果（机械钟、化工储液罐等）不会被当成生产性收入
+    /// </summary>
+    private bool _inTradeContext = false;
+
+    /// <summary>
+    /// 资源点变动来源
+    /// </summary>
+    public enum IncomeSource
+    {
+        /// <summary>
+        /// 生产性收入（建筑产出、核心产出），计入任务累计
+        /// </summary>
+        Production,
+        /// <summary>
+        /// 交易（买卖、刷新），不计入任务累计
+        /// </summary>
+        Trade,
+    }
+
+    #endregion
+
     [Export] public Array<IncrementTask> tasks;
     [Export] public Array<BuildingPool> rarityPools;
 
@@ -55,7 +130,7 @@ public partial class IncrementWorld : Node
         //放置核心
         Building.SetBuilding(Map(2, 2), coreData);
 
-        shopRefreshCost = shopRefreshCostBase;
+        shopRefreshCost = GetRefreshCost();
         NextTurn();
     }
 
@@ -83,6 +158,8 @@ public partial class IncrementWorld : Node
     public void NextTurn()
     {
         turn += 1;
+        //新回合开始：清空上一个回合的买卖统计（卖出折扣、买入额、联动次数）
+        ResetTurnTradeState();
         Update();
         ui.ShowText("回合开始");
         if(turn >= 0)
@@ -99,18 +176,41 @@ public partial class IncrementWorld : Node
         Update();
     }
 
-    public void ChangeResourcePoint(int value)
+    /// <summary>
+    /// 修改资源点。
+    /// 只有生产性收入会计入累计点数（任务进度）和本回合产出；
+    /// 买卖/刷新等交易产生的资源不计入任务，避免玩家靠反复买卖刷任务进度
+    /// </summary>
+    /// <param name="value">变动值</param>
+    /// <param name="source">来源（在买卖效果里会自动按交易处理）</param>
+    public void ChangeResourcePoint(int value, IncomeSource source = IncomeSource.Production)
     {
         resourcePoint += value;
-        if(value > 0)
+
+        //交易上下文里产生的一切资源变动都算交易收入
+        if (_inTradeContext)
         {
-            cumulativePoint += value;
+            source = IncomeSource.Trade;
         }
-        else
+
+        if (source == IncomeSource.Production)
+        {
+            if (value > 0)
+            {
+                cumulativePoint += value;
+                turnPoint += value;
+            }
+        }
+        else if (value < 0)
         {
             ui.Tips("-" + value.ToString(), ui.resourceTip.GlobalPosition).SetColor(Colors.Red);
         }
-        turnPoint += value;
+        else
+        {
+            //交易产生正收益时也提示一下，让玩家看得见自己在赚钱
+            ui.Tips("+" + value.ToString(), ui.resourceTip.GlobalPosition).SetColor(Colors.Green);
+        }
+
         EmitSignal(SignalName.OnResourcePointChanged, value);
         Update();
     }
@@ -159,12 +259,23 @@ public partial class IncrementWorld : Node
             }
             else
             {
-                ChangeResourcePoint(-shopItem.price);
+                ChangeResourcePoint(-shopItem.price, IncomeSource.Trade);
+                _buyVolumeThisTurn += shopItem.price;
                 AddBuildingItem(shopItem.data);
                 shopItem.Sell();
-                shopItem.data.onBuy?.Run();
+
+                //购买类联动：同类建筑每回合最多触发一次，避免反复买卖无限叠
+                if (TryUseOncePerTurn($"buy:{shopItem.data.id}"))
+                {
+                    shopItem.data.onBuy?.Run();
+                }
+
                 foreach(var b in GetAllBuilding())
                 {
+                    if (!TryUseOncePerTurn($"beBuy:{b.id}"))
+                    {
+                        continue;
+                    }
                     b.onSomeBuildingBeBuy?.Run(b, shopItem.data);
                 }
             }
@@ -202,29 +313,34 @@ public partial class IncrementWorld : Node
             item.QueueFree();
         }
         
-        var datas = shopItemPool.Pick(4);
+        var datas = shopItemPool.Pick(Mathf.Max(1, shopItemCount));
         foreach(var data in datas)
         {
             ui.AddShopItem(data);
         }
 
+        //商店刷新联动（例如"每次刷新给资源"）每回合最多触发一次，避免无限刷
         foreach(var b in GetAllBuilding())
         {
+            if (!TryUseOncePerTurn($"shopRefresh:{b.id}"))
+            {
+                continue;
+            }
             b.onShopRefresh?.Run(b);
         }
 
+        shopRefreshCost = GetRefreshCost();
         ui.shopRefreshCostLabel.Text = $"消耗{shopRefreshCost}";
         
     }
  
     public bool TryRefreshShop()
     {
-        if(resourcePoint >= shopRefreshCost)
+        int cost = GetRefreshCost();
+        if(resourcePoint >= cost)
         {
-            ChangeResourcePoint(-shopRefreshCost);
-            //刷新时刷新费用上升百分比（有最低限制）
-            shopRefreshCost += shopRefreshCostPromote;
-            shopRefreshCostPromote += shopRefreshCostBase;
+            ChangeResourcePoint(-cost, IncomeSource.Trade);
+            _refreshCountThisShop += 1;
             RefreshShop();
             return true;
         }
@@ -238,6 +354,11 @@ public partial class IncrementWorld : Node
     public void OpenShop()
     {
         shoping = true;
+        //每次开店重置本次商店的刷新次数与交易统计
+        _refreshCountThisShop = 0;
+        _soldThisTurn = 0;
+        _buyVolumeThisTurn = 0;
+        _oncePerTurnUse.Clear();
         RefreshShop();
         ui.info.Close();
         ui.OpenShop();
@@ -246,7 +367,7 @@ public partial class IncrementWorld : Node
     public void EndShop()
     {
         shoping = false;
-        shopRefreshCost = shopRefreshCostBase;
+        shopRefreshCost = GetRefreshCost();
         shopRefreshCostPromote = shopRefreshCostPromoteBase;
         Update();
         EmitSignal(SignalName.OnShopEnd);
@@ -264,12 +385,31 @@ public partial class IncrementWorld : Node
             ui.Tips("核心无法出售");
             return;
         }
-        ChangeResourcePoint(building.sellPrice * building.level);
-        GD.Print($"出售 {building.name} 获得 {building.sellPrice}");
-        building.OnSell();
-        foreach(var b in GetAllBuilding())
+
+        int refund = GetSellRefund(building.sellPrice);
+        ChangeResourcePoint(refund, IncomeSource.Trade);
+        _soldThisTurn += 1;
+        GD.Print($"出售 {building.name} 获得 {refund}");
+
+        //出售期间的所有效果都按"交易上下文"处理，产生的资源不计入任务
+        _inTradeContext = true;
+        try
         {
-            b.onSomeBuildingBeSell?.Run(b, building);
+            //建筑自身的出售效果：同类建筑每回合最多触发一次
+            building.OnSell(TryUseOncePerTurn($"sell:{building.id}"));
+
+            foreach(var b in GetAllBuilding())
+            {
+                if (!TryUseOncePerTurn($"beSell:{b.id}"))
+                {
+                    continue;
+                }
+                b.onSomeBuildingBeSell?.Run(b, building);
+            }
+        }
+        finally
+        {
+            _inTradeContext = false;
         }
     }
 
@@ -279,17 +419,122 @@ public partial class IncrementWorld : Node
     /// <param name="data"></param>
     public void Sell(BuildingData data)
     {
-        int price = data.GetDefaultSellPrice();
-        ChangeResourcePoint(price);
-        
+        //未放置的建筑按"实际买入价的一半"返还（含阶段通胀，与放置后出售一致）
+        int basePrice = data.sellPrice >= 0
+            ? data.sellPrice
+            : Mathf.FloorToInt(GetPrice(data) * 0.5f);
+        int price = GetSellRefund(basePrice);
+        ChangeResourcePoint(price, IncomeSource.Trade);
+        _soldThisTurn += 1;
+
         GD.Print($"出售 {data.buildingName} 获得 {price}");
 
-        data.onSell?.Run(data);
-
-        foreach(var b in GetAllBuilding())
+        _inTradeContext = true;
+        try
         {
-            b.onSomeBuildingBeSell?.Run(b, data);
+            if (TryUseOncePerTurn($"sellData:{data.id}"))
+            {
+                data.onSell?.Run(data);
+            }
+
+            foreach(var b in GetAllBuilding())
+            {
+                if (!TryUseOncePerTurn($"beSell:{b.id}"))
+                {
+                    continue;
+                }
+                b.onSomeBuildingBeSell?.Run(b, data);
+            }
         }
+        finally
+        {
+            _inTradeContext = false;
+        }
+    }
+
+    /// <summary>
+    /// 卖出返还：本回合卖得越多折扣越大（最低 sellDecayMinFactor），
+    /// 让"反复买卖赚差价"从无摩擦变成有成本，但保留清仓回血的手感
+    /// </summary>
+    public int GetSellRefund(int sellPrice)
+    {
+        float factor = Mathf.Max(sellDecayMinFactor, 1f - sellDecayPerItem * _soldThisTurn);
+        return Mathf.FloorToInt(sellPrice * factor);
+    }
+
+    /// <summary>
+    /// 本次商店的刷新成本：
+    /// 基础价 ×（1 + 本回合买入额 / buyVolumeForDoubleRefresh）×（1 + 本次商店已刷新次数）。
+    /// 买入额越大刷新越贵，靠"买一堆再刷"来滚经济的路子会被自动限速
+    /// </summary>
+    public int GetRefreshCost()
+    {
+        float volumeFactor = 1f + (float)_buyVolumeThisTurn / Mathf.Max(1, buyVolumeForDoubleRefresh);
+        float countFactor = 1f + _refreshCountThisShop;
+        return Mathf.Max(1, Mathf.RoundToInt(shopRefreshCostBase * volumeFactor * countFactor));
+    }
+
+    /// <summary>
+    /// r1 建筑的后期价格系数：随阶段上涨。
+    /// 后期收益膨胀后，便宜建筑相对收入会变成"白菜价"，铺满刷交易也不再花钱，
+    /// 这里让 r1 的价格跟着阶段涨（r2/r3 保持原价，它们的回本周期本来就长）
+    /// </summary>
+    public float GetInflationMultiplier(BuildingData data)
+    {
+        if (data == null || data.rarity > 1)
+        {
+            return 1f;
+        }
+        if (turn < 9)
+        {
+            return 1f;
+        }
+        if (turn < 32)
+        {
+            return 2f;
+        }
+        return 4f;
+    }
+
+    /// <summary>
+    /// 商品的实际购买价（含阶段通胀）
+    /// </summary>
+    public int GetPrice(BuildingData data)
+    {
+        if (data == null)
+        {
+            return 0;
+        }
+        return Mathf.Max(1, Mathf.RoundToInt(data.buyPrice * GetInflationMultiplier(data)));
+    }
+
+    /// <summary>
+    /// 每回合（每次商店）最多触发 limit 次的联动效果
+    /// </summary>
+    /// <param name="key">效果标识（通常用"建筑id:钩子"）</param>
+    /// <param name="limit">上限，默认用 oncePerTurnLinkageLimit</param>
+    /// <returns>还能触发返回true，并记一次使用</returns>
+    private bool TryUseOncePerTurn(string key, int limit = -1)
+    {
+        int max = limit >= 0 ? limit : Mathf.Max(1, oncePerTurnLinkageLimit);
+        _oncePerTurnUse.TryGetValue(key, out int used);
+        if (used >= max)
+        {
+            return false;
+        }
+        _oncePerTurnUse[key] = used + 1;
+        return true;
+    }
+
+    /// <summary>
+    /// 重置回合内的交易状态（每回合开始调用）
+    /// </summary>
+    private void ResetTurnTradeState()
+    {
+        _soldThisTurn = 0;
+        _buyVolumeThisTurn = 0;
+        _refreshCountThisShop = 0;
+        _oncePerTurnUse.Clear();
     }
 
     public void TaskUpdate()

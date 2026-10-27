@@ -446,6 +446,12 @@ public partial class Room : Node2D
             GD.Print($"    {door.Name}: targetRoom={door.targetRoom?.Name ?? "null"} targetDoor={(door.targetDoor != null ? door.targetDoor.Name : "null")}");
         }
         OnEnter();
+
+        //通知游戏模式：切BGM之类的事情由各模式自己实现（经典模式在这里换关卡/Boss音乐）
+        if (entity is Player)
+        {
+            game?.currentMode?.OnRoomEnter(this);
+        }
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ht5q7xcutoh3"]
 
 [ext_resource type="Script" uid="uid://wdxydd0mmwxh" path="res://Script/UI/Demo/TempStartMenu.cs" id="1_y846o"]
-[ext_resource type="AudioStream" uid="uid://cx88l8ea8tw6x" path="res://Resource/Music/Circulation.wav" id="2_7dlpr"]
+[ext_resource type="AudioStream" uid="uid://cx88l8ea8tw6x" path="res://Resource/Music/Menu.wav" id="2_7dlpr"]
 [ext_resource type="Texture2D" uid="uid://bfpivcp3h2f71" path="res://Resource/Demo/UI/StartMenu/主菜单背景图.jpg" id="2_dcb3i"]
 
 [node name="StartMenu" type="Control" unique_id=1497403549]

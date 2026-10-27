@@ -85,6 +85,10 @@ public partial class BulletData : Resource
     /// 生命周期结束时触发的效果
     /// </summary>
     [Export] public Effect onLifetimeEnd;
+    /// <summary>
+    /// 死亡时
+    /// </summary>
+    [Export] public Effect onDead;
 
     /// <summary>
     /// 弹幕音频 

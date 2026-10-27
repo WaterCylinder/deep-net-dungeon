@@ -69,6 +69,11 @@ public partial class EnemyData : Resource
     [Export] public float speed = 100;
 
     /// <summary>
+    /// 初始护盾
+    /// </summary>
+    [Export] public float shield = 0;
+
+    /// <summary>
     /// 敌人贴图
     /// </summary>
     [Export] public Texture2D sprite;

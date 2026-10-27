@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bq768b4iatdp4"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_t8jf2"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_hlo2h"]
+[ext_resource type="Texture2D" uid="uid://b470yifwdpb5i" path="res://Resource/v1/Level4/Enemy/Sprite/WSAWA_left_hand.tres" id="3_88ncr"]
+[ext_resource type="Script" uid="uid://cy03vtw837xg0" path="res://Resource/v1/Level4/EnemyBehaviorLevel4.cs" id="4_wsawa_behav"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_effect"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="6_player_able"]
+[ext_resource type="Resource" uid="uid://3iyd4um7i5jk" path="res://Resource/v1/Bullet/Data/bullet_big_rift_fire.tres" id="7_bigfire"]
+[ext_resource type="Resource" uid="uid://strt6poys00v" path="res://Resource/v1/Bullet/Data/bullet_virus.tres" id="8_virus"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t8jf2"]
+radius = 32.0
+
+[sub_resource type="Resource" id="Resource_left_update"]
+script = ExtResource("4_wsawa_behav")
+behaviorName = "UpdateWSAWALeftHand"
+metadata/_custom_type_script = "uid://cy03vtw837xg0"
+
+[sub_resource type="Resource" id="Resource_left_update_effect"]
+script = ExtResource("5_effect")
+condition = ExtResource("6_player_able")
+behavior = SubResource("Resource_left_update")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_efiw4"]
+radius = 32.0
+
+[resource]
+script = ExtResource("2_hlo2h")
+enemyName = "WSAWA_left_hand"
+displayName = "知吾所见_左手"
+description = "无"
+tags = Array[int]([6])
+maxHealth = 5000.0
+attack = 50.0
+defense = 50.0
+speed = 200.0
+shield = 5000.0
+sprite = ExtResource("3_88ncr")
+layoutOffset = Vector2(0, 0)
+physicShape = SubResource("CircleShape2D_efiw4")
+attackShape = SubResource("CircleShape2D_t8jf2")
+meleeOffest = Vector2(0, 0)
+args = Dictionary[String, Variant]({
+"big_fire_bullet": ExtResource("7_bigfire"),
+"virus_bullet": ExtResource("8_virus")
+})
+onUpdate = SubResource("Resource_left_update_effect")
+metadata/_custom_type_script = "uid://mqed4halsexx"

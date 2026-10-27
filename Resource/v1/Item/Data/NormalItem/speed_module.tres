@@ -10,6 +10,7 @@ script = ExtResource("2_ui7f2")
 ItemName = "speed_module"
 showName = "速度模块"
 intro = "速度提升 50"
+tags = Array[int]([2])
 args = Dictionary[String, Variant]({
 "value": 50.0
 })

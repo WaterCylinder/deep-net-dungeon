@@ -8,9 +8,9 @@
 
 [resource]
 script = ExtResource("2_4wi7e")
-ItemName = "glod_bullet"
+ItemName = "gold_bullet"
 showName = "金色弹壳"
-intro = "【弹幕】发射金色弹幕，造成0.5倍攻击力的伤害，额外造成0.1倍当前护盾值的伤害"
+intro = "【弹幕】发射金色弹幕，造成0.5倍攻击力的伤害，额外造成0.3倍当前护盾值的伤害"
 tags = Array[int]([4])
 args = Dictionary[String, Variant]({
 "bullet": ExtResource("1_auwgm")

@@ -86,14 +86,44 @@ public partial class Map : Node2D
     #region 常量
 
     /// <summary>
-    /// 房间之间的水平间距
+    /// 房间本体宽高（含外墙，单位：像素）。
+    /// 实测所有房间预制体（Level1/Level2 的 start/normal/shop/resource/event/boss）
+    /// 都是 27x19 格 × 64px 瓦片 = 1728x1216，相对房间原点的范围是
+    /// x∈[-832, 896]、y∈[-640, 576]。
+    /// 房间预制体尺寸变了要同步改这里，间距会自动跟着变
     /// </summary>
-    private const float ROOM_SPACING_X = 1980f;
+    private const float ROOM_WIDTH = 1728f;
+    private const float ROOM_HEIGHT = 1216f;
 
     /// <summary>
-    /// 房间之间的垂直偏移幅度（用于纺锤形布局的层内排列）
+    /// 相机可视范围的一半（1280x720 视口、游戏内 zoom=1）
     /// </summary>
-    private const float ROOM_SPACING_Y = 1980f;
+    private const float CAMERA_HALF_WIDTH = 640f;
+    private const float CAMERA_HALF_HEIGHT = 360f;
+
+    /// <summary>
+    /// 在「刚好看不见隔壁」的最小间距之上再留的余量（像素）。
+    /// 取 192 / 472，使水平与垂直的墙到墙净空都是 832：
+    /// 水平 1728+640+192-1728=832，垂直 1216+360+472-1216=832
+    /// </summary>
+    private const float SPACING_MARGIN_X = 192f;
+    private const float SPACING_MARGIN_Y = 472f;
+
+    /// <summary>
+    /// 房间之间的水平间距（= 2560）。
+    /// 「站在房间里看不到隔壁房间」的推导：玩家贴到房间外墙时，相机中心就在房间边缘，
+    /// 相机可视边缘还要再向外 CAMERA_HALF_WIDTH，所以要求
+    /// 间距 - ROOM_WIDTH &gt; CAMERA_HALF_WIDTH，即 &gt; 1728 + 640 = 2368。
+    /// 2560 比这个下限多 192，玩家贴着外墙站在门口也看不到隔壁房间的墙
+    /// </summary>
+    private const float ROOM_SPACING_X = ROOM_WIDTH + CAMERA_HALF_WIDTH + SPACING_MARGIN_X;
+
+    /// <summary>
+    /// 房间之间的垂直间距（= 2048）。
+    /// 同理要求 间距 &gt; ROOM_HEIGHT + CAMERA_HALF_HEIGHT = 1216 + 360 = 1576，
+    /// 2048 比这个下限多 472
+    /// </summary>
+    private const float ROOM_SPACING_Y = ROOM_HEIGHT + CAMERA_HALF_HEIGHT + SPACING_MARGIN_Y;
 
     /// <summary>
     /// 单个房间最多允许的入口数/出口数。
@@ -195,11 +225,21 @@ public partial class Map : Node2D
     private void FinishGeneration()
     {
         Array<Room> normalList = new();
+        int eventRoomCount = 0;
         foreach (Room room in rooms)
         {
-            if (room != null && room.CheckTag(RoomTag.Normal))
+            if (room == null)
+            {
+                continue;
+            }
+
+            if (room.CheckTag(RoomTag.Normal))
             {
                 normalList.Add(room);
+            }
+            else if (room.CheckTag(RoomTag.Event))
+            {
+                eventRoomCount++;
             }
         }
 
@@ -241,7 +281,7 @@ public partial class Map : Node2D
             }
         }
 
-        GD.Print($"[Map] 地图生成完成（{data.mapMode}）：共{rooms.Count}个房间、{layers.Count}层、普通房间{mapSize}个" +
+        GD.Print($"[Map] 地图生成完成（{data.mapMode}）：共{rooms.Count}个房间、{layers.Count}层、普通房间{mapSize}个、事件房间{eventRoomCount}个" +
                  $"（资源房间={(treasureRoom != null ? "有" : "无")}，商店房间={(shopRoom != null ? "有" : "无")}，Boss={(bossRoom != null ? "有" : "无")}" +
                  $"，未使用的门{unboundDoorCount}扇，无出口房间{deadEndRoomCount}个）");
     }
@@ -563,7 +603,8 @@ public partial class Map : Node2D
     /// - 每个房间最多2个出口（DoorType.Next）和2个入口（DoorType.Back）；
     ///   房间之间用"门对门"显式配对（Door.PairWith），并且按门的上下位置依次配对，
     ///   所以一个房间可以有多条入口/出口，且"走下面的门去下面的房间"
-    /// - 资源房间越靠近起始房间概率越高，商店房间越靠近Boss房间概率越高
+    /// - 资源房间越靠近起始房间概率越高，商店房间越靠近Boss房间概率越高，
+    ///   事件房间则尽量落在道路中央（离起始房间与Boss房间都远）
     ///   （权重 = pow(1 - bias, 层距)，与直线模式共用同一套公式）
     /// </summary>
     private void GenerateSpindleMap()
@@ -574,6 +615,7 @@ public partial class Map : Node2D
         int normalCount = Mathf.Max(0, data.normalRoomCount);
         int treasureCount = Mathf.Max(0, data.treasureRoomCount);
         int shopCount = Mathf.Max(0, data.shopRoomCount);
+        int eventCount = Mathf.Max(0, data.eventRoomCount);
 
         if (normalCount > 0 && !HasRoomData(RoomTag.Normal))
         {
@@ -590,12 +632,17 @@ public partial class Map : Node2D
             GD.PushWarning("[Map] 商店房间数据池为空，本次不生成商店房间");
             shopCount = 0;
         }
+        if (eventCount > 0 && !HasRoomData(RoomTag.Event))
+        {
+            GD.PushWarning("[Map] 事件房间数据池为空，本次不生成事件房间");
+            eventCount = 0;
+        }
         if (bossData == null)
         {
             GD.PushWarning("[Map] 未配置Boss房间数据，纺锤末端将没有Boss房间");
         }
 
-        int innerCount = normalCount + treasureCount + shopCount;
+        int innerCount = normalCount + treasureCount + shopCount + eventCount;
 
         // 1. 起始房间（先建出来：它的可用出口数决定纺锤第一层能有几个房间）
         Room start = CreateRoomInstance(CalculateSpindlePosition(-1, 0, 1), startData, "Room_Start");
@@ -615,7 +662,7 @@ public partial class Map : Node2D
         System.Collections.Generic.List<int> widths = BuildSpindleWidths(innerCount, data.maxLayerRooms, firstWidth);
         int layerCount = widths.Count;
 
-        GD.Print($"[Map] 纺锤形地图：普通{normalCount} 资源{treasureCount} 商店{shopCount}，" +
+        GD.Print($"[Map] 纺锤形地图：普通{normalCount} 资源{treasureCount} 商店{shopCount} 事件{eventCount}，" +
                  $"起始房间出口{startExits}个→第一层{firstWidth}间，共{layerCount}层，" +
                  $"层宽=[{string.Join(",", widths)}]");
 
@@ -634,12 +681,21 @@ public partial class Map : Node2D
             }
         }
 
-        // 4. 抽取资源/商店房间所在的槽位：资源偏起始房间、商店偏Boss房间，两者互不重叠
+        // 4. 抽取特殊房间所在的槽位：
+        //    资源房间偏起始房间、商店房间偏Boss房间、事件房间集中在道路中央（离两头都远），三者互不重叠
         System.Collections.Generic.HashSet<int> usedSlots = new();
         System.Collections.Generic.List<int> treasureSlots = PickWeightedSlots(
             innerCount, treasureCount, slot => slotLayer[slot], data.treasureNearStartBias, usedSlots);
         System.Collections.Generic.List<int> shopSlots = PickWeightedSlots(
             innerCount, shopCount, slot => layerCount - 1 - slotLayer[slot], data.shopNearBossBias, usedSlots);
+
+        // 事件房间：按"离路径中央的层距"加权，越靠中间权重越高。
+        // 层数为偶数时中央落在两层之间，这里用×2的"半层距"让中间两层同样优先
+        float centerLayer = (layerCount - 1) * 0.5f;
+        System.Collections.Generic.List<int> eventSlots = PickWeightedSlots(
+            innerCount, eventCount,
+            slot => Mathf.RoundToInt(Mathf.Abs(slotLayer[slot] - centerLayer) * 2f),
+            data.eventMiddleBias, usedSlots);
 
         // 5. 逐层创建中间房间
         Array<Array<Room>> innerLayers = new();
@@ -661,6 +717,11 @@ public partial class Map : Node2D
                 {
                     roomData = PickRoomData(RoomTag.Shop);
                     roomName = $"Room_Shop_{layer}_{k}";
+                }
+                else if (eventSlots.Contains(slot))
+                {
+                    roomData = PickRoomData(RoomTag.Event);
+                    roomName = $"Room_Event_{layer}_{k}";
                 }
                 else
                 {

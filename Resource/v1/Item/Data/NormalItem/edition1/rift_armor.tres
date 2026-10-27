@@ -2,10 +2,19 @@
 
 [ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_qnixd"]
 [ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_fm3cx"]
+[ext_resource type="Resource" uid="uid://dfm3o7mtsxkq8" path="res://Resource/v1/Item/Buff/Data/buff_rift_armor.tres" id="2_wapei"]
 [ext_resource type="Texture2D" uid="uid://ecaxnh0tpvdh" path="res://Resource/v1/Item/Sprite/edition1/RiftArmor.png" id="3_fm3cx"]
 
 [resource]
 script = ExtResource("2_fm3cx")
 ItemName = "rift_armor"
+showName = "裂罅护甲"
+intro = "房间内每有1个带有灼烧效果的敌怪，获得10点护甲（每0.1秒刷新）。"
+tags = Array[int]([2])
+itemLevel = 1
 sprite = ExtResource("3_fm3cx")
+carryBuffs = Dictionary[ExtResource("1_qnixd"), int]({
+ExtResource("2_wapei"): 1
+})
+addBuffOnPick = true
 metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

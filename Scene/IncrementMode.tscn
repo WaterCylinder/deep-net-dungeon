@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://qu2qkatm2ttd" path="res://Script/IncrementMode/IncrementModeUI.cs" id="2_sle33"]
 [ext_resource type="PackedScene" uid="uid://bgrwjdl2jpkcg" path="res://Asset/Object/IncrementModeObject/building_item.tscn" id="3_4hyi3"]
 [ext_resource type="Resource" uid="uid://cutvjhjm1uc5n" path="res://Resource/IncrementMode/Building/core.tres" id="3_gayc5"]
-[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="3_j1v2w"]
+[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Level12.wav" id="3_j1v2w"]
 [ext_resource type="Texture2D" uid="uid://bf1oun6b16vq2" path="res://Resource/IncrementMode/返回.png" id="3_q8mgd"]
 [ext_resource type="TileSet" uid="uid://dtdusdklw7ca4" path="res://Resource/IncrementMode/increment_tile_set.tres" id="4_kdd63"]
 [ext_resource type="PackedScene" uid="uid://bhkwvwtltyc8n" path="res://Asset/Object/IncrementModeObject/shop_item.tscn" id="4_trvfj"]
@@ -56,23 +56,23 @@ metadata/_custom_type_script = "uid://jetqew8yttgm"
 
 [sub_resource type="Resource" id="Resource_eg0h7"]
 script = ExtResource("17_3htsc")
-intro = "在16回合前累计获得1000资源"
-targetTurn = 16
-targetResourcePoint = 1000
+intro = "在15回合前累计产出300资源"
+targetTurn = 15
+targetResourcePoint = 300
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="Resource" id="Resource_6bp8m"]
 script = ExtResource("17_3htsc")
-intro = "在32回合前累计获得100000资源"
+intro = "在32回合前累计产出2000资源"
 targetTurn = 32
-targetResourcePoint = 100000
+targetResourcePoint = 2000
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="Resource" id="Resource_yu6n2"]
 script = ExtResource("17_3htsc")
-intro = "在64回合前累计获得10000000资源"
-targetTurn = 64
-targetResourcePoint = 10000000
+intro = "在50回合前累计产出10000资源"
+targetTurn = 50
+targetResourcePoint = 10000
 metadata/_custom_type_script = "uid://cqum6tff5jn8u"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jk8qv"]

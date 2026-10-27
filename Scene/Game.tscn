@@ -48,7 +48,7 @@
 [ext_resource type="AudioStream" uid="uid://ba8xn7a85s2ct" path="res://Resource/Sounds/hit_001.wav" id="23_vmjmr"]
 [ext_resource type="PackedScene" uid="uid://6ypnwdg7gtun" path="res://Asset/Object/Component/shadow.tscn" id="24_65ldo"]
 [ext_resource type="Shader" uid="uid://b4xmlkmaqwgs5" path="res://Resource/Shader/Wave.gdshader" id="26_eg5pg"]
-[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Fruit Machine.wav" id="34_yl8rb"]
+[ext_resource type="AudioStream" uid="uid://dajq1w8js3wsg" path="res://Resource/Music/Level12.wav" id="34_yl8rb"]
 [ext_resource type="AudioStream" uid="uid://bal5atfimasm6" path="res://Asset/Sound/broken.wav" id="35_qugof"]
 [ext_resource type="AudioStream" uid="uid://cp5y0bwwnk6jr" path="res://Asset/Sound/pounch.wav" id="36_kw2qm"]
 [ext_resource type="AudioStream" uid="uid://bk6j1asdrmo00" path="res://Asset/Sound/skill1.wav" id="40_d5ohv"]
@@ -115,14 +115,42 @@ shader_parameter/hole_softness = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_10r1t"]
 shader = ExtResource("17_10r1t")
-shader_parameter/color_deep = Color(0.10801005, 0.0126, 0.21, 1)
-shader_parameter/color_mid = Color(0.31831986, 0.055200003, 0.46, 1)
-shader_parameter/color_bright = Color(0.8950001, 0.37, 1, 1)
+shader_parameter/color_deep = Color(0, 0, 0, 1)
+shader_parameter/color_mid = Color(0.27, 0, 0.22949998, 1)
+shader_parameter/color_bright = Color(0.95, 0, 0.9025003, 1)
 shader_parameter/blocks_x = 128.000005985
 shader_parameter/blocks_y = 128.000005985
 shader_parameter/spiral_twist = 8.00000038
 shader_parameter/spiral_speed = 0.2
-shader_parameter/abyss_radius = 1.0
+shader_parameter/abyss_radius = 0.50000002375
+shader_parameter/abyss_darkness = 1.0
+shader_parameter/abyss_color = Color(0.020000005, 0, 0.05, 1)
+shader_parameter/color_bands = 7.742000272745
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ohncn"]
+shader = ExtResource("17_10r1t")
+shader_parameter/color_deep = Color(0, 0, 0, 1)
+shader_parameter/color_mid = Color(0, 0.27, 0.07649999, 1)
+shader_parameter/color_bright = Color(0.37, 0.34533337, 0, 1)
+shader_parameter/blocks_x = 128.000005985
+shader_parameter/blocks_y = 128.000005985
+shader_parameter/spiral_twist = 8.00000038
+shader_parameter/spiral_speed = 0.2
+shader_parameter/abyss_radius = 0.400000019
+shader_parameter/abyss_darkness = 1.0
+shader_parameter/abyss_color = Color(0.020000005, 0, 0.05, 1)
+shader_parameter/color_bands = 7.742000272745
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m8vr0"]
+shader = ExtResource("17_10r1t")
+shader_parameter/color_deep = Color(0, 0, 0, 1)
+shader_parameter/color_mid = Color(0.27, 0.27, 0.27, 1)
+shader_parameter/color_bright = Color(0.4, 0.4, 0.4, 1)
+shader_parameter/blocks_x = 128.000005985
+shader_parameter/blocks_y = 128.000005985
+shader_parameter/spiral_twist = 8.00000038
+shader_parameter/spiral_speed = 0.2
+shader_parameter/abyss_radius = 0.0
 shader_parameter/abyss_darkness = 1.0
 shader_parameter/abyss_color = Color(0.020000005, 0, 0.05, 1)
 shader_parameter/color_bands = 7.742000272745
@@ -132,7 +160,7 @@ script = ExtResource("3_3xgnh")
 
 [sub_resource type="Resource" id="Resource_tujvx"]
 script = ExtResource("4_48ymf")
-baseValue = 100.0
+baseValue = 99999.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_cohtu")
 })
@@ -144,7 +172,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_06386"]
 script = ExtResource("4_48ymf")
-baseValue = 1000.0
+baseValue = 256.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_lymyl")
 })
@@ -156,7 +184,7 @@ sortCode = -2147483648
 
 [sub_resource type="Resource" id="Resource_kw2qm"]
 script = ExtResource("4_48ymf")
-baseValue = 5.0
+baseValue = 10.0
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_qugof")
 })
@@ -188,7 +216,7 @@ script = ExtResource("3_3xgnh")
 
 [sub_resource type="Resource" id="Resource_3jynh"]
 script = ExtResource("4_48ymf")
-baseValue = 0.3
+baseValue = 0.1
 _multipliers = Dictionary[String, ExtResource("3_3xgnh")]({
 "Base": SubResource("Resource_1e3q2")
 })
@@ -229,7 +257,7 @@ radius = 12.0
 radius = 15.0
 height = 46.0
 
-[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("hud", "musicPlayer", "soundPlayeyPoolNode", "enemyNode", "roomNode", "dropItemNode", "energyNode", "smallObjectNode", "particlesNode")]
+[node name="Game" type="Node" unique_id=1707391241 node_paths=PackedStringArray("hud", "musicPlayer", "soundPlayeyPoolNode", "enemyNode", "roomNode", "dropItemNode", "energyNode", "smallObjectNode", "particlesNode", "bg")]
 script = ExtResource("1_6igcf")
 gameMode = "Classic"
 hud = NodePath("CanvasLayer/HUD")
@@ -241,6 +269,7 @@ dropItemNode = NodePath("World/ItemNode")
 energyNode = NodePath("World/EnergyNode")
 smallObjectNode = NodePath("World/SmallObject")
 particlesNode = NodePath("World/ParticlesNode")
+bg = NodePath("World/BG")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1447645414]
 
@@ -614,7 +643,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="CanvasLayer/HUD/PUI/BossHealthBar/Bar/Shield" unique_id=398804516]
-self_modulate = Color(1, 1, 1, 0.5019608)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -755,7 +783,7 @@ anchor_bottom = 0.15
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("8_1mx4w")
-ShowAll = false
+hideUnvisited = true
 
 [node name="Bag" type="Control" parent="CanvasLayer/HUD" unique_id=1714779155 node_paths=PackedStringArray("button", "bagUI", "itemBullet", "itemUsed", "itemSpecial", "itemIntro", "itemNode", "characterButton", "playerInfo")]
 layout_mode = 1
@@ -2067,13 +2095,44 @@ metadata/_custom_type_script = "uid://dywqu0xq2xtsw"
 
 [node name="World" type="Node2D" parent="." unique_id=1017394826]
 
-[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera")]
+[node name="BG" type="Node2D" parent="World" unique_id=79711064 node_paths=PackedStringArray("camera", "bg1", "bg2", "bg3")]
 position = Vector2(500, 0)
 script = ExtResource("12_ghk2r")
 camera = NodePath("../../MainCamera")
+bg1 = NodePath("ColorRect")
+bg2 = NodePath("ColorRect2")
+bg3 = NodePath("ColorRect3")
 
 [node name="ColorRect" type="ColorRect" parent="World/BG" unique_id=709489278]
 material = SubResource("ShaderMaterial_10r1t")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1024.0
+offset_top = -1024.0
+offset_right = 1024.0
+offset_bottom = 1024.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ColorRect2" type="ColorRect" parent="World/BG" unique_id=493056507]
+visible = false
+material = SubResource("ShaderMaterial_ohncn")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1024.0
+offset_top = -1024.0
+offset_right = 1024.0
+offset_bottom = 1024.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ColorRect3" type="ColorRect" parent="World/BG" unique_id=1302462255]
+visible = false
+material = SubResource("ShaderMaterial_m8vr0")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -2099,6 +2158,7 @@ metadata/_custom_type_script = "uid://b6prhnpxeysfn"
 
 [node name="Player" type="RigidBody2D" parent="World" unique_id=993026941 node_paths=PackedStringArray("enemyTrigger", "energyTrigger", "animeNode", "shotPoint", "area")]
 unique_name_in_owner = true
+position = Vector2(-2, 0)
 collision_mask = 129
 gravity_scale = 0.0
 lock_rotation = true
@@ -2114,6 +2174,7 @@ brokenSound = ExtResource("35_qugof")
 pounchSound = ExtResource("36_kw2qm")
 skillSound = ExtResource("40_d5ohv")
 maxHealth = SubResource("Resource_tujvx")
+currentHealth = 999999.0
 attack = SubResource("Resource_06386")
 defense = SubResource("Resource_kw2qm")
 attackSpeed = SubResource("Resource_mw7jm")

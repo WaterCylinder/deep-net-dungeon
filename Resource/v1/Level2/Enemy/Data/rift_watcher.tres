@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://des6xjut3cg40"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_gp60j"]
+[ext_resource type="Resource" uid="uid://lqqhhqedghqc" path="res://Resource/v1/Bullet/Data/bullet_rift_fire.tres" id="1_xvyxs"]
+[ext_resource type="Resource" uid="uid://3iyd4um7i5jk" path="res://Resource/v1/Bullet/Data/bullet_big_rift_fire.tres" id="2_fg240"]
+[ext_resource type="Script" uid="uid://mqed4halsexx" path="res://Script/Data/Entity/EnemyData.cs" id="2_gsi7o"]
+[ext_resource type="Resource" uid="uid://b0qrjh8cbpyqk" path="res://Resource/Global/EnemyBehavior/change_bullet.tres" id="3_8lgo3"]
+[ext_resource type="SpriteFrames" uid="uid://ct63kv4dubjor" path="res://Resource/v1/Level2/Enemy/Sprite/rift_watcher_sprite_frames.tres" id="3_gsi7o"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="4_3bgut"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_fg240"]
+[ext_resource type="Script" uid="uid://sk4l54vyi4h8" path="res://Resource/v1/Level2/EnemyBehaviorLevel2.cs" id="6_3bgut"]
+[ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="7_fg240"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fg240"]
+radius = 44.0
+
+[sub_resource type="Resource" id="Resource_uwv3r"]
+script = ExtResource("5_fg240")
+condition = ExtResource("4_3bgut")
+behavior = ExtResource("3_8lgo3")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_nrv10"]
+script = ExtResource("6_3bgut")
+behaviorName = "UpdateRiftWatcher"
+metadata/_custom_type_script = "uid://sk4l54vyi4h8"
+
+[sub_resource type="Resource" id="Resource_nobdr"]
+script = ExtResource("5_fg240")
+condition = ExtResource("7_fg240")
+behavior = SubResource("Resource_nrv10")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uwv3r"]
+radius = 32.0
+height = 64.0
+
+[resource]
+script = ExtResource("2_gsi7o")
+enemyName = "rift_watcher"
+displayName = "裂罅监视者"
+description = "无"
+tags = Array[int]([4])
+maxHealth = 6666.0
+attack = 32.0
+defense = 20.0
+speed = 30.0
+spriteFrames = ExtResource("3_gsi7o")
+physicShape = SubResource("CapsuleShape2D_uwv3r")
+attackShape = SubResource("CircleShape2D_fg240")
+meleeOffest = Vector2(0, 0)
+scale = Vector2(2.2, 2.2)
+args = Dictionary[String, Variant]({
+"big_fire": ExtResource("2_fg240"),
+"bullet_data": ExtResource("1_xvyxs")
+})
+onGenerate = SubResource("Resource_uwv3r")
+onUpdate = SubResource("Resource_nobdr")
+metadata/_custom_type_script = "uid://mqed4halsexx"

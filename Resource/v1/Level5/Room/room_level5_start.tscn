@@ -1,0 +1,82 @@
+[gd_scene format=4 uid="uid://bqen1cy36qi1m"]
+
+[ext_resource type="Script" uid="uid://c6t7t4sn5ln52" path="res://Script/Object/GameObject/RoomTileMap.cs" id="1_5w13j"]
+[ext_resource type="TileSet" uid="uid://rsfmy767lguj" path="res://Resource/Global/tile_set.tres" id="2_2eroy"]
+[ext_resource type="Shader" uid="uid://b3pxo8pnblut0" path="res://Resource/Shader/RectShadow.gdshader" id="3_6vdxp"]
+[ext_resource type="Script" uid="uid://tkfprh41gyym" path="res://Script/Object/GameObject/EndTrigger.cs" id="4_lij0h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lij0h"]
+shader = ExtResource("3_6vdxp")
+shader_parameter/pixel_size = 64.0000029925
+shader_parameter/rect_size = Vector2(0.3, 0.5)
+shader_parameter/roundness = 0.0
+shader_parameter/inner_color = Color(0, 0, 0, 1)
+shader_parameter/radiate_color = Color(0.44, 0.44, 0.44, 1)
+shader_parameter/outer_color = Color(0, 0, 0, 1)
+shader_parameter/radiate_range = 0.30000001425
+shader_parameter/outer_alpha = 0.0
+shader_parameter/intensity = 1.0000000475
+shader_parameter/wave_speed = 0.35
+shader_parameter/wave_count = 2.0000000475
+shader_parameter/wave_width = 0.02000000025148
+shader_parameter/wave_strength = 1.5000000712500001
+shader_parameter/rect_pulse = 0.0
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6vdxp"]
+size = Vector2(80, 128)
+
+[node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]
+script = ExtResource("1_5w13j")
+trrainLayer = NodePath("Terrain")
+enemyGeneratorNode = NodePath("EnemyGenerator")
+itemGeneratorNode = NodePath("ItemGenerator")
+doorsNode = NodePath("Doors")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=1317414934]
+tile_map_data = PackedByteArray("AAD/////AAARAAsAAAD//wAAAAARAAsAAAAAAAAAAAARAAsAAAAAAP//AAARAAsAAAD+//7/AAARAAsAAAD+////AAARAAsAAAD+/wAAAAARAAsAAAD+/wEAAAARAAsAAAD//wEAAAARAAsAAAAAAAEAAAARAAsAAAABAAEAAAARAAsAAAABAAAAAAARAAsAAAABAP//AAARAAsAAAABAP7/AAARAAsAAAAAAP7/AAARAAsAAAD///7/AAARAAsAAAD9//3/AAARAAsAAAD9//7/AAARAAsAAAD9////AAARAAsAAAD9/wAAAAARAAsAAAD9/wEAAAARAAsAAAD9/wIAAAARAAsAAAD+/wIAAAARAAsAAAD//wIAAAARAAsAAAAAAAIAAAARAAsAAAABAAIAAAARAAsAAAACAAIAAAARAAsAAAACAAEAAAARAAsAAAACAAAAAAARAAsAAAACAP//AAARAAsAAAACAP7/AAARAAsAAAACAP3/AAARAAsAAAABAP3/AAARAAsAAAAAAP3/AAARAAsAAAD///3/AAARAAsAAAD+//3/AAARAAsAAAD8//z/AAAQAAoAAAD8//3/AAAQAAsAAAD8//7/AAAQAAsAAAD8////AAAQAAsAAAD8/wAAAAAQAAsAAAD8/wEAAAAQAAsAAAD8/wIAAAAQAAsAAAD8/wMAAAAQAAwAAAD9/wMAAAARAAwAAAD+/wMAAAARAAwAAAD//wMAAAARAAwAAAAAAAMAAAARAAwAAAABAAMAAAARAAwAAAACAAMAAAARAAwAAAADAAMAAAARAAwAAAADAAIAAAARAAsAAAADAAEAAAARAAsAAAADAAAAAAARAAsAAAADAP//AAARAAsAAAADAP7/AAARAAsAAAADAP3/AAARAAsAAAADAPz/AAARAAoAAAACAPz/AAARAAoAAAABAPz/AAARAAoAAAAAAPz/AAARAAoAAAD///z/AAARAAoAAAD+//z/AAARAAoAAAD9//z/AAARAAoAAAAEAPz/AAARAAoAAAAFAPz/AAARAAoAAAAGAPz/AAARAAoAAAAHAPz/AAARAAoAAAAIAPz/AAARAAoAAAAJAPz/AAARAAoAAAAKAPz/AAARAAoAAAALAPz/AAARAAoAAAAMAPz/AAASAAoAAAAMAP3/AAASAAsAAAAMAP7/AAASAAsAAAAMAP//AAASAAsAAAAMAAAAAAASAAsAAAAMAAEAAAASAAsAAAAMAAIAAAASAAsAAAAMAAMAAAASAAwAAAALAAMAAAARAAwAAAAKAAMAAAARAAwAAAAJAAMAAAARAAwAAAAIAAMAAAARAAwAAAAHAAMAAAARAAwAAAAGAAMAAAARAAwAAAAFAAMAAAARAAwAAAAEAAMAAAARAAwAAAAEAAIAAAARAAsAAAAEAAEAAAARAAsAAAAEAAAAAAARAAsAAAAEAP//AAARAAsAAAAEAP7/AAARAAsAAAAEAP3/AAARAAsAAAAFAP3/AAARAAsAAAAGAP3/AAARAAsAAAAHAP3/AAARAAsAAAAGAP7/AAARAAsAAAAFAP//AAARAAsAAAAFAAAAAAARAAsAAAAFAAIAAAARAAsAAAAGAAIAAAARAAsAAAAGAAEAAAARAAsAAAAHAAEAAAARAAsAAAAHAAAAAAARAAsAAAAHAP//AAARAAsAAAAHAP7/AAARAAsAAAAFAP7/AAARAAsAAAAFAAEAAAARAAsAAAAGAP//AAARAAsAAAAHAAIAAAARAAsAAAAIAAIAAAARAAsAAAAJAAIAAAARAAsAAAAKAAIAAAARAAsAAAAKAAEAAAARAAsAAAAKAAAAAAARAAsAAAAJAAAAAAARAAsAAAAIAAAAAAARAAsAAAAIAAEAAAARAAsAAAAJAAEAAAARAAsAAAAKAP//AAARAAsAAAAJAP//AAARAAsAAAAIAP//AAARAAsAAAAIAP7/AAARAAsAAAAGAAAAAAARAAsAAAAKAP7/AAARAAsAAAAJAP7/AAARAAsAAAAJAP3/AAARAAsAAAAIAP3/AAARAAsAAAALAP7/AAARAAsAAAALAP3/AAARAAsAAAAKAP3/AAARAAsAAAALAP//AAARAAsAAAALAAAAAAARAAsAAAALAAEAAAARAAsAAAALAAIAAAARAAsAAAD8//v/AAAbAAAAAAD9//v/AAAbAAAAAAD+//v/AAAbAAAAAAD///v/AAAbAAAAAAAAAPv/AAAbAAAAAAABAPv/AAAbAAAAAAACAPv/AAAbAAAAAAADAPv/AAAbAAAAAAAEAPv/AAAbAAAAAAAFAPv/AAAbAAAAAAAGAPv/AAAbAAAAAAAHAPv/AAAbAAAAAAAIAPv/AAAbAAAAAAAJAPv/AAAbAAAAAAAKAPv/AAAbAAAAAAALAPv/AAAbAAAAAAAMAPv/AAAbAAAAAAD8/wQAAAAbAAAAAAD9/wQAAAAbAAAAAAD+/wQAAAAbAAAAAAD//wQAAAAbAAAAAAAAAAQAAAAbAAAAAAABAAQAAAAbAAAAAAACAAQAAAAbAAAAAAADAAQAAAAbAAAAAAAEAAQAAAAbAAAAAAAFAAQAAAAbAAAAAAAGAAQAAAAbAAAAAAAHAAQAAAAbAAAAAAAIAAQAAAAbAAAAAAAJAAQAAAAbAAAAAAAKAAQAAAAbAAAAAAALAAQAAAAbAAAAAAAMAAQAAAAbAAAAAAANAAQAAAAbAAAAAAANAAMAAAAbAAAAAAANAAIAAAAbAAAAAAANAAEAAAAbAAAAAAANAPz/AAAbAAAAAAANAP3/AAAbAAAAAAANAP7/AAAbAAAAAAANAP//AAAbAAAAAAANAAAAAAAbAAAAAAANAPv/AAAbAAAAAAD7//v/AAAbAAAAAAD7//z/AAAbAAAAAAD7//3/AAAbAAAAAAD7//7/AAAbAAAAAAD7////AAAbAAAAAAD7/wAAAAAbAAAAAAD7/wEAAAAbAAAAAAD7/wIAAAAbAAAAAAD7/wMAAAAbAAAAAAD7/wQAAAAbAAAAAAA=")
+tile_set = ExtResource("2_2eroy")
+
+[node name="EnemyGenerator" type="Node2D" parent="." unique_id=1983415525]
+
+[node name="ItemGenerator" type="Node2D" parent="." unique_id=1370546880]
+
+[node name="ShopNode" type="Node2D" parent="." unique_id=1260284010]
+
+[node name="Doors" type="Node2D" parent="." unique_id=1913729891]
+
+[node name="EndDoor" type="Node2D" parent="." unique_id=1449899711]
+position = Vector2(592, 0)
+
+[node name="ColorRect" type="ColorRect" parent="EndDoor" unique_id=143580007]
+material = SubResource("ShaderMaterial_lij0h")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="EndDoor/ColorRect" unique_id=243788039]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.341
+anchor_top = 0.255
+anchor_right = 0.659
+anchor_bottom = 0.749
+grow_horizontal = 2
+grow_vertical = 2
+text = "EXIT"
+horizontal_alignment = 1
+
+[node name="Area2D" type="Area2D" parent="EndDoor" unique_id=196053113]
+script = ExtResource("4_lij0h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EndDoor/Area2D" unique_id=1083664595]
+shape = SubResource("RectangleShape2D_6vdxp")
+debug_color = Color(0.84000003, 0, 0.9, 0.047058824)

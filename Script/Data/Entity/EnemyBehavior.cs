@@ -78,6 +78,35 @@ public partial class EnemyBehavior : Behavior
         enemy.ChangeBullet(data);
     }
 
+    /// <summary>
+    /// 朝向玩家发射四方向弹幕：
+    /// 以"敌人 → 玩家"的方向为基准，再分别旋转 90°、180°、270°，共四发呈十字形散开。
+    /// 参数：
+    /// - speed：弹速，默认 3（和 AttackShotPlayer 一致）
+    /// - start_angle：整体起始偏移角（度），默认 0；填 45 就变成"×"形
+    /// - bullet_data：可选，指定本次使用的弹幕数据；不填则用敌人当前弹幕
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void AttackShotPlayerFourDirection(Enemy enemy)
+    {
+        if(!Game.IsAble(enemy) || !Game.IsAble(player))return;
+
+        Vector2 toward = player.GlobalPosition - enemy.GlobalPosition;
+        //玩家和敌人完全重叠时Normalized()会得到零向量，四发弹幕会全部卡在原地，这里退化成朝右
+        if(toward.LengthSquared() < 0.0001f)
+            toward = Vector2.Right;
+
+        float bulletSpeed = Arg("speed", 3);
+        float startAngle = Arg("start_angle", 0f);
+        BulletData data = Arg<BulletData>("bullet_data", null);
+
+        for(int i = 0; i < 4; i++)
+        {
+            float angle = Mathf.DegToRad(startAngle + 90f * i);
+            enemy.Shot(toward.Normalized().Rotated(angle) * bulletSpeed, default, data);
+        }
+    }
+
     # endregion
 
 }

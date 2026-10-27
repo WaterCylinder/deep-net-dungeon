@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyBehavior" format=3]
+
+[ext_resource type="Script" uid="uid://dblyxvivec0w8" path="res://Script/Data/Entity/EnemyBehavior.cs" id="1_fourdir"]
+
+[resource]
+script = ExtResource("1_fourdir")
+behaviorName = "AttackShotPlayerFourDirection"
+args = Dictionary[String, Variant]({
+"speed": 3
+})
+metadata/_custom_type_script = "uid://dblyxvivec0w8"

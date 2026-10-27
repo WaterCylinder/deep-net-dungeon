@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bcjcr3pvbp3i2"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buffscript"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_item"]
+[ext_resource type="Resource" uid="uid://jtxu3whf37fm" path="res://Resource/v1/Item/Buff/Data/buff_virus_module.tres" id="3_buff"]
+[ext_resource type="Texture2D" uid="uid://dvalanomm6q3g" path="res://Resource/v1/Item/Sprite/edition1/VirusModule.png" id="4_sprite"]
+
+[resource]
+script = ExtResource("2_item")
+ItemName = "virus_module"
+showName = "病毒模块"
+intro = "拾取时自身获得5层病毒；攻击力+50、暴击率+20%、暴击伤害+50%。"
+tags = Array[int]([2])
+itemLevel = 3
+sprite = ExtResource("4_sprite")
+carryBuffs = Dictionary[ExtResource("1_buffscript"), int]({
+ExtResource("3_buff"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

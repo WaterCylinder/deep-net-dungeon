@@ -45,7 +45,7 @@ behavior = SubResource("Resource_wmq1f")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vcfg8"]
-radius = 20.0
+radius = 32.0
 
 [resource]
 script = ExtResource("2_xol1m")
