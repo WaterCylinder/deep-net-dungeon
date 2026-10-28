@@ -9,7 +9,7 @@
 script = ExtResource("2_iakqj")
 ItemName = "void_energy_tank"
 showName = "虚空能量罐"
-intro = "获得资源点时，恢复1点生命值"
+intro = "获得资源点时，有50%概率恢复1点生命值"
 tags = Array[int]([2])
 itemLevel = 2
 sprite = ExtResource("3_iakqj")

@@ -165,6 +165,12 @@ public abstract partial class Entity : RigidBody2D
     public bool isDead = false;
 
     #endregion
+
+    #region 控制属性
+
+    public bool shieldOverLoad = false;
+
+    #endregion
     
     public Game game => GameManager.Instance.game;
 
@@ -800,7 +806,7 @@ public abstract partial class Entity : RigidBody2D
         
             // 伤害公式：原始伤害 * (100 / (100 + 防御力)) - (防御力 / 10)
             float damageReduction = 100f / (100f + def);
-            finalDamage = rawDamage * damageReduction - (def * 0.1f);
+            finalDamage = rawDamage * damageReduction - Mathf.Min(def * 0.1f, 10);
         }    
     
         // 确保伤害不为负
@@ -1086,6 +1092,15 @@ public abstract partial class Entity : RigidBody2D
         
         // 更新Buff
         UpdateBuffs(delta);
+
+        //Buff的持续伤害可能就在这一帧把实体打死：这时不能再跑OnUpdate，
+        //否则行为里的animNode.Play("idle"/"move")会把刚播上的死亡动画顶掉，
+        //死亡动画的AnimationFinished永远不会触发，尸体就会一直卡在待机/移动动画上
+        if (isDead)
+        {
+            MoveStop();
+            return;
+        }
 
         // 更新攻击计时器
         if (attackTimer <= 1f)
@@ -1398,13 +1413,21 @@ public abstract partial class Entity : RigidBody2D
     }
 
     /// <summary>
-    /// 一般的添加护盾方法，此方法获得的护盾无法大于最大生命值
+    /// 一般的添加护盾方法，一般情况此方法获得的护盾无法大于最大生命值
     /// </summary>
     /// <param name="num"></param>
     public void AddShield(float num)
     {
-        float diff = maxHealth.Get() - shield;
-        shield += Mathf.Min(diff, num);
+        if (shieldOverLoad)
+        {
+            shield += num;
+        }
+        else
+        {
+            float diff = maxHealth.Get() - shield;
+            diff = Mathf.Max(0, diff);
+            shield += Mathf.Min(diff, num);
+        }
     }
 
     public T GetComponent<T>() where T : EntityComponent

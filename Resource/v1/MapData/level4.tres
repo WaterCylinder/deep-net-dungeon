@@ -16,13 +16,14 @@
 
 [resource]
 script = ExtResource("13_dhy1c")
+mapMode = 1
 minNormalRoomCount = 1
 maxNormalRoomCount = 1
-normalRoomCount = 16
+normalRoomCount = 20
 treasureRoomCount = 3
 shopRoomCount = 3
-eventRoomCount = 4
-maxLayerRooms = 8
+eventRoomCount = 5
+maxLayerRooms = 10
 roomDatas = Dictionary[int, Array]({
 0: Array[ExtResource("1_mg6t5")]([ExtResource("2_mg6t5")]),
 1: Array[ExtResource("1_mg6t5")]([ExtResource("4_tlslt"), ExtResource("6_pai0a"), ExtResource("7_2l3v5"), ExtResource("6_mg6t5"), ExtResource("7_6h6r2")]),

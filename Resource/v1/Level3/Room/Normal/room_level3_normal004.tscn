@@ -4,10 +4,14 @@
 [ext_resource type="TileSet" uid="uid://rsfmy767lguj" path="res://Resource/Global/tile_set.tres" id="2_78ggf"]
 [ext_resource type="PackedScene" uid="uid://8akdyvnylgxo" path="res://Asset/Object/enemy_generator_cluster.tscn" id="3_2ldet"]
 [ext_resource type="Resource" uid="uid://vgsj7371dsji" path="res://Resource/v1/Level3/Enemy/Data/the_eye.tres" id="4_21v0g"]
+[ext_resource type="Resource" uid="uid://bik0utnsprxti" path="res://Resource/v1/Level3/Enemy/Data/elect_spider.tres" id="5_fgde1"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="8_hrkm8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x2b2l"]
 size = Vector2(770, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fgde1"]
+size = Vector2(320, 320)
 
 [node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]
 script = ExtResource("1_23ldl")
@@ -27,13 +31,24 @@ tile_set = ExtResource("2_78ggf")
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/1" unique_id=61005515 instance=ExtResource("3_2ldet")]
 visible = false
 position = Vector2(0, -24)
-onceSpawnRange = Vector2i(5, 7)
+onceSpawnRange = Vector2i(4, 6)
 spawnTime = 5.0
-spawnNum = 4
+spawnNum = 3
 clusterData = Dictionary[Object, int]({
 ExtResource("4_21v0g"): 1
 })
 areaShape = SubResource("RectangleShape2D_x2b2l")
+dataList = []
+
+[node name="EnemyGeneratorCluster2" parent="EnemyGenerator/1" unique_id=42588997 instance=ExtResource("3_2ldet")]
+visible = false
+onceSpawnRange = Vector2i(2, 2)
+spawnTime = 3.0
+spawnNum = 5
+clusterData = Dictionary[Object, int]({
+ExtResource("5_fgde1"): 1
+})
+areaShape = SubResource("RectangleShape2D_fgde1")
 
 [node name="ItemGenerator" type="Node2D" parent="." unique_id=1370546880]
 

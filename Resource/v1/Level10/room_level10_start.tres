@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomData" format=3 uid="uid://dsgibosr5kp01"]
+
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_3pkp1"]
+[ext_resource type="PackedScene" uid="uid://bqen1cy36qi1m" path="res://Resource/v1/Level5/Room/room_level5_start.tscn" id="2_iisyp"]
+
+[resource]
+script = ExtResource("1_3pkp1")
+roomId = "END"
+tileMap = ExtResource("2_iisyp")
+args = null
+metadata/_custom_type_script = "uid://bodfjcgco84dp"

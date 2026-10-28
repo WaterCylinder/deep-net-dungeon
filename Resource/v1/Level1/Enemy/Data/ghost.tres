@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="3_kio6a"]
 [ext_resource type="Resource" uid="uid://os0nvoivt45p" path="res://Resource/Global/EnemyBehavior/attack.tres" id="4_vp0io"]
 [ext_resource type="Script" uid="uid://dh6u0gbckh2vx" path="res://Resource/v1/Level1/EnemyBehaviorLevel1.cs" id="6_rn1pp"]
-[ext_resource type="SpriteFrames" uid="uid://2fuglulnx4mf" path="res://Resource/v1/Level1/Enemy/Sprite/ghost_sprite_frames.tres" id="10_rn1pp"]
+[ext_resource type="SpriteFrames" uid="uid://2fuglulnx4mf" path="res://Resource/v1/Level1/Enemy/Sprite/ghost_sprite_frames.tres" id="10_ehpjd"]
 
 [sub_resource type="Resource" id="Resource_iocjv"]
 script = ExtResource("3_j8wj5")
@@ -41,7 +41,7 @@ description = "幽灵"
 maxHealth = 60.0
 defense = 0.0
 attackSpeed = 0.2
-spriteFrames = ExtResource("10_rn1pp")
+spriteFrames = ExtResource("10_ehpjd")
 onUpdate = SubResource("Resource_jixut")
 onAttack = SubResource("Resource_iocjv")
 dropValue = Vector2i(1, 2)

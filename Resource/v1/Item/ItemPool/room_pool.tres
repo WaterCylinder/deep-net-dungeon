@@ -15,9 +15,9 @@ pool = Dictionary[Object, int]({
 ExtResource("1_g1vtd"): 4,
 ExtResource("2_81lu6"): 4,
 ExtResource("3_jxfa7"): 4,
-ExtResource("4_g1vtd"): 4,
-ExtResource("5_81lu6"): 4,
+ExtResource("4_g1vtd"): 3,
+ExtResource("5_81lu6"): 1,
 ExtResource("6_1tfuu"): 4,
-ExtResource("7_y3mrg"): 4
+ExtResource("7_y3mrg"): 2
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

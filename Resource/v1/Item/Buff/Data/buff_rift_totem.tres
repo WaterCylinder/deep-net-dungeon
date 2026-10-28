@@ -22,13 +22,15 @@ script = ExtResource("1_data")
 sprite = ExtResource("4_sprite")
 id = "buff_rift_totem"
 name = "裂罅图腾"
-intro = "每秒使房间内所有敌怪获得4层灼烧"
-maxStack = 1
+intro = "每秒使房间内所有敌怪获得等同于层数的灼烧（每层1点，可叠加）"
+maxStack = 999
+baseStack = 10
 processTime = 1.0
 tags = Array[int]([2])
 isUnique = true
+isAdded = true
 args = Dictionary[String, Variant]({
-"fire_stack": 4
+"fire_stack_per_layer": 1.0
 })
 onTimer = SubResource("Resource_totem_effect")
 metadata/_custom_type_script = "uid://bctrndevbmqqd"

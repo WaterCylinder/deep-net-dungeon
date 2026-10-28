@@ -1,23 +1,25 @@
 [gd_resource type="Resource" script_class="ItemPool" format=3 uid="uid://cy3kd058us37v"]
 
 [ext_resource type="Script" uid="uid://bc5j8miuab1g0" path="res://Script/Object/ItemPool.cs" id="1_pool"]
-[ext_resource type="Resource" uid="uid://o1po5532qrdn" path="res://Resource/v1/Item/Data/NormalItem/edition1/emergency_manual.tres" id="2_manual"]
 [ext_resource type="Resource" uid="uid://cfsvk6irt6nhv" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_glod_bullet.tres" id="3_gold"]
 [ext_resource type="Resource" uid="uid://cmwlsbdn4t0qn" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_rift_fire.tres" id="4_riftfire"]
 [ext_resource type="Resource" uid="uid://oc5i16ag0267" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_trojan.tres" id="5_trojan"]
 [ext_resource type="Resource" uid="uid://f686lla5sh07" path="res://Resource/v1/Item/Data/UsableItem/usable_item_electronic_barrier.tres" id="6_barrier"]
 [ext_resource type="Resource" uid="uid://lfmc4ubjc5vx" path="res://Resource/v1/Item/Data/UsableItem/usable_item_the_end.tres" id="7_end"]
-[ext_resource type="Resource" uid="uid://bcjcr3pvbp3i2" path="res://Resource/v1/Item/Data/NormalItem/edition1/virus_module.tres" id="8_virus"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/breakdown.tres" id="8_breakdown"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/crossfire.tres" id="9_crossfire"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/overload_module.tres" id="10_overload"]
 
 [resource]
 script = ExtResource("1_pool")
 pool = Dictionary[Object, int]({
-ExtResource("2_manual"): 1,
 ExtResource("3_gold"): 1,
 ExtResource("4_riftfire"): 1,
 ExtResource("5_trojan"): 1,
 ExtResource("6_barrier"): 1,
 ExtResource("7_end"): 1,
-ExtResource("8_virus"): 1
+ExtResource("8_breakdown"): 1,
+ExtResource("9_crossfire"): 1,
+ExtResource("10_overload"): 1
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

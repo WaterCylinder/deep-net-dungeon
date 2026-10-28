@@ -155,6 +155,7 @@ public partial class Enemy : Entity
     /// 敌人数据源
     /// </summary>
     [Export] public EnemyData data;
+    [Export] public string showName;
 
     /// <summary>
     /// 目标实体（用于AI追踪）
@@ -271,7 +272,8 @@ public partial class Enemy : Entity
         dropValue = data.dropValue;
 
         //设置节点属性
-        Name = data.enemyName;
+        Name = data.enemyName + System.Guid.NewGuid().ToString();
+        showName = data.displayName;
 
         // 复制标签
         foreach (var tag in data.tags)
@@ -440,6 +442,13 @@ public partial class Enemy : Entity
             animNode.Stop();
             animNode.Play("death");
             animNode.AnimationFinished += QueueFree;
+
+            //兜底回收：万一死亡动画被别的东西顶掉了（AnimationFinished就不会触发），
+            //按动画时长过一会儿强制回收，避免尸体永远停在待机/移动动画上
+            int deathFrames = animNode.SpriteFrames.GetFrameCount("death");
+            float deathSpeed = (float)animNode.SpriteFrames.GetAnimationSpeed("death");
+            float deathLength = deathSpeed > 0f ? deathFrames / deathSpeed : 1f;
+            AddTempTimer("enemy_death_recycle", deathLength + 0.5f, QueueFree);
             if (meleeBullet != null && IsInstanceValid(meleeBullet))
             {
                 meleeBullet.QueueFree();

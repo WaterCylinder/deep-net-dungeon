@@ -60,7 +60,7 @@ radius = 64.0
 [resource]
 script = ExtResource("8_3g5jn")
 enemyName = "RiftDefener"
-displayName = "RiftDefener"
+displayName = "裂罅守卫"
 description = "裂隙守卫"
 tags = Array[int]([4, 3])
 maxHealth = 1440.0
@@ -79,5 +79,5 @@ args = Dictionary[String, Variant]({
 onGenerate = SubResource("Resource_va8sj")
 onUpdate = SubResource("Resource_xto4r")
 onAttack = SubResource("Resource_h2fd4")
-dropValue = Vector2i(7, 9)
+dropValue = Vector2i(7, 15)
 metadata/_custom_type_script = "uid://mqed4halsexx"

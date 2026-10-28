@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dolopiq5jfcfx" path="res://Resource/v1/Bullet/Sprite/glod_bullet.png" id="2_ley7s"]
 [ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="2_o0gb1"]
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_fsa8e"]
-[ext_resource type="AudioStream" uid="uid://cl2gqh8brl8n3" path="res://Asset/Sound/kick.wav" id="5_o0gb1"]
+[ext_resource type="AudioStream" uid="uid://dppl50nm4sw5f" path="res://Resource/Sounds/bullet_shot_001.wav" id="5_o0gb1"]
 
 [sub_resource type="Resource" id="Resource_x7g66"]
 script = ExtResource("1_0trgo")
@@ -22,7 +22,7 @@ metadata/_custom_type_script = "uid://bext0m7l2otpv"
 script = ExtResource("1_ckjwd")
 bulletName = "GoldBullet"
 lifetime = 8.0
-damageMultiplier = 0.5
+damageMultiplier = 0.7
 sprite = ExtResource("2_ley7s")
 collisionRadius = 8.0
 onHit = SubResource("Resource_uoomd")

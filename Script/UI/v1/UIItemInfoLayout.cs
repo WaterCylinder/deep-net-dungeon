@@ -56,7 +56,11 @@ public partial class UIItemInfoLayout : Control
         {
             Init(data);
             Visible = true;
-            GlobalPosition = InputManager.Instance.GetMousePosition();
+            Vector2 pos = InputManager.Instance.GetMousePosition();
+            Vector2 band = GetViewport().GetVisibleRect().Size - Size;
+            if(pos.X > band.X)pos.X = band.X;
+            if(pos.Y > band.Y)pos.Y = band.Y;
+            GlobalPosition = pos;
         }
         else
         {

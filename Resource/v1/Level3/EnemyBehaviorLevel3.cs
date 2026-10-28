@@ -108,7 +108,8 @@ public partial class EnemyBehaviorLevel3 : EnemyBehavior
         if (enemy.args.Get<bool>("emoji_rage"))
         {
             enemy.animNode?.Play("move");
-            enemy.MoveToward(player.GlobalPosition - enemy.GlobalPosition);
+            //暴走追击走导航
+            UpdateCloseToPalyer(enemy);
             return;
         }
 
@@ -122,7 +123,8 @@ public partial class EnemyBehaviorLevel3 : EnemyBehavior
         }
         else if (distance > keepDistance * 1.2f)
         {
-            enemy.MoveToward(towardPlayer);
+            //离太远：走导航追回来
+            UpdateCloseToPalyer(enemy);
         }
         else
         {
@@ -369,8 +371,8 @@ public partial class EnemyBehaviorLevel3 : EnemyBehavior
             if (spider == null) continue;
 
             spider.OnGenerate();
-            //召唤物攻击力对齐boss的攻击力
-            spider.attack.Add(enemy.attack.Get() - spider.attack.Get(), "Summoner", 60);
+            //召唤物攻击力在自身基础上增加boss的攻击力
+            spider.attack.AddModify(enemy.attack.Get(), "Summoner");
             //召唤物不掉资源点：蜘蛛数据是共用的，这里只改这一只实例，不然boss战会变成刷钱机
             spider.dropValue = Vector2I.Zero;
             spawned.Add(spider);

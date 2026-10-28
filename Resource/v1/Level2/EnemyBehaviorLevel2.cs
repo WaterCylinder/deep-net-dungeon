@@ -180,6 +180,29 @@ public partial class EnemyBehaviorLevel2 : EnemyBehavior
             enemy.Shot(toward, _data:bigFire);
             enemy.Shot(toward.Rotated(Mathf.DegToRad(20)), _data:bigFire);
             enemy.Shot(toward.Rotated(Mathf.DegToRad(-20)), _data:bigFire);
+
+            //50%概率额外召唤两只裂罅烈焰（rift_fire）
+            if(game.randomSystem.Float() < 0.5f)
+            {
+                EnemyData riftFireData = enemy.args.Get<EnemyData>("rift_fire");
+                if(riftFireData != null)
+                {
+                    for(int i = 0; i < 2; i++)
+                    {
+                        Enemy riftFire = game.SpawnEnemy(riftFireData, enemy.GlobalPosition + new Vector2(i == 0 ? -160f : 160f, 0), enemy.GetParent());
+                        if(riftFire == null)
+                        {
+                            continue;
+                        }
+
+                        riftFire.room = enemy.room;
+                        riftFire.OnGenerate();
+                        //召唤物不掉资源点
+                        riftFire.dropValue = Vector2I.Zero;
+                    }
+                }
+            }
+
             enemy.args.Set("rift_watcher_state", "wander");
             enemy.animNode.Play("idle");
         }

@@ -9,12 +9,12 @@
 script = ExtResource("2_fm3cx")
 ItemName = "rift_armor"
 showName = "裂罅护甲"
-intro = "房间内每有1个带有灼烧效果的敌怪，获得10点护甲（每0.1秒刷新）。"
+intro = "获得10层裂罅护甲：房间内每有1个带灼烧效果的敌怪，按层数提供护甲（每层1点，每0.1秒刷新，可叠加）。"
 tags = Array[int]([2])
-itemLevel = 1
+itemLevel = 2
 sprite = ExtResource("3_fm3cx")
 carryBuffs = Dictionary[ExtResource("1_qnixd"), int]({
-ExtResource("2_wapei"): 1
+ExtResource("2_wapei"): 10
 })
 addBuffOnPick = true
 metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

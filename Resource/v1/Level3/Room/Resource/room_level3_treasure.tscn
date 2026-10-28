@@ -37,6 +37,14 @@ pool = ExtResource("6_ewe17")
 position = Vector2(192, 88)
 pool = ExtResource("6_ewe17")
 
+[node name="ItemGenerator6" parent="ItemGenerator" unique_id=421922225 instance=ExtResource("5_1c3lx")]
+position = Vector2(0, 88)
+pool = ExtResource("6_ewe17")
+
+[node name="ItemGenerator7" parent="ItemGenerator" unique_id=579775824 instance=ExtResource("5_1c3lx")]
+position = Vector2(0, -136)
+pool = ExtResource("6_ewe17")
+
 [node name="ShopNode" type="Node2D" parent="." unique_id=1260284010]
 
 [node name="Doors" type="Node2D" parent="." unique_id=1913729891]

@@ -6,11 +6,19 @@
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_bwov1"]
 [ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="5_1bf8i"]
 [ext_resource type="PackedScene" uid="uid://dlv1odjc60q8t" path="res://Resource/v1/Level3/Room/Normal/room_level3_normal003.tscn" id="6_fi68w"]
+[ext_resource type="Resource" path="res://Resource/Global/RoomBehavior/room_generate_attack_energy.tres" id="9_attack_energy"]
+[ext_resource type="Resource" path="res://Resource/Global/RoomBehavior/room_generate_defense_energy.tres" id="10_defense_energy"]
+[ext_resource type="Script" uid="uid://b6iq415gsv2dy" path="res://Script/Data/Effect/Behaviors/BindBehavior.cs" id="11_bind"]
+
+[sub_resource type="Resource" id="Resource_clear_bind"]
+script = ExtResource("11_bind")
+behaviorArray = Array[Object]([ExtResource("2_e20qx"), ExtResource("9_attack_energy"), ExtResource("10_defense_energy")])
+metadata/_custom_type_script = "uid://b6iq415gsv2dy"
 
 [sub_resource type="Resource" id="Resource_mg7dd"]
 script = ExtResource("4_bwov1")
 condition = ExtResource("3_q8a8x")
-behavior = ExtResource("2_e20qx")
+behavior = SubResource("Resource_clear_bind")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [resource]
@@ -19,6 +27,10 @@ roomId = "Normal"
 roomTags = Array[int]([1])
 tileMap = ExtResource("6_fi68w")
 args = Dictionary[String, Variant]({
+"attack_count": Vector2i(3, 6),
+"attack_value": Vector2i(1, 1),
+"defense_count": Vector2i(3, 6),
+"defense_value": Vector2i(1, 1),
 "item_pool": ExtResource("1_bgk4v")
 })
 onClear = SubResource("Resource_mg7dd")

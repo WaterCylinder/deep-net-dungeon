@@ -3,9 +3,7 @@
 [ext_resource type="Script" uid="uid://c6t7t4sn5ln52" path="res://Script/Object/GameObject/RoomTileMap.cs" id="1_5g5ih"]
 [ext_resource type="TileSet" uid="uid://rsfmy767lguj" path="res://Resource/Global/tile_set.tres" id="2_3ryjm"]
 [ext_resource type="PackedScene" uid="uid://bkx0qi13gxiuk" path="res://Asset/Object/shop_item.tscn" id="3_41b7y"]
-[ext_resource type="PackedScene" uid="uid://cmnv5ygvfjkqt" path="res://Asset/Object/item_generator.tscn" id="3_dlhed"]
 [ext_resource type="Resource" uid="uid://je86wmjoudw0" path="res://Resource/v1/Item/ItemPool/shop_pool.tres" id="4_67nav"]
-[ext_resource type="Resource" uid="uid://dmc3og15mia7f" path="res://Resource/v1/Item/Data/BulletItem/bullet_item_arrow.tres" id="4_txxdu"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="5_8pmwh"]
 
 [node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]
@@ -23,15 +21,7 @@ tile_set = ExtResource("2_3ryjm")
 
 [node name="ItemGenerator" type="Node2D" parent="." unique_id=1370546880]
 
-[node name="ItemGenerator" parent="ItemGenerator" unique_id=1631980262 instance=ExtResource("3_dlhed")]
-position = Vector2(0, -248)
-itemData = ExtResource("4_txxdu")
-
 [node name="ShopNode" type="Node2D" parent="." unique_id=1260284010]
-
-[node name="ShopItem" parent="ShopNode" unique_id=351719576 instance=ExtResource("3_41b7y")]
-position = Vector2(-480, -24)
-pool = ExtResource("4_67nav")
 
 [node name="ShopItem2" parent="ShopNode" unique_id=213056645 instance=ExtResource("3_41b7y")]
 position = Vector2(-416, 168)

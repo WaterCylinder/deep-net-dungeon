@@ -4,7 +4,7 @@
 [ext_resource type="TileSet" uid="uid://rsfmy767lguj" path="res://Resource/Global/tile_set.tres" id="2_l7v63"]
 [ext_resource type="PackedScene" uid="uid://bsvmpnjd6qt5d" path="res://Asset/Object/Component/room_title.tscn" id="3_8id17"]
 [ext_resource type="PackedScene" uid="uid://bkx0qi13gxiuk" path="res://Asset/Object/shop_item.tscn" id="4_qfh5h"]
-[ext_resource type="Resource" uid="uid://je86wmjoudw0" path="res://Resource/v1/Item/ItemPool/shop_pool.tres" id="5_yfhvf"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/ItemPool/shop_pool_level1.tres" id="5_yfhvf"]
 [ext_resource type="PackedScene" uid="uid://c2ddfp6q8lbyt" path="res://Asset/Object/door.tscn" id="6_rpaq7"]
 
 [node name="DefaultTileMap" type="Node2D" unique_id=112748542 node_paths=PackedStringArray("trrainLayer", "enemyGeneratorNode", "itemGeneratorNode", "doorsNode")]

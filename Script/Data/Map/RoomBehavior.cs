@@ -73,6 +73,32 @@ public partial class RoomBehavior : Behavior
         EnergyPoint.CreateEnergyPoint(EnergyType.Shield, room.GlobalPosition, game.randomSystem.Int(count.X, count.Y), game.randomSystem.Int(value.X, value.Y) * 0.5f, 128, room);
     }
 
+    /// <summary>
+    /// 在房间位置生成攻击能量点（红色）：拾取永久 +攻击力。
+    /// args：attack_count 数量、attack_value 每颗提供的攻击力
+    /// </summary>
+    /// <param name="room"></param>
+    public void GenerateAttackEnergy(Room room)
+    {
+        Vector2I count = room.args.Get("attack_count", Vector2I.One);
+        Vector2I value = room.args.Get("attack_value", Vector2I.One);
+
+        EnergyPoint.CreateEnergyPoint(EnergyType.Attack, room.GlobalPosition, game.randomSystem.Int(count.X, count.Y), game.randomSystem.Int(value.X, value.Y), 128, room);
+    }
+
+    /// <summary>
+    /// 在房间位置生成防御能量点（蓝色）：拾取永久 +护甲。
+    /// args：defense_count 数量、defense_value 每颗提供的护甲
+    /// </summary>
+    /// <param name="room"></param>
+    public void GenerateDefenseEnergy(Room room)
+    {
+        Vector2I count = room.args.Get("defense_count", Vector2I.One);
+        Vector2I value = room.args.Get("defense_value", Vector2I.One);
+
+        EnergyPoint.CreateEnergyPoint(EnergyType.Defense, room.GlobalPosition, game.randomSystem.Int(count.X, count.Y), game.randomSystem.Int(value.X, value.Y), 128, room);
+    }
+
     //设置boss实体，用于显示boss血条
     public void SetBoss(Room room, Enemy enemy)
     {

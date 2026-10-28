@@ -33,12 +33,16 @@ script = ExtResource("1_fonq6")
 sprite = ExtResource("2_m4vyq")
 id = "buff_rift_armor"
 name = "裂罅护甲"
-intro = "根据房间内带有灼烧效果的敌怪数量获得护甲，每只提供10点，每0.1秒刷新一次"
-maxStack = 1
+intro = "每层根据房间内灼烧敌怪的数量获得护甲"
+maxStack = 999
+baseStack = 10
 processTime = 0.1
 tags = Array[int]([2])
 isUnique = true
-args = Dictionary[String, Variant]({})
+isAdded = true
+args = Dictionary[String, Variant]({
+"defense_per_stack": 10.0
+})
 onTimer = SubResource("Resource_xj3sn")
 onEnd = SubResource("Resource_an0my")
 metadata/_custom_type_script = "uid://bctrndevbmqqd"

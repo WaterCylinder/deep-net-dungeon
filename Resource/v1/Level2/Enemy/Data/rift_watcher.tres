@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="5_fg240"]
 [ext_resource type="Script" uid="uid://sk4l54vyi4h8" path="res://Resource/v1/Level2/EnemyBehaviorLevel2.cs" id="6_3bgut"]
 [ext_resource type="Resource" uid="uid://xhdvjxe346t" path="res://Asset/Effect/player_able_condition.tres" id="7_fg240"]
+[ext_resource type="Resource" uid="uid://bwj2507qengi5" path="res://Resource/v1/Level2/Enemy/Data/rift_fire.tres" id="8_rift_fire"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fg240"]
 radius = 44.0
@@ -42,8 +43,8 @@ displayName = "裂罅监视者"
 description = "无"
 tags = Array[int]([4])
 maxHealth = 6666.0
-attack = 32.0
-defense = 20.0
+attack = 20.0
+defense = 18.0
 speed = 30.0
 spriteFrames = ExtResource("3_gsi7o")
 physicShape = SubResource("CapsuleShape2D_uwv3r")
@@ -52,8 +53,10 @@ meleeOffest = Vector2(0, 0)
 scale = Vector2(2.2, 2.2)
 args = Dictionary[String, Variant]({
 "big_fire": ExtResource("2_fg240"),
-"bullet_data": ExtResource("1_xvyxs")
+"bullet_data": ExtResource("1_xvyxs"),
+"rift_fire": ExtResource("8_rift_fire")
 })
 onGenerate = SubResource("Resource_uwv3r")
 onUpdate = SubResource("Resource_nobdr")
+dropValue = Vector2i(10, 15)
 metadata/_custom_type_script = "uid://mqed4halsexx"

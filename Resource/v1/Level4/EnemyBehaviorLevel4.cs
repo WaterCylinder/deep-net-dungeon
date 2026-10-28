@@ -20,9 +20,9 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
             enemy.OnHurtSignal += (_, _) => enemy.args.Set("panic_regen_wait", 0f);
         }
 
-        //跟随玩家
+        //跟随玩家（走导航，绕开墙）
         enemy.animNode?.Play("idle");
-        enemy.MoveToward(player.GlobalPosition - enemy.GlobalPosition);
+        UpdateCloseToPalyer(enemy);
 
         //回盾：累计满1秒结算一次，只有护盾低于最大生命一半时才恢复
         float wait = enemy.args.Get<float>("panic_regen_wait") + (float)enemy.GetProcessDeltaTime();
@@ -227,7 +227,7 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
         //发射间隔
         float interval = pattern switch
         {
-            0 => enemy.args.Get("odd_even_interval", 0.2f),
+            0 => enemy.args.Get("odd_even_interval", 0.3f),
             1 => enemy.args.Get("virus_interval", 0.1f),
             _ => enemy.args.Get("big_fire_interval", 0.4f),
         };
@@ -252,7 +252,7 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
                     BulletData plasma = enemy.args.Get<BulletData>("plasma_bullet");
                     if (plasma != null)
                     {
-                        float shotSpeed = 5.5f;
+                        float shotSpeed = 4f;
                         enemy.Shot(aim * shotSpeed, default, plasma);
                         enemy.Shot(aim.Rotated(Mathf.DegToRad(-20f)) * shotSpeed, default, plasma);
                         enemy.Shot(aim.Rotated(Mathf.DegToRad(20f)) * shotSpeed, default, plasma);
@@ -263,7 +263,7 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
                     BulletData fire = enemy.args.Get<BulletData>("fire_bullet");
                     if (fire != null)
                     {
-                        float shotSpeed = 5.5f;
+                        float shotSpeed = 4f;
                         enemy.Shot(aim.Rotated(Mathf.DegToRad(-30f)) * shotSpeed, default, fire);
                         enemy.Shot(aim.Rotated(Mathf.DegToRad(-10f)) * shotSpeed, default, fire);
                         enemy.Shot(aim.Rotated(Mathf.DegToRad(10f)) * shotSpeed, default, fire);
@@ -384,7 +384,8 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
 
         if (state == "chase")
         {
-            enemy.MoveToward(player.GlobalPosition - enemy.GlobalPosition);
+            //追击走导航
+            UpdateCloseToPalyer(enemy);
 
             float shot = enemy.args.Get<float>("wsawa_shot_timer") + delta;
             if (shot >= 0.4f)
@@ -512,7 +513,7 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
             Vector2 toPlayer = player.GlobalPosition - enemy.GlobalPosition;
             float distance = toPlayer.Length();
             if (distance < 420f) enemy.MoveToward(-toPlayer);
-            else if (distance > 560f) enemy.MoveToward(toPlayer);
+            else if (distance > 560f) UpdateCloseToPalyer(enemy);   //离太远：走导航追回来
             else enemy.MoveStop();
 
             float shot = enemy.args.Get<float>("wsawa_shot_timer") + delta;
@@ -573,8 +574,8 @@ public partial class EnemyBehaviorLevel4 : EnemyBehavior
                         spider.room = enemy.room;
                         spider.OnGenerate();
 
-                        //召唤物攻击力对齐右手自己的攻击力
-                        spider.attack.Add(enemy.attack.Get() - spider.attack.Get(), "Summoner", 60);
+                        //召唤物攻击力在自身基础上增加右手自己的攻击力
+                        spider.attack.AddModify(enemy.attack.Get(), "Summoner");
 
                         spider.dropValue = Vector2I.Zero;
                     }

@@ -52,6 +52,8 @@ public partial class BagUIPlayerInfo : Control
     /// </summary>
     [Export] public Label speed;
 
+    [Export] public Label Intro;
+
 
     public void Update()
     {

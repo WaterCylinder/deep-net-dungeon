@@ -36,6 +36,7 @@ clusterData = Dictionary[Object, int]({
 ExtResource("4_mo8w3"): 1
 })
 areaShape = SubResource("RectangleShape2D_o5ecu")
+dataList = []
 
 [node name="EnemyGenerator" parent="EnemyGenerator/1" unique_id=463566022 instance=ExtResource("5_mo8w3")]
 position = Vector2(-352, -224)

@@ -1,16 +1,30 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 /// <summary>
 /// 商店物品
 /// </summary>
 public partial class ShopItem : Area2D
 {
+    public static Dictionary<int, int> ItemLevelPriceMapping = new Dictionary<int, int>
+    {
+        {0, 1},
+        {1, 16},
+        {2, 64},
+        {3, 256},
+        {4, 1024},
+    };
+
     [Export] public ItemPool pool;
     [Export] public ItemData data;
     [Export] public int price;
     [Export] public Sprite2D sprite;
     [Export] public Label priceLabel;
     [Export] public ColorRect colorRect;
+
+    [Signal] public delegate void OnShopItemResetEventHandler();
+
+    public int upPrice = 0;
 
     public override void _Ready()
     {
@@ -26,7 +40,20 @@ public partial class ShopItem : Area2D
             }
         };
 
-        data ??= pool.Pick();
+        ResetData();
+    }
+
+    public void ResetData(ItemData data = null)
+    {
+        if(data == null)
+        {
+            this.data ??= pool.Pick();
+        }
+        else
+        {
+            this.data = data;
+        }
+        EmitSignal(SignalName.OnShopItemReset);
     }
 
     public override void _Process(double delta)
@@ -35,7 +62,7 @@ public partial class ShopItem : Area2D
         if(data != null)
         {
             sprite.Texture = data.sprite;
-            price = GetPrice(data);
+            price = GetPrice(data) + upPrice;
             priceLabel.Text = price.ToString();
             colorRect.SelfModulate = Item.GetLevelColor(data.itemLevel);
         }
@@ -56,14 +83,14 @@ public partial class ShopItem : Area2D
     /// <returns></returns>
     public int GetPrice(ItemData data)
     {
-        return data.itemLevel switch
+        if (ItemLevelPriceMapping.ContainsKey(data.itemLevel))
         {
-            1 => 16,
-            2 => 64,
-            3 => 256,
-            4 => 1024,
-            _ => 1,
-        };
+            return ItemLevelPriceMapping[data.itemLevel];
+        }
+        else
+        {
+            return 0;
+        }
 
     }
 }

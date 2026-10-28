@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_item"]
+[ext_resource type="Resource" uid="uid://nmw7aodsnohf" path="res://Resource/v1/Item/Behavior/item_add_attack_normal.tres" id="3_pick"]
+[ext_resource type="Texture2D" uid="uid://nnfof83dvubk" path="res://Resource/v1/Item/Sprite/edition2/Art knife.png" id="4_sprite"]
+
+[resource]
+script = ExtResource("2_item")
+ItemName = "art_knife"
+showName = "美工刀"
+intro = "攻击力提升 10"
+tags = Array[int]([2])
+args = Dictionary[String, Variant]({
+"value": 10.0
+})
+itemLevel = 2
+sprite = ExtResource("4_sprite")
+onPick = ExtResource("3_pick")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

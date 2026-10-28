@@ -12,6 +12,8 @@ public partial class ClassicMode : GameModeBase
     public int level = 1;
     public MapData mapData = null;
 
+    bool firstGetUseableItem = true;
+
     public override void OnStart()
     {
         base.OnStart();
@@ -51,7 +53,7 @@ public partial class ClassicMode : GameModeBase
             case 0:
                 //初始化生成地图
                 Init();
-                map.Initialize(GetMapData(4), game.randomSystem);
+                map.Initialize(GetMapData(1), game.randomSystem);
                 UpdateBackground();   //回到第1层时把bg2/bg3收起来
                 if(map.bossRoom != null)
                 {
@@ -147,6 +149,15 @@ public partial class ClassicMode : GameModeBase
         base.OnPhysicsProcess(delta);
         //对其摄像机到玩家位置
         CameraFollowPlayer();
+        //检测玩家主动道具
+        if(player.usableItem != null)
+        {
+            if (firstGetUseableItem)
+            {
+                firstGetUseableItem = false;
+                game.hud.ShowTips(1);
+            }
+        }
     }
 
     //非事件房间清理完之后自动吸取房间内所有资源点
@@ -172,14 +183,14 @@ public partial class ClassicMode : GameModeBase
     public override void OnEnemySpawned(Enemy enemy)
     {
         base.OnEnemySpawned(enemy);
+        float levelUp = 0.3f;
         //根据level提升敌怪属性，提升为当前等级 - 1乘以30%
-        enemy.attack.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
-        enemy.maxHealth.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
+        enemy.attack.Multi(1 + (level - 1) * levelUp, "LEVEL", 80);
+        enemy.maxHealth.Multi(1 + (level - 1) * levelUp, "LEVEL", 80);
         enemy.maxHealth.Add((level - 1) * 30f, "LEVEL", 80);
         enemy.Heal(enemy.maxHealth);
-        enemy.defense.Multi(1 + (level - 1) * 0.3f, "LEVEL", 80);
-        enemy.shield *= 1 + (level - 1) * 0.3f;
-        enemy.shield += (level - 1) * 10f;
+        enemy.defense.Multi(1 + (level - 1) * levelUp, "LEVEL", 80);
+        enemy.shield *= 1 + (level - 1) * levelUp;
     }
 
     public void NextLevel()
@@ -272,5 +283,44 @@ public partial class ClassicMode : GameModeBase
     {
         base.OnRoomEnter(room);
         UpdateMusic(room);
+
+        //第3层起商店商品价格翻倍
+        if(level >= 3 && room != null && room.CheckTag(RoomTag.Shop))
+        {
+            UpdateShopPrice(room);
+        }
+    }
+
+    /// <summary>
+    /// 商店价格翻倍：把每个商品的加价设成道具原价，最终价 = 原价 + 加价 = 2倍。
+    /// 用节点元数据标记，重复进出同一个商店房不会叠加；
+    /// 商品被刷新（换道具）时也要重新翻倍，所以接一次 OnShopItemReset
+    /// </summary>
+    void UpdateShopPrice(Room room)
+    {
+        foreach(ShopItem shopItem in Utils.Tools.GetAllChildren<ShopItem>(room))
+        {
+            if(shopItem == null || shopItem.HasMeta("level_price_doubled"))
+            {
+                continue;
+            }
+
+            shopItem.SetMeta("level_price_doubled", true);
+            shopItem.OnShopItemReset += () => DoubleShopItemPrice(shopItem);
+            DoubleShopItemPrice(shopItem);
+        }
+    }
+
+    /// <summary>
+    /// 把单个商品的价格翻倍：加价 = 道具原价（ShopItem每帧用 原价+upPrice 算价格）
+    /// </summary>
+    void DoubleShopItemPrice(ShopItem shopItem)
+    {
+        if(shopItem == null || shopItem.data == null)
+        {
+            return;
+        }
+
+        shopItem.upPrice = shopItem.GetPrice(shopItem.data);
     }
 }

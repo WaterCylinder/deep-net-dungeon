@@ -69,5 +69,5 @@ args = Dictionary[String, Variant]({
 onGenerate = SubResource("Resource_s7ia1")
 onUpdate = SubResource("Resource_77xck")
 onAttack = SubResource("Resource_btkew")
-dropValue = Vector2i(10, 12)
+dropValue = Vector2i(5, 6)
 metadata/_custom_type_script = "uid://mqed4halsexx"

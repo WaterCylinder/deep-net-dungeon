@@ -34,9 +34,10 @@ roomMap = NodePath("..")
 [node name="1" type="Node2D" parent="EnemyGenerator" unique_id=1213234613]
 
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/1" unique_id=61005515 instance=ExtResource("4_rnfib")]
+visible = false
 position = Vector2(608, -32)
-onceSpawnRange = Vector2i(4, 5)
-spawnTime = 2.0
+onceSpawnRange = Vector2i(2, 3)
+spawnTime = 3.0
 spawnNum = 3
 clusterData = Dictionary[Object, int]({
 ExtResource("5_swube"): 1
@@ -48,22 +49,23 @@ dataList = []
 position = Vector2(288, -256)
 enemyData = ExtResource("5_gwd01")
 
-[node name="EnemyGenerator2" parent="EnemyGenerator/1" unique_id=1734462062 instance=ExtResource("5_ow4ra")]
-position = Vector2(288, 192)
-enemyData = ExtResource("5_gwd01")
-
 [node name="2" type="Node2D" parent="EnemyGenerator" unique_id=1431902640]
 
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/2" unique_id=688578644 instance=ExtResource("4_rnfib")]
+visible = false
 position = Vector2(0, -32)
 onceSpawnRange = Vector2i(2, 3)
-spawnTime = 2.0
+spawnTime = 3.0
 spawnNum = 3
 clusterData = Dictionary[Object, int]({
 ExtResource("6_1n61t"): 1
 })
 areaShape = SubResource("RectangleShape2D_8n7h8")
 dataList = []
+
+[node name="EnemyGenerator2" parent="EnemyGenerator/2" unique_id=1734462062 instance=ExtResource("5_ow4ra")]
+position = Vector2(288, 192)
+enemyData = ExtResource("5_gwd01")
 
 [node name="Doors" type="Node2D" parent="." unique_id=1913729891]
 

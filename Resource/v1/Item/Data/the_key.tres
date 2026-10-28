@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://m2uy08v0yyps"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_ispk3"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_d1sjl"]
+[ext_resource type="Texture2D" uid="uid://c743knk7n1gww" path="res://Resource/v1/Item/Sprite/Key.png" id="3_d1sjl"]
+
+[resource]
+script = ExtResource("2_d1sjl")
+ItemName = "Key"
+showName = "???"
+intro = "???"
+tags = Array[int]([3])
+itemLevel = 4
+sprite = ExtResource("3_d1sjl")
+maxCount = 1
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

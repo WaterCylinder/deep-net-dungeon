@@ -9,7 +9,7 @@
 script = ExtResource("2_item")
 ItemName = "virus_module"
 showName = "病毒模块"
-intro = "拾取时自身获得5层病毒；攻击力+50、暴击率+20%、暴击伤害+50%。"
+intro = "拾取时自身获得10层病毒；攻击力×150%、暴击率+30%、暴击伤害+50%。"
 tags = Array[int]([2])
 itemLevel = 3
 sprite = ExtResource("4_sprite")

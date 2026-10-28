@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://dcrb74wj4k325"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_data"]
+[ext_resource type="Script" uid="uid://bfm5ojevom4ff" path="res://Resource/v1/BuffBehaviorLevel2.cs" id="2_behav"]
+[ext_resource type="Resource" uid="uid://brk0457hwr2ig" path="res://Asset/Effect/entity_able_condition.tres" id="3_cond"]
+[ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_effect"]
+[ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="5_true"]
+[ext_resource type="Texture2D" uid="uid://du6uvhdlkpadu" path="res://Resource/v1/Item/Sprite/edition2/Reinforcing plate.png" id="6_sprite"]
+
+[sub_resource type="Resource" id="Resource_end"]
+script = ExtResource("2_behav")
+behaviorName = "RemoveReinforcingPlate"
+
+[sub_resource type="Resource" id="Resource_end_effect"]
+script = ExtResource("4_effect")
+condition = ExtResource("5_true")
+behavior = SubResource("Resource_end")
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2_behav")
+behaviorName = "ReinforcingPlateOnStart"
+
+[sub_resource type="Resource" id="Resource_start_effect"]
+script = ExtResource("4_effect")
+condition = ExtResource("3_cond")
+behavior = SubResource("Resource_start")
+
+[resource]
+script = ExtResource("1_data")
+sprite = ExtResource("6_sprite")
+id = "buff_reinforcing_plate"
+name = "加固板"
+intro = "获得10点护甲；若护甲高于50，再额外获得5点"
+maxStack = 1
+tags = Array[int]([2])
+isUnique = true
+args = Dictionary[String, Variant]({
+"defense_bonus": 10.0,
+"extra_defense_bonus": 5.0
+})
+onStart = SubResource("Resource_start_effect")
+onEnd = SubResource("Resource_end_effect")

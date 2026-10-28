@@ -1,20 +1,9 @@
-[gd_resource type="Resource" script_class="BuffData" format=3]
+[gd_resource type="Resource" script_class="BuffData" format=3 uid="uid://qq5epebnusgd"]
 
 [ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_data"]
 [ext_resource type="Script" uid="uid://biy5ucny21tcr" path="res://Resource/v1/BuffBehaviorLevel1.cs" id="2_behav"]
 [ext_resource type="Resource" uid="uid://c1tdwtd8xh7y" path="res://Asset/Effect/true_condition.tres" id="3_true"]
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="4_effect"]
-
-[sub_resource type="Resource" id="Resource_sb_bullet_start_behav"]
-script = ExtResource("2_behav")
-behaviorName = "SpringboardBullet"
-metadata/_custom_type_script = "uid://biy5ucny21tcr"
-
-[sub_resource type="Resource" id="Resource_sb_bullet_start_effect"]
-script = ExtResource("4_effect")
-condition = ExtResource("3_true")
-behavior = SubResource("Resource_sb_bullet_start_behav")
-metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [sub_resource type="Resource" id="Resource_sb_bullet_end_behav"]
 script = ExtResource("2_behav")
@@ -25,6 +14,17 @@ metadata/_custom_type_script = "uid://biy5ucny21tcr"
 script = ExtResource("4_effect")
 condition = ExtResource("3_true")
 behavior = SubResource("Resource_sb_bullet_end_behav")
+metadata/_custom_type_script = "uid://bext0m7l2otpv"
+
+[sub_resource type="Resource" id="Resource_sb_bullet_start_behav"]
+script = ExtResource("2_behav")
+behaviorName = "SpringboardBullet"
+metadata/_custom_type_script = "uid://biy5ucny21tcr"
+
+[sub_resource type="Resource" id="Resource_sb_bullet_start_effect"]
+script = ExtResource("4_effect")
+condition = ExtResource("3_true")
+behavior = SubResource("Resource_sb_bullet_start_behav")
 metadata/_custom_type_script = "uid://bext0m7l2otpv"
 
 [resource]

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cc5fedo2qriey"]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buffscript"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_item"]
+[ext_resource type="Resource" uid="uid://bd6dlop8nqekb" path="res://Resource/v1/Item/Buff/Data/buff_overload_module.tres" id="3_buff"]
+[ext_resource type="Texture2D" uid="uid://ca3iua2fhfspc" path="res://Resource/v1/Item/Sprite/edition2/Overload module.png" id="4_sprite"]
+
+[resource]
+script = ExtResource("2_item")
+ItemName = "overload_module"
+showName = "超载模块"
+intro = "攻击力×200%"
+tags = Array[int]([2])
+itemLevel = 3
+sprite = ExtResource("4_sprite")
+carryBuffs = Dictionary[ExtResource("1_buffscript"), int]({
+ExtResource("3_buff"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

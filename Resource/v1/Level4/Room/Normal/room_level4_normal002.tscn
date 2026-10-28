@@ -30,12 +30,13 @@ tile_set = ExtResource("2_hxbnl")
 visible = false
 position = Vector2(0, -24)
 onceSpawnRange = Vector2i(3, 5)
-spawnTime = 2.0
+spawnTime = 3.0
 spawnNum = 4
 clusterData = Dictionary[Object, int]({
 ExtResource("5_sgis1"): 6
 })
 areaShape = SubResource("RectangleShape2D_x2b2l")
+dataList = []
 
 [node name="EnemyGenerator" parent="EnemyGenerator/1" unique_id=463566022 instance=ExtResource("5_latwd")]
 position = Vector2(-352, -160)

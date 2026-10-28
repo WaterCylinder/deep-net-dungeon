@@ -12,8 +12,8 @@
 
 [resource]
 script = ExtResource("9_6e6i7")
-minNormalRoomCount = 1
-maxNormalRoomCount = 1
+minNormalRoomCount = 4
+maxNormalRoomCount = 5
 maxLayerRooms = 1
 roomDatas = Dictionary[int, Array]({
 0: Array[ExtResource("1_ubjaf")]([ExtResource("2_yd02n")]),

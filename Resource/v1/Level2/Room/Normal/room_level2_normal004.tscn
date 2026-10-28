@@ -43,8 +43,8 @@ dataList = []
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/1" unique_id=61005515 instance=ExtResource("4_2vpbs")]
 visible = false
 position = Vector2(0, -32)
-onceSpawnRange = Vector2i(4, 5)
-spawnTime = 3.0
+onceSpawnRange = Vector2i(2, 3)
+spawnTime = 4.0
 spawnNum = 4
 clusterData = Dictionary[Object, int]({
 ExtResource("7_g36pv"): 1

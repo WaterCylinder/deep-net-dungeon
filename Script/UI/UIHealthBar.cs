@@ -12,12 +12,18 @@ public partial class UIHealthBar : Control
 
     [Export] public Label healthText;
 
+    [Export] public Label nameText;
+
     [Export] public Entity target;
 
     public void SetTarget(Entity entity)
     {
         target = entity;
         healthSlowCover.Scale = new(1f, 1f);
+        if(nameText != null && target is Enemy enemy)
+        {
+            nameText.Text = enemy.showName;
+        }
     }
 
     protected virtual void OnUpdate(double delta){}

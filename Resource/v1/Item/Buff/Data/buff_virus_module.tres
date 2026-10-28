@@ -34,15 +34,15 @@ script = ExtResource("1_data")
 sprite = ExtResource("4_sprite")
 id = "buff_virus_module"
 name = "病毒模块"
-intro = "拾取时获得5层病毒；攻击力+60、暴击率+30%、暴击伤害+50%"
+intro = "拾取时获得10层病毒；攻击力×150%、暴击率+30%、暴击伤害+50%"
 maxStack = 1
 tags = Array[int]([2])
 isUnique = true
 args = Dictionary[String, Variant]({
-"attack_bonus": 60.0,
+"attack_multi": 1.5,
 "crit_damage_bonus": 0.5,
 "crit_rate_bonus": 0.3,
-"virus_stack": 5
+"virus_stack": 10
 })
 onStart = SubResource("Resource_virusmodule_start_effect")
 onEnd = SubResource("Resource_virusmodule_end_effect")

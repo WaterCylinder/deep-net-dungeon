@@ -14,7 +14,15 @@ public enum EnergyType
     /// <summary>
     /// 护盾
     /// </summary>
-    Shield
+    Shield,
+    /// <summary>
+    /// 攻击力（红色能量点，拾取永久+攻击力）
+    /// </summary>
+    Attack,
+    /// <summary>
+    /// 防御力（蓝色能量点，拾取永久+护甲）
+    /// </summary>
+    Defense
 }
 
 public partial class EnergyPoint : Entity
@@ -98,6 +106,7 @@ public partial class EnergyPoint : Entity
             
             ep.value = value;
             ep.Init(type);
+            result.Add(ep);
         }
 
         return result;
@@ -136,6 +145,14 @@ public partial class EnergyPoint : Entity
                 //护盾点：拾取获得 value × 2 点护盾（AddShield内部会封顶到最大生命）
                 entity.AddShield(value * 2);
             break;
+            case EnergyType.Attack:
+                //攻击能量点：永久增加攻击力（同名区间累加，拾取多个会叠加）
+                entity.attack.AddModify(value, "EnergyAttack");
+            break;
+            case EnergyType.Defense:
+                //防御能量点：永久增加护甲（同名区间累加）
+                entity.defense.AddModify(value, "EnergyDefense");
+            break;
         }
         entity.EmitSignal(Entity.SignalName.OnPickEnergy, entity, this);
     }
@@ -153,6 +170,14 @@ public partial class EnergyPoint : Entity
             break;
             case EnergyType.Shield:
                 spriteNode.SelfModulate = Colors.Gold;
+            break;
+            case EnergyType.Attack:
+                //红色：攻击能量点
+                spriteNode.SelfModulate = new Color("ff5a5a");
+            break;
+            case EnergyType.Defense:
+                //蓝色：防御能量点
+                spriteNode.SelfModulate = new Color("5aa8ff");
             break;
         }
 

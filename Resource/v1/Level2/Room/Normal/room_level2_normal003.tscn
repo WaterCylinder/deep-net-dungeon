@@ -31,12 +31,12 @@ roomMap = NodePath("..")
 [node name="EnemyGeneratorCluster" parent="EnemyGenerator/1" unique_id=61005515 instance=ExtResource("4_2vpbs")]
 visible = false
 position = Vector2(0, -32)
-onceSpawnRange = Vector2i(4, 5)
-spawnTime = 2.0
+onceSpawnRange = Vector2i(2, 3)
+spawnTime = 3.0
 spawnNum = 5
 clusterData = Dictionary[Object, int]({
-ExtResource("7_g36pv"): 5,
-ExtResource("6_qghpw"): 20
+ExtResource("7_g36pv"): 1,
+ExtResource("6_qghpw"): 2
 })
 areaShape = SubResource("RectangleShape2D_8n7h8")
 dataList = []

@@ -210,7 +210,51 @@ public partial class Player : Entity
 
     protected override void OnAttack()
     {
-        Shot(targetShotToward * bulletSpeed, shotPoint.GlobalPosition);
+        Shot(targetShotToward * bulletSpeed, GetSafeShotPosition());
+    }
+
+    /// <summary>
+    /// 取一个安全的发射点：贴着墙射击时枪口(shotPoint)会插进墙体里，
+    /// 子弹一出生就被墙吃掉。这里从身体中心朝枪口打一条射线，
+    /// 撞到墙就退到墙前——退让距离要大于弹幕自身的碰撞半径（bullet.tscn里是6），
+    /// 否则子弹的碰撞体依然和墙面重叠，第一帧照样被判死
+    /// </summary>
+    Vector2 GetSafeShotPosition()
+    {
+        const float bulletBodyRadius = 6f;
+        const float margin = 6f;
+        float retreat = bulletBodyRadius + margin;
+
+        Vector2 muzzle = shotPoint.GlobalPosition;
+
+        //墙在第8层（掩码128）
+        PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(GlobalPosition, muzzle, 128);
+        Godot.Collections.Dictionary hit = GetWorld2D().DirectSpaceState.IntersectRay(query);
+
+        if (hit.Count == 0)
+        {
+            return muzzle;
+        }
+
+        Vector2 toMuzzle = muzzle - GlobalPosition;
+        if (toMuzzle.LengthSquared() < 0.0001f)
+        {
+            return GlobalPosition;
+        }
+
+        Vector2 dir = toMuzzle.Normalized();
+        Vector2 hitPos = (Vector2)hit["position"];
+
+        //朝身体方向退：dir指向枪口，所以减dir就是往回退
+        Vector2 safePos = hitPos - dir * retreat;
+
+        //墙离身体太近（退过头了）就直接从身体中心发射，中心不可能在墙里
+        if ((safePos - GlobalPosition).Dot(dir) < 0f)
+        {
+            return GlobalPosition;
+        }
+
+        return safePos;
     }
 
     protected override void OnHurt(Damage damage, float finalDamage)

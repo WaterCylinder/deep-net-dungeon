@@ -67,7 +67,7 @@ description = "Boss：一阶段击破双手，二阶段本体下场，三种弹�
 tags = Array[int]([5, 3, 4])
 maxHealth = 16384.0
 attack = 50.0
-defense = 50.0
+defense = 80.0
 speed = 150.0
 spriteFrames = SubResource("SpriteFrames_pxpxb")
 layoutOffset = Vector2(0, 0)
@@ -86,4 +86,5 @@ args = Dictionary[String, Variant]({
 })
 onUpdate = SubResource("Resource_wsawa_update_effect")
 onDeath = SubResource("Resource_wsawa_death_effect")
+dropValue = Vector2i(64, 128)
 metadata/_custom_type_script = "uid://mqed4halsexx"

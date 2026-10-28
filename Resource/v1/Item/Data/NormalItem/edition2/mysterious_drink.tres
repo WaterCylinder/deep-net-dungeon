@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" uid="uid://bctrndevbmqqd" path="res://Script/Data/Buff/BuffData.cs" id="1_buffscript"]
+[ext_resource type="Script" uid="uid://dmat4pjl0eqgr" path="res://Script/Data/Item/ItemData.cs" id="2_item"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Buff/Data/buff_mysterious_drink.tres" id="3_buff"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Behavior/item_heal_per.tres" id="4_pick"]
+[ext_resource type="Texture2D" uid="uid://cg3lh3h4oalp4" path="res://Resource/v1/Item/Sprite/edition2/Mysterious drink.png" id="5_sprite"]
+
+[resource]
+script = ExtResource("2_item")
+ItemName = "mysterious_drink"
+showName = "神秘饮料"
+intro = "恢复30%最大生命值，攻击力提高30%持续30秒"
+tags = Array[int]([2])
+args = Dictionary[String, Variant]({
+"value_per": 30.0
+})
+itemLevel = 2
+sprite = ExtResource("5_sprite")
+carryBuffs = Dictionary[ExtResource("1_buffscript"), int]({
+ExtResource("3_buff"): 1
+})
+addBuffOnPick = true
+removeBuffOnDrop = true
+onPick = ExtResource("4_pick")
+metadata/_custom_type_script = "uid://dmat4pjl0eqgr"

@@ -16,9 +16,15 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
 
     void _HealOneWhenGetScore(Entity entity, EnergyPoint energyPoint)
     {
-        if(Game.IsAble(energyPoint) && energyPoint.energyType == EnergyType.Coin)
+        if(!Game.IsAble(energyPoint) || energyPoint.energyType != EnergyType.Coin)
         {
-            entity.Heal(energyPoint.value);
+            return;
+        }
+
+        //50%概率回复1点生命值
+        if(GameManager.Instance.game.randomSystem.Float() < 0.5f)
+        {
+            entity.Heal(1f);
         }
     }
 
@@ -77,8 +83,8 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
         entity.AddShield(damage);
     }
 
-    //裂罅护甲：按"本房间内带灼烧效果的敌怪数量"提供护甲（每只+10），由Buff的onTimer每0.1秒刷新一次。
-    //比原来的检测范围(Trigger)省很多：不再有额外的Area2D，只是遍历房间敌人的子节点
+    //裂罅护甲：按"本房间内带灼烧效果的敌怪数量 × 本buff层数"提供护甲，由Buff的onTimer每0.1秒刷新一次。
+    //层数可叠加（捡多个裂罅护甲就是加层），所以每只灼烧敌怪提供的护甲会随层数变高
     public void RiftArmorOnTimer(Entity entity, Buff buff)
     {
         if(!Game.IsAble(entity))return;
@@ -96,8 +102,11 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
             }
         }
 
+        //每只灼烧敌怪提供的护甲 = 层数 × defense_per_stack（默认每层1点）
+        float perEnemy = buff.currentStack * buff.args.Get<float>("defense_per_stack", 1f);
+
         //房间为空时这里会写入0，顺便把上一个房间残留的护甲清掉
-        entity.defense.Add(10 * count, "RiftArmor", 10);
+        entity.defense.Add(perEnemy * count, "RiftArmor", 10);
     }
 
     public void RemoveRiftArmor(Entity entity, Buff buff)
@@ -105,7 +114,8 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
         entity.defense.RemoveMultiplier("RiftArmor");
     }
 
-    //裂罅图腾：每秒让房间内所有敌怪获得 fire_stack 层灼烧（默认4层），由Buff的onTimer每1秒触发一次
+    //裂罅图腾：每秒让房间内所有敌怪获得"本buff层数"层灼烧，由Buff的onTimer每1秒触发一次。
+    //层数可叠加（捡多个图腾就是加层），所以每秒挂的灼烧也会随层数变高
     public void RiftTotemOnTimer(Entity entity, Buff buff)
     {
         if(!Game.IsAble(entity))return;
@@ -113,7 +123,9 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
         Room room = entity.room;
         if(room == null || room.enemyNode == null)return;
 
-        int stack = buff.args.Get<int>("fire_stack", 4);
+        //每个敌怪每秒获得的灼烧层数 = 层数 × fire_stack_per_layer（默认每层1点）
+        int stack = Mathf.RoundToInt(buff.currentStack * buff.args.Get<float>("fire_stack_per_layer", 1f));
+        if(stack <= 0)return;
 
         foreach(Node node in room.enemyNode.GetChildren())
         {
@@ -140,14 +152,15 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
         entity.speed.RemoveMultiplier("ShieldThruster");
     }
 
-    //病毒模块：拾取时自身获得若干层病毒，同时攻击力、暴击率、暴击伤害各加一段固定值
+    //病毒模块：拾取时自身获得若干层病毒，同时攻击力乘一段倍率、暴击率/暴击伤害各加一段固定值
     //三个数值用同一个乘区id（分别挂在不同的Value上，互不影响），移除时一起摘掉
     public void VirusModuleOnStart(Entity entity, Buff buff)
     {
         if(!Game.IsAble(entity))return;
 
-        entity.AttachBuff(Buff.Virus, buff.args.Get<int>("virus_stack", 5));
-        entity.attack.Add(buff.args.Get<float>("attack_bonus", 50f), "VirusModule", 50);
+        entity.AttachBuff(Buff.Virus, buff.args.Get<int>("virus_stack", 10));
+        //攻击力是乘区（默认×150%），不是加固定值了
+        entity.attack.Multi(buff.args.Get<float>("attack_multi", 1.5f), "VirusModule", 50);
         entity.critRate.Add(buff.args.Get<float>("crit_rate_bonus", 0.2f), "VirusModule", 50);
         entity.critDamage.Add(buff.args.Get<float>("crit_damage_bonus", 0.5f), "VirusModule", 50);
     }
@@ -162,7 +175,7 @@ public partial class BuffBehaviorLevel1 : BuffBehavior
         Buff virus = entity.GetBuff("virus");
         if(virus != null)
         {
-            entity.ChangeBuffStack(virus, -buff.args.Get<int>("virus_stack", 5));
+            entity.ChangeBuffStack(virus, -buff.args.Get<int>("virus_stack", 10));
         }
     }
 

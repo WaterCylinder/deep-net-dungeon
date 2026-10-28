@@ -16,10 +16,11 @@
 
 [resource]
 script = ExtResource("2_h3ghx")
+mapMode = 1
 minNormalRoomCount = 1
 maxNormalRoomCount = 1
 normalRoomCount = 16
-treasureRoomCount = 3
+treasureRoomCount = 2
 shopRoomCount = 3
 eventRoomCount = 4
 maxLayerRooms = 8

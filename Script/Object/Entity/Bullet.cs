@@ -186,7 +186,11 @@ public partial class Bullet : Entity
         bullet.Initialize(data);
 
         
-        if (Game.IsAble(owner))
+        // 转移攻击/暴击等数值到弹幕上。
+        // 注意这里只判断"对象是否有效"，不能用 Game.IsAble：死亡回调里（例如电浆蜘蛛的死亡弹幕）
+        // owner 的 isDead 已经是 true，若按 IsAble 判断就会跳过转移，
+        // 弹幕只能吃到 bullet.tscn 预制体里的默认攻击力（10），伤害会莫名其妙地变得很低。
+        if (owner != null && GodotObject.IsInstanceValid(owner))
         {
             // 转移伤害基础值到弹幕上
             bullet.attack = owner.attack.Get();
@@ -260,6 +264,16 @@ public partial class Bullet : Entity
     /// 弹幕存在时间（秒），0表示永久存在
     /// </summary>
     [Export] public float lifetime = 5f;
+
+    /// <summary>
+    /// 出生保护时间（秒）：发射后这段时间内不结算实体碰撞，避免贴脸/重叠生成时被立刻吃掉。
+    /// 保护结束时会对"当前仍然重叠"的实体立刻补一次命中检测，所以保护期后不会漏判。
+    /// 可以在 BulletData 的 args 里用 spawn_protect 覆盖，0 = 关闭
+    /// </summary>
+    [Export] public float spawnProtectTime = 0.1f;
+
+    ulong spawnProtectStartMs;
+    bool spawnProtectDone;
 
     /// <summary>
     /// 弹幕伤害倍率
@@ -579,6 +593,12 @@ public partial class Bullet : Entity
     {
         base.OnStart();
         aliveTime = 0f;
+
+        //出生保护：发射后短时间内部不结算碰撞（可用数据里的spawn_protect覆盖）
+        spawnProtectTime = args.Get<float>("spawn_protect", spawnProtectTime);
+        spawnProtectStartMs = Time.GetTicksMsec();
+        spawnProtectDone = spawnProtectTime <= 0f;
+
         // 取消与障碍物的碰撞
         if (CheckTag(BulletTag.PenetrateObstacle) || CheckTag(BulletTag.PenetrateAll)
             || CheckTag(BulletTag.IgnoreObstacle) || CheckTag(BulletTag.IgnoreAll))
@@ -597,6 +617,7 @@ public partial class Bullet : Entity
     {
         base.OnUpdate(delta);
         UpdateLifetime(delta);
+        UpdateSpawnProtect();
 
         if(isRotateWithToward && moveTowards != Vector2.Zero)
         {
@@ -631,18 +652,75 @@ public partial class Bullet : Entity
     {
         base.OnCollisionEntered(other);
 
+        // 忽略与发射者的碰撞
         if(other == owner)
         {
-            return; // 忽略与发射者的碰撞
+            return;
         }
 
+        // 出生保护期内不结算：交给 UpdateSpawnProtect 在保护结束时补一次检测
+        if(!spawnProtectDone)
+        {
+            return;
+        }
+
+        ResolveHit(other);
+    }
+
+    /// <summary>
+    /// 出生保护检测：时间一到，立刻对当前重叠着的实体补一次碰撞结算。
+    /// 因为Area2D一直在监测，重叠列表是实时的，所以"0.1秒后立刻检测"不会漏判；
+    /// 保护期内就离开的实体自然不会出现在重叠列表里，也就不会被打到。
+    /// </summary>
+    void UpdateSpawnProtect()
+    {
+        if(spawnProtectDone || isDead)
+        {
+            return;
+        }
+
+        if(Time.GetTicksMsec() - spawnProtectStartMs < (ulong)(spawnProtectTime * 1000f))
+        {
+            return;
+        }
+
+        spawnProtectDone = true;
+
+        if(area == null || !IsInstanceValid(area))
+        {
+            return;
+        }
+
+        foreach(Node node in area.GetOverlappingBodies())
+        {
+            if(node is not Entity other || other == owner)
+            {
+                continue;
+            }
+
+            ResolveHit(other);
+
+            //不可穿透的弹幕已经销毁，不用继续结算
+            if(isDead)
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 结算一次实体碰撞：命中效果 + 不可穿透则销毁
+    /// </summary>
+    void ResolveHit(Entity other)
+    {
         // 处理碰撞效果
-        if (! IsIgnore(other))
+        if (!IsIgnore(other))
         {
             HandleCollision(other);
         }
+
         // 检查是否可穿透
-        if (! CanPenetrate(other))
+        if (!CanPenetrate(other))
         {
             Kill();
         }

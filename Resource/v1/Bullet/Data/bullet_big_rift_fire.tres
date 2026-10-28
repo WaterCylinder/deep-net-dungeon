@@ -8,6 +8,7 @@
 [ext_resource type="SpriteFrames" uid="uid://b4ratua3lg1xr" path="res://Resource/v1/Bullet/Sprite/rift_sprite_frames.tres" id="2_nmo01"]
 [ext_resource type="Script" uid="uid://bext0m7l2otpv" path="res://Script/Data/Effect/Effect.cs" id="3_07efp"]
 [ext_resource type="Resource" uid="uid://lqqhhqedghqc" path="res://Resource/v1/Bullet/Data/bullet_rift_fire.tres" id="3_rift_fire"]
+[ext_resource type="AudioStream" uid="uid://dbfjq8lntkmf3" path="res://Resource/Sounds/fire_001.wav" id="8_hwubg"]
 
 [sub_resource type="Resource" id="Resource_t2jo5"]
 script = ExtResource("1_0jrhv")
@@ -44,4 +45,5 @@ layoutOffset = Vector2(-32, 0)
 scale = Vector2(5, 5)
 onHit = SubResource("Resource_setfire_effect")
 onDead = SubResource("Resource_hwubg")
+soundOnShot = ExtResource("8_hwubg")
 metadata/_custom_type_script = "uid://draiigge0qptw"

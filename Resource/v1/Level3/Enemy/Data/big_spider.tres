@@ -64,12 +64,12 @@ args = Dictionary[String, Variant]({
 "ring_fast_speed": 5.0,
 "ring_medium_speed": 3.0,
 "ring_slow_speed": 1.5,
-"summon_count": 3,
-"summon_interval": 5.0,
-"summon_max": 30,
-"wait_time_max": 1.0,
-"wait_time_min": 0.5
+"summon_count": 1,
+"summon_interval": 2.0,
+"summon_max": 5,
+"wait_time_max": 2.0,
+"wait_time_min": 1.0
 })
 onUpdate = SubResource("Resource_update_effect")
-dropValue = Vector2i(30, 40)
+dropValue = Vector2i(25, 40)
 metadata/_custom_type_script = "uid://mqed4halsexx"

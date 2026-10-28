@@ -47,9 +47,8 @@ description = "静止1~2秒与随机爬行1~2秒交替；死亡时朝玩家发�
 tags = Array[int]([6])
 maxHealth = 20.0
 attack = 32.0
-defense = 8.0
 speed = 200.0
-shield = 130.0
+shield = 180.0
 spriteFrames = ExtResource("4_spider_frames")
 layoutOffset = Vector2(0, -16)
 physicShape = SubResource("RectangleShape2D_body")
@@ -61,5 +60,5 @@ args = Dictionary[String, Variant]({
 })
 onUpdate = SubResource("Resource_update_effect")
 onDeath = SubResource("Resource_death_effect")
-dropValue = Vector2i(4, 6)
+dropValue = Vector2i(2, 3)
 metadata/_custom_type_script = "uid://mqed4halsexx"

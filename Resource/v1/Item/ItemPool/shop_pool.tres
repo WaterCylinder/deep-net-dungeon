@@ -31,6 +31,15 @@
 [ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition1/shield_thruster.tres" id="28_thruster"]
 [ext_resource type="Resource" uid="uid://bcjcr3pvbp3i2" path="res://Resource/v1/Item/Data/NormalItem/edition1/virus_module.tres" id="29_virusmodule"]
 [ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition1/springboard_machine.tres" id="30_springboard"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/art_knife.tres" id="31_artknife"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/breakdown.tres" id="32_breakdown"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/crossfire.tres" id="33_crossfire"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/energy_extractor.tres" id="34_extractor"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/gold_coin.tres" id="35_goldcoin"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/mechanical_heart.tres" id="36_heart"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/mysterious_drink.tres" id="37_drink"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/overload_module.tres" id="38_overload"]
+[ext_resource type="Resource" path="res://Resource/v1/Item/Data/NormalItem/edition2/reinforcing_plate.tres" id="39_plate"]
 
 [resource]
 script = ExtResource("1_ebaih")
@@ -61,9 +70,18 @@ ExtResource("4_3q6yw"): 4,
 ExtResource("3_aht5y"): 4,
 ExtResource("2_re88x"): 4,
 ExtResource("1_gmvd8"): 4,
-ExtResource("21_q7xkl"): 4,
+ExtResource("21_q7xkl"): 2,
 ExtResource("22_sb5yh"): 1,
 ExtResource("23_5ipsi"): 2,
-ExtResource("24_flint"): 2
+ExtResource("24_flint"): 2,
+ExtResource("31_artknife"): 2,
+ExtResource("32_breakdown"): 1,
+ExtResource("33_crossfire"): 1,
+ExtResource("34_extractor"): 2,
+ExtResource("35_goldcoin"): 2,
+ExtResource("36_heart"): 1,
+ExtResource("37_drink"): 2,
+ExtResource("38_overload"): 1,
+ExtResource("39_plate"): 2
 })
 metadata/_custom_type_script = "uid://bc5j8miuab1g0"

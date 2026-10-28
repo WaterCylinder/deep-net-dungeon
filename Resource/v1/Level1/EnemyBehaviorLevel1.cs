@@ -16,8 +16,8 @@ public partial class EnemyBehaviorLevel1 : EnemyBehavior
         Vector2 diff = player.GlobalPosition - enemy.GlobalPosition;
         if(diff.Length() > distance + 16)
         {
-            //朝着玩家移动
-            enemy.MoveTarget(player.GlobalPosition);
+            //朝着玩家移动（走导航，绕开墙）
+            UpdateCloseToPalyer(enemy);
         }
         else if(diff.Length() < distance - 16)
         {
@@ -115,7 +115,8 @@ public partial class EnemyBehaviorLevel1 : EnemyBehavior
 
         if(enemy.args.Get<string>("follow_and_charged_impact_state") == "follow")
         {
-            enemy.MoveTarget(player.GlobalPosition);
+            //追击阶段走导航
+            UpdateCloseToPalyer(enemy);
             enemy.AddTempTimer(
                 "follow_and_charged_impact_timer1",
                 game.randomSystem.Float(2,3),
@@ -166,7 +167,8 @@ public partial class EnemyBehaviorLevel1 : EnemyBehavior
         
         if(enemy.args.Get<string>("rift_defener_state") == "follow")
         {
-            enemy.MoveTarget(player.GlobalPosition);
+            //追击阶段走导航
+            UpdateCloseToPalyer(enemy);
             enemy.AddTempTimer(
                 "rift_defener_timer1",
                 game.randomSystem.Float(1, 2),

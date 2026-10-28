@@ -32,32 +32,26 @@ roomMap = NodePath("..")
 [node name="ShopItem" parent="ShopNode" unique_id=351719576 instance=ExtResource("4_htdog")]
 position = Vector2(-448, -144)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="ShopItem2" parent="ShopNode" unique_id=2098123302 instance=ExtResource("4_htdog")]
 position = Vector2(-448, -32)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="ShopItem3" parent="ShopNode" unique_id=849370585 instance=ExtResource("4_htdog")]
 position = Vector2(-448, 88)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="ShopItem4" parent="ShopNode" unique_id=527953691 instance=ExtResource("4_htdog")]
 position = Vector2(440, -144)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="ShopItem5" parent="ShopNode" unique_id=1403557429 instance=ExtResource("4_htdog")]
 position = Vector2(440, -32)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="ShopItem6" parent="ShopNode" unique_id=958021049 instance=ExtResource("4_htdog")]
 position = Vector2(440, 88)
 pool = ExtResource("5_07kds")
-data = null
 
 [node name="Doors" type="Node2D" parent="." unique_id=1913729891]
 

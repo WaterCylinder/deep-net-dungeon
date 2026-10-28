@@ -31,8 +31,8 @@ public partial class Door : Area2D
 {
     public static Dictionary<RoomTag, Color> RoomTagColorMapper = new Dictionary<RoomTag, Color>
     {
-        // 商店：琥珀橙
-        {RoomTag.Shop, new Color("b87f54")},
+        // 商店：偏棕色（比资源房的金色更暗更浊，避免和金色撞色）
+        {RoomTag.Shop, new Color("8b5a2b")},
         // 普通：紫（数量最多，饱和度统一后不会糊成一片）
         {RoomTag.Normal, new Color("8252b2")},
         // 资源：金

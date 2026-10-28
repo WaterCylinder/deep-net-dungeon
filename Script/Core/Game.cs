@@ -77,6 +77,15 @@ public partial class Game : Node
     [Signal]
     public delegate void ItemSpawnedEventHandler(Item item);
 
+
+
+    /// <summary>
+    /// 特殊事件信号，检测info来处理特殊事件
+    /// </summary>
+    /// <param name="item"></param>
+    [Signal]
+    public delegate void SpecialEventEventHandler(string info);
+
     #endregion
 
     #region 游戏系统

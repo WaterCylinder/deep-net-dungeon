@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MapData" format=3 uid="uid://jnjp4kjusakx"]
+
+[ext_resource type="Script" uid="uid://bodfjcgco84dp" path="res://Script/Data/Map/RoomData.cs" id="1_v5b6s"]
+[ext_resource type="Resource" uid="uid://dsgibosr5kp01" path="res://Resource/v1/Level10/room_level10_start.tres" id="2_pslsy"]
+[ext_resource type="Script" uid="uid://cdikju4kdlymr" path="res://Script/Data/Map/MapData.cs" id="3_7qp12"]
+
+[resource]
+script = ExtResource("3_7qp12")
+minNormalRoomCount = 1
+maxNormalRoomCount = 1
+roomDatas = Dictionary[int, Array]({
+0: Array[ExtResource("1_v5b6s")]([ExtResource("2_pslsy")]),
+1: Array[ExtResource("1_v5b6s")]([]),
+2: Array[ExtResource("1_v5b6s")]([]),
+3: Array[ExtResource("1_v5b6s")]([]),
+4: Array[ExtResource("1_v5b6s")]([]),
+5: Array[ExtResource("1_v5b6s")]([])
+})
+metadata/_custom_type_script = "uid://cdikju4kdlymr"
